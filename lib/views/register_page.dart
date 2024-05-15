@@ -16,7 +16,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _cedulaController = TextEditingController();
   final AuthenticationController _authenticationController =
       Get.put(AuthenticationController());
 
@@ -57,7 +57,7 @@ class _RegisterPageState extends State<RegisterPage> {
               InputWidget(
                 hintText: 'Cedula',
                 obscureText: false,
-                controller: _usernameController,
+                controller: _cedulaController,
               ),
               const SizedBox(
                 height: 30,
@@ -87,10 +87,11 @@ class _RegisterPageState extends State<RegisterPage> {
                     vertical: 15,
                   ),
                 ),
-                onPressed: () async {
+                   onPressed: () async {
                   await _authenticationController.register(
                     name: _nameController.text.trim(),
-                    username: _usernameController.text.trim(),
+                    // Convertir la cédula a un número antes de enviarla al controlador de autenticación
+                    cedula: int.parse(_cedulaController.text.trim()), // <- Comentario agregado
                     email: _emailController.text.trim(),
                     password: _passwordController.text.trim(),
                   );

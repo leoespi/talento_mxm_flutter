@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:talento_mxm_flutter/views/menu.dart';
 
 class AuthenticationController extends GetxController {
   Future<void> logout() async {
@@ -20,7 +21,7 @@ class AuthenticationController extends GetxController {
 
   Future register({
     required String name,
-    required String username,
+    required int cedula,
     required String email,
     required String password,
   }) async {
@@ -28,7 +29,7 @@ class AuthenticationController extends GetxController {
       isLoading.value = true;
       var data = {
         'name': name,
-        'username': username,
+         'cedula': cedula.toString(),
         'email': email,
         'password': password,
       };
@@ -45,7 +46,7 @@ class AuthenticationController extends GetxController {
         isLoading.value = false;
         token.value = json.decode(response.body)['token'];
         box.write('token', token.value);
-        Get.offAll(() => const ()); //homepage  o pagina menu 
+        Get.offAll(() =>   MenuPage ()); //homepage  o pagina menu 
       } else {
         isLoading.value = false;
         Get.snackbar(
@@ -65,13 +66,13 @@ class AuthenticationController extends GetxController {
   }
 
   Future login({
-    required String username,
+    required int cedula,
     required String password,
   }) async {
     try {
       isLoading.value = true;
       var data = {
-        'username': username,
+         'cedula': cedula.toString(),
         'password': password,
       };
 
@@ -87,7 +88,7 @@ class AuthenticationController extends GetxController {
         isLoading.value = false;
         token.value = json.decode(response.body)['token'];
         box.write('token', token.value);
-        Get.offAll(() => const ()); //homepage  o pagina menu 
+        Get.offAll(() => MenuPage ()); //homepage  o pagina menu 
         box.write('user_id', json.decode(response.body)['user']['id']);
       } else {
         isLoading.value = false;

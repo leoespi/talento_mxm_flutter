@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart'; // Importa la biblioteca Get
-
+import 'package:get_storage/get_storage.dart';
+import 'package:talento_mxm_flutter/views/menu.dart';
 import 'views/login_page.dart';
 
 void main() {
@@ -8,14 +9,16 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return  const GetMaterialApp( // Usa GetMaterialApp en lugar de MaterialApp
+     final box = GetStorage();
+     final token = box.read('token');
+    return   GetMaterialApp( // Usa GetMaterialApp en lugar de MaterialApp
       debugShowCheckedModeBanner: false,
       title: 'Talento MxM',
-      home: LoginPage(),
+      home: token == null ? const LoginPage() :  MenuPage(),
     );
   }
 }

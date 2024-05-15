@@ -13,7 +13,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _cedulaController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final AuthenticationController _authenticationController =
       Get.put(AuthenticationController());
@@ -58,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
                       InputWidget(
                         hintText: 'Cedula',
                         obscureText: false,
-                        controller: _usernameController,
+                        controller: _cedulaController,
                       ),
                       const SizedBox(
                         height: 35,
@@ -81,10 +81,10 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         onPressed: () async {
-                          await _authenticationController.login(
-                            username: _usernameController.text.trim(),
-                            password: _passwordController.text.trim(),
-                          );
+                        await _authenticationController.login(
+                          cedula: int.parse(_cedulaController.text.trim()), 
+                          password: _passwordController.text.trim(),
+                        );
                         },
                         child: Obx(() {
                           return _authenticationController.isLoading.value

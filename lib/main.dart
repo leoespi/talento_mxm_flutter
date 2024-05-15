@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp( // Usa GetMaterialApp en lugar de MaterialApp
+    return  const GetMaterialApp( // Usa GetMaterialApp en lugar de MaterialApp
       debugShowCheckedModeBanner: false,
       title: 'Talento MxM',
       home: LoginPage(),

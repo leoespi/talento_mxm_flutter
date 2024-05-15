@@ -105,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       TextButton(
                         onPressed: () {
-                         print("Botón Registrarse presionado"); // Agrega esta línea para debug
+                         print("Botón Registrarse presionado"); // Agrega esta línea para debug Borrarlo cuando quiera
                         Get.to(RegisterPage());
                         },
                         child: Text(

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:talento_mxm_flutter/controllers/authentication.dart';
 import 'package:talento_mxm_flutter/views/login_page.dart';
-import 'package:get/get.dart';
 import './widgets/input_widget.dart';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+  const RegisterPage ({super.key});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -23,6 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: Center(
         child: Padding(
@@ -32,10 +33,14 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'Registrarse',
-                style: GoogleFonts.poppins(
-                  fontSize: size * 0.080,
+              Transform.translate(
+                offset: Offset(0, -60),
+                child: Text(
+                  'Registrarse',
+                  style: GoogleFonts.poppins(
+                    color: Color.fromARGB(255, 3, 0, 168),
+                    fontSize: size * 0.080,
+                  ),
                 ),
               ),
               const SizedBox(
@@ -97,11 +102,14 @@ class _RegisterPageState extends State<RegisterPage> {
                             color: Colors.white,
                           ),
                         )
-                      : Text(
-                          'Registrarse',
-                          style: GoogleFonts.poppins(
-                             color: Color.fromARGB(255, 255, 255, 255),
-                            fontSize: size * 0.040,
+                      : Transform.translate(
+                          offset: Offset(0, 0),
+                          child: Text(
+                            'Registrarse',
+                            style: GoogleFonts.poppins(
+                              color: Color.fromARGB(255, 255, 255, 255),
+                              fontSize: size * 0.040,
+                            ),
                           ),
                         );
                 }),
@@ -111,6 +119,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               TextButton(
                 onPressed: () {
+                  Navigator.pop(context);
                   Get.to(LoginPage());
                 },
                 child: Text(

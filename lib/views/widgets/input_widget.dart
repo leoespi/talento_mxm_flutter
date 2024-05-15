@@ -17,7 +17,7 @@ class InputWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-                width: double.infinity,
+                width:double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(10), 

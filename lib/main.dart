@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart'; // Importa la biblioteca Get
+
 import 'views/login_page.dart';
 
 void main() {
@@ -6,12 +8,11 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return GetMaterialApp( // Usa GetMaterialApp en lugar de MaterialApp
       debugShowCheckedModeBanner: false,
       title: 'Talento MxM',
       home: LoginPage(),

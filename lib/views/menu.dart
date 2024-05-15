@@ -5,39 +5,29 @@ class MenuPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Menu Example'),
+        title: Text('Menú Demostrativo'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            RaisedButton(
-              onPressed: () {
-                // Acción al presionar el botón 1
-                print('Botón 1 presionado');
-              },
-              child: Text('Opción 1'),
+            Text(
+              'Opción 1',
+              style: TextStyle(fontSize: 18),
             ),
-            RaisedButton(
-              onPressed: () {
-                // Acción al presionar el botón 2
-                print('Botón 2 presionado');
-              },
-              child: Text('Opción 2'),
+            SizedBox(height: 20),
+            Text(
+              'Opción 2',
+              style: TextStyle(fontSize: 18),
             ),
-            RaisedButton(
-              onPressed: () {
-                // Acción al presionar el botón 3
-                print('Botón 3 presionado');
-              },
-              child: Text('Opción 3'),
+            SizedBox(height: 20),
+            Text(
+              'Opción 3',
+              style: TextStyle(fontSize: 18),
             ),
           ],
         ),
       ),
     );
   }
-}
-
-RaisedButton({required Null Function() onPressed, required Text child}) {
 }

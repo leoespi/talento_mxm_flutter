@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:talento_mxm_flutter/views/incapacidades_page.dart'; // Asegúrate de importar el archivo donde tienes la página de incapacidades
 
 class MenuPage extends StatelessWidget {
   @override
@@ -11,20 +12,17 @@ class MenuPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'Opción 1',
-              style: TextStyle(fontSize: 18),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyForm()), // Reemplaza IncapacidadesPage con el nombre de tu clase de la página de incapacidades
+                );
+              },
+              child: Text('Incapacidades'), // Cambia el texto según la opción que quieras
             ),
             SizedBox(height: 20),
-            Text(
-              'Opción 2',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Opción 3',
-              style: TextStyle(fontSize: 18),
-            ),
+           
           ],
         ),
       ),

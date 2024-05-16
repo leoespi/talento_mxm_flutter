@@ -47,7 +47,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 height: 30,
               ),
               InputWidget(
-                hintText: 'Nombre',
+                hintText: 'Nombre Completo',
                 obscureText: false,
                 controller: _nameController,
               ),

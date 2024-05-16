@@ -54,7 +54,7 @@ class _MyFormState extends State<MyForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Formulario de Datos'),
+        title: Text('Formulario Incapacidades'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),

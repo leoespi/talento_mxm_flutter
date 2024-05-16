@@ -120,7 +120,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           'Cédula: ${usuario?.cedula}',
                           style: TextStyle(fontSize: 18.0),
                         ),
-                        SizedBox(height: 20.0),
+                        SizedBox(height: 3.0),
+                        Text(
+                          'Correo Electronico: ${usuario?.email}',
+                          style: TextStyle(fontSize: 18.0),
+                        ),
+                        
                         
                       ],
                     ),

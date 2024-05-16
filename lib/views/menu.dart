@@ -8,50 +8,94 @@ class MenuPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold( 
+    return Scaffold(
       appBar: AppBar(
-        title: Text('Menú '),
+        title: Text('Menú'),
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
-            onPressed: () => _authController.logout(), // Llama al método de logout sin argumentos
+            onPressed: () => _authController.logout(),
           ),
         ],
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: () {
+          children: [
+            SizedBox(height: 20),
+            GestureDetector(
+              onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => MyForm()), // Reemplaza IncapacidadesPage con el nombre de tu clase de la página de incapacidades
+                  MaterialPageRoute(builder: (context) => MyForm()),
                 );
               },
-              child: Column(
-                children: [
-                  Icon(Icons.article), // Icono de la opción
-                  SizedBox(height: 8),
-                  Text('Incapacidades'), // Texto de la opción
-                ],
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: Colors.blue, // Cambia el color de fondo según el diseño
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Icon(Icons.article, color: Colors.white), // Icono de la opción
+                    SizedBox(width: 20),
+                    Text(
+                      'Incapacidades', // Texto de la opción
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ],
+                ),
               ),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
+            GestureDetector(
+              onTap: () {
                 // Agrega aquí la lógica para la otra opción del menú
               },
-              child: Column(
-                children: [
-                  Icon(Icons.quiz), // Icono de la opción
-                  SizedBox(height: 8),
-                  Text('Otra opción'), // Texto de la opción
-                ],
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: Colors.green, // Cambia el color de fondo según el diseño
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Icon(Icons.quiz, color: Colors.white), // Icono de la opción
+                    SizedBox(width: 20),
+                    Text(
+                      'Otra opción', // Texto de la opción
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ],
+                ),
               ),
             ),
             SizedBox(height: 20),
-            // Agrega más opciones del menú según sea necesario
+            GestureDetector(
+              onTap: () {
+                // Agrega aquí la lógica para la opción de perfil
+              },
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: Colors.orange, // Cambia el color de fondo según el diseño
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Icon(Icons.person, color: Colors.white), // Icono de la opción
+                    SizedBox(width: 20),
+                    Text(
+                      'Perfil', // Texto de la opción
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

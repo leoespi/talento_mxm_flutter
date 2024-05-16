@@ -3,7 +3,7 @@ import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
 import 'package:talento_mxm_flutter/controllers/authentication.dart';
 import 'package:get/get.dart';
 import 'package:talento_mxm_flutter/views/login_page.dart';
-
+import 'package:talento_mxm_flutter/views/perfil.dart';
 class MenuPage extends StatelessWidget {
   final AuthenticationController _authController = Get.find();
 
@@ -77,7 +77,12 @@ class MenuPage extends StatelessWidget {
             SizedBox(height: 20),
             GestureDetector(
               onTap: () {
-                 
+                 Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfileScreen(
+                     userId: ''
+                  )),
+                );
                 // Agrega aquí la lógica para la opción de perfil
               },
               child: Container(

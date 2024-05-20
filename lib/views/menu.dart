@@ -11,60 +11,66 @@ class MenuPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Menú'),
+      appBar: AppBar (
+        
         actions: [
-          IconButton(
+          IconButton (
             icon: Icon(Icons.logout),
             onPressed: () => _authController.logout(),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 16.0,
-          mainAxisSpacing: 16.0,
-          children: [
-            _buildMenuItem(
-              context,
-              color: Colors.blue,
-              icon: Icons.article,
-              text: 'Incapacidades',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MyForm()),
-                );
-              },
+      
+      bottomNavigationBar: Transform.translate(
+        offset: Offset(0.0, -5.0), // Ajusta el valor verticalmente según sea necesario
+        child: Container(
+          decoration: BoxDecoration(
+            color: Color(0xFF3366FF), // Cambia aquí el color a azul rey
+            borderRadius: BorderRadius.circular(15.0),
+          
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 1.0, vertical: 10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildBottomMenuItem(
+                  icon: Icons.article,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyForm()),
+                    );
+                  },
+                  color: Colors.white, // Cambia aquí el color del icono
+                  iconSize: 30, // Cambia aquí el tamaño del icono
+                ),
+                _buildBottomMenuItem(
+                  icon: Icons.quiz,
+                  onPressed: () {
+                    // Agrega aquí la lógica para la otra opción del menú
+                  },
+                  color: Colors.white, // Cambia aquí el color del icono
+                  iconSize: 30, // Cambia aquí el tamaño del icono
+                ),
+                _buildBottomMenuItem(
+                  icon: Icons.person,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfileScreen(
+                          userId: '',
+                        ),
+                      ),
+                    );
+                  },
+                  color: Colors.white, // Cambia aquí el color del icono
+                  iconSize: 30, // Cambia aquí el tamaño del icono
+                ),
+              ],
             ),
-            _buildMenuItem(
-              context,
-              color: Colors.green,
-              icon: Icons.quiz,
-              text: 'Otra opción',
-              onTap: () {
-                // Agrega aquí la lógica para la otra opción del menú
-              },
-            ),
-            _buildMenuItem(
-              context,
-              color: Colors.orange,
-              icon: Icons.person,
-              text: 'Perfil',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProfileScreen(
-                      userId: '',
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -108,6 +114,18 @@ class MenuPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildBottomMenuItem({
+    required IconData icon,
+    required VoidCallback onPressed,
+    required Color color,
+    required double iconSize, // Añade el tamaño del icono
+  }) {
+    return IconButton(
+      icon: Icon(icon, color: color, size: iconSize), // Aplica el tamaño del icono
+      onPressed: onPressed,
     );
   }
 }

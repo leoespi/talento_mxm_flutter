@@ -53,7 +53,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: Text(
                       'Registrarse',
                       style: GoogleFonts.poppins(
-                        color: Color.fromARGB(255, 3, 0, 168),
+                        color: Color.fromARGB(255, 255, 255, 255),
                         fontSize: size * 0.080,
                       ),
                     ),
@@ -88,7 +88,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
-                      backgroundColor: Color.fromARGB(255, 3, 0, 168),
+                      backgroundColor: Color(0xFF3366FF),
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 50,

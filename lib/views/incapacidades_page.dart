@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class MyApp extends StatelessWidget {
   @override
@@ -25,6 +27,7 @@ class _MyFormState extends State<MyForm> {
   String? _selectedEntidadAfiliada;
   DateTime _fechaInicio = DateTime.now();
   File? _image;
+  bool _isLoading = false;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -46,6 +49,47 @@ class _MyFormState extends State<MyForm> {
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('http://10.0.2.2:8000/api/incapacidades'),
+      );
+
+      request.fields['user_id'] = '3'; // Cambia esto según corresponda
+      request.fields['dias_incapacidad'] = _diasIncapacidadController.text;
+      request.fields['fecha_inicio_incapacidad'] = _fechaInicio.toIso8601String();
+      request.fields['aplica_cobro'] = 'true';
+      request.fields['entidad_afiliada'] = _selectedEntidadAfiliada!;
+      request.fields['tipo_incapacidad'] = 'accidente laboral'; // Ajusta esto según tu lógica
+      request.fields['uuid'] = '9c0b2610-1cf8-4abe-a8bf-9584d707ae65'; // Genera un UUID único
+
+      if (_image != null) {
+        request.files.add(await http.MultipartFile.fromPath('image', _image!.path));
+      }
+
+      var response = await request.send();
+
+      if (response.statusCode == 201) {
+        print('Incapacidad creada con éxito');
+      } else {
+        print('Error al crear incapacidad sapo hpt malparido no sabe programar');
+      }
+    } catch (e) {
+      print('Error: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
       });
     }
   }
@@ -163,15 +207,8 @@ class _MyFormState extends State<MyForm> {
                     ),
                   SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState?.validate() ?? false) {
-                        print('Días de Incapacidad: ${_diasIncapacidadController.text}');
-                        print('Fecha de Inicio de la Incapacidad: $_fechaInicio');
-                        print('Entidad Afiliada: $_selectedEntidadAfiliada');
-                        print('Imagen seleccionada: $_image');
-                      }
-                    },
-                    child: Text('Enviar'),
+                    onPressed: _isLoading ? null : _submitForm,
+                    child: _isLoading ? CircularProgressIndicator() : Text('Enviar'),
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                       textStyle: TextStyle(fontSize: 16),
@@ -186,3 +223,5 @@ class _MyFormState extends State<MyForm> {
     );
   }
 }
+
+void main() => runApp(MyApp());

@@ -97,37 +97,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        SizedBox(
-                          height: ScreenSize.absoluteHeight * 0.02,
-                        ),
-                        Text(
-                          'Información del usuario:',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
                           ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Información del usuario:',
+                              style: TextStyle(
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue, // Cambio de color del texto
+                              ),
+                            ),
+                            SizedBox(height: 10.0),
+                            Text(
+                              'Nombre: ${usuario?.name}',
+                              style: TextStyle(fontSize: 18.0),
+                            ),
+                            SizedBox(height: 5.0),
+                            Text(
+                              'Cédula: ${usuario?.cedula}',
+                              style: TextStyle(fontSize: 18.0),
+                            ),
+                            SizedBox(height: 3.0),
+                            Text(
+                              'Correo Electrónico: ${usuario?.email}',
+                              style: TextStyle(fontSize: 18.0),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 10.0),
-                        Text(
-                          'Nombre: ${usuario?.name}',
-                          style: TextStyle(fontSize: 18.0),
-                        ),
-                        SizedBox(height: 5.0),
-                        Text(
-                          'Cédula: ${usuario?.cedula}',
-                          style: TextStyle(fontSize: 18.0),
-                        ),
-                        SizedBox(height: 3.0),
-                        Text(
-                          'Correo Electronico: ${usuario?.email}',
-                          style: TextStyle(fontSize: 18.0),
-                        ),
-                        
-                        
-                      ],
+                      ),
                     ),
                   ),
                 ],

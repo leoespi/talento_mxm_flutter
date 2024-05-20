@@ -3,12 +3,13 @@ import 'package:get/get.dart'; // Importa la biblioteca Get
 import 'package:get_storage/get_storage.dart';
 import 'package:talento_mxm_flutter/views/menu.dart';
 import 'views/login_page.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatelessWidget { 
   const MyApp({super.key});
 
   @override
@@ -22,3 +23,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+

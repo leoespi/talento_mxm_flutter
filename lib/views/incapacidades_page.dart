@@ -3,6 +3,10 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:talento_mxm_flutter/controllers/incapacidades_controller.dart';
+import 'package:talento_mxm_flutter/views/menu.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -29,6 +33,8 @@ class _MyFormState extends State<MyForm> {
   File? _image;
   bool _isLoading = false;
 
+  final IncapacidadesController _controller = Get.put(IncapacidadesController());
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -53,52 +59,39 @@ class _MyFormState extends State<MyForm> {
     }
   }
 
-  Future<void> _submitForm() async {
-    if (!_formKey.currentState!.validate()) return;
+ Future<void> _submitForm() async {
+  if (!_formKey.currentState!.validate()) return;
 
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    await _controller.createIncapacidad(
+      diasIncapacidad: int.parse(_diasIncapacidadController.text),
+      fechaInicioIncapacidad: _fechaInicio,
+      entidadAfiliada: _selectedEntidadAfiliada!,
+      imagePath: _image!.path,
+    );
+
+    // Redirige al usuario al menú después de enviar la incapacidad
+    Get.offAll(() => MenuPage());
+
+  } catch (e) {
+    print('Error: $e');
+  } finally {
     setState(() {
-      _isLoading = true;
+      _isLoading = false;
     });
-
-    try {
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse('http://10.0.2.2:8000/api/incapacidades'),
-      );
-
-      request.fields['user_id'] = '3'; // Cambia esto según corresponda
-      request.fields['dias_incapacidad'] = _diasIncapacidadController.text;
-      request.fields['fecha_inicio_incapacidad'] = _fechaInicio.toIso8601String();
-      request.fields['aplica_cobro'] = 'true';
-      request.fields['entidad_afiliada'] = _selectedEntidadAfiliada!;
-      request.fields['tipo_incapacidad'] = 'accidente laboral'; // Ajusta esto según tu lógica
-      request.fields['uuid'] = '9c0b2610-1cf8-4abe-a8bf-9584d707ae65'; // Genera un UUID único
-
-      if (_image != null) {
-        request.files.add(await http.MultipartFile.fromPath('image', _image!.path));
-      }
-
-      var response = await request.send();
-
-      if (response.statusCode == 201) {
-        print('Incapacidad creada con éxito');
-      } else {
-        print('Error al crear incapacidad sapo hpt malparido no sabe programar');
-      }
-    } catch (e) {
-      print('Error: $e');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(''),
+        title: Text('Formulario de Incapacidades'),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),

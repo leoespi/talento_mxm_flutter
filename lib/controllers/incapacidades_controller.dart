@@ -1,0 +1,80 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:path/path.dart';
+import 'package:talento_mxm_flutter/models/incapaacidades_model.dart';
+
+class IncapacidadesController extends GetxController {
+  final isLoading = false.obs;
+  final box = GetStorage();
+  
+  // Asegúrate de definir la URL completa de la API aquí.
+  final String url = 'http://10.0.2.2:8000/api/';
+
+  Future<void> createIncapacidad({
+    required int diasIncapacidad,
+    required DateTime fechaInicioIncapacidad,
+    required String entidadAfiliada,
+    required String imagePath,
+  }) async {
+    try {
+      int userId = box.read('user_id');
+      String token = box.read('token');
+
+      IncapacidadModel incapacidad = IncapacidadModel(
+        userId: userId,
+        diasIncapacidad: diasIncapacidad,
+        fechaInicioIncapacidad: fechaInicioIncapacidad,
+        entidadAfiliada: entidadAfiliada,
+        image: basename(imagePath),
+      );
+
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('${url}incapacidades'),
+      );
+
+      request.headers['Authorization'] = 'Bearer $token';
+
+      request.fields.addAll(incapacidad.toJson().map((key, value) => MapEntry(key, value.toString())));
+
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'image',
+          imagePath,
+          contentType: MediaType('image', 'jpeg'),
+        ),
+      );
+
+      var response = await request.send();
+
+      // Leer la respuesta completa del servidor
+      var responseBody = await response.stream.bytesToString();
+      print('Response status: ${response.statusCode}');
+      print('Response body: $responseBody');
+
+      if (response.statusCode == 201) {
+        Get.snackbar(
+          'Éxito',
+          'Incapacidad creada con éxito',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+      } else {
+        Get.snackbar(
+          'Error',
+          'Error al crear la incapacidad: $responseBody',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+}

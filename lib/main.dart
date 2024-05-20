@@ -5,7 +5,8 @@ import 'package:talento_mxm_flutter/views/menu.dart';
 import 'views/login_page.dart';
 import 'package:http/http.dart' as http;
 
-void main() {
+void main()  {
+    GetStorage.init();
   runApp(const MyApp());
 }
 

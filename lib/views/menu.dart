@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:talento_mxm_flutter/controllers/authentication.dart';
 import 'package:get/get.dart';
-import 'package:talento_mxm_flutter/views/login_page.dart';
 import 'package:talento_mxm_flutter/views/perfil.dart';
 import 'package:talento_mxm_flutter/views/incapacidades_page.dart'; 
 class MenuPage extends StatelessWidget {
@@ -53,7 +52,7 @@ class MenuPage extends StatelessWidget {
                       transitionsBuilder: (context, animation, _, child) {
                         return SlideTransition(
                           position: Tween<Offset>(
-                            begin: Offset(1.0, 0.0), // Comienza desde la derecha
+                            begin: Offset(-1.0, 0.0), // Comienza desde la derecha
                             end: Offset.zero, // Hacia la posición inicial
                           ).animate(animation),
                           child: child,
@@ -76,7 +75,7 @@ class MenuPage extends StatelessWidget {
                       transitionsBuilder: (context, animation, _, child) {
                         return SlideTransition(
                           position: Tween<Offset>(
-                            begin: Offset(1.0, 0.0), // Comienza desde la derecha
+                            begin: Offset(0.0, 1.0), // Comienza desde la derecha
                             end: Offset.zero, // Hacia la posición inicial
                           ).animate(animation),
                           child: child,

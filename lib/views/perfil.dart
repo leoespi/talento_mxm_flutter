@@ -189,7 +189,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       transitionsBuilder: (context, animation, _, child) {
                         return SlideTransition(
                           position: Tween<Offset>(
-                            begin: Offset(1.0, 0.0), // Comienza desde la derecha
+                            begin: Offset(-1.0, 0.0), // Comienza desde la derecha
                             end: Offset.zero, // Hacia la posición inicial
                           ).animate(animation),
                           child: child,
@@ -212,7 +212,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       transitionsBuilder: (context, animation, _, child) {
                         return SlideTransition(
                           position: Tween<Offset>(
-                            begin: Offset(1.0, 0.0), // Comienza desde la derecha
+                            begin: Offset(-1.0, 0.0), // Comienza desde la derecha
                             end: Offset.zero, // Hacia la posición inicial
                           ).animate(animation),
                           child: child,
@@ -236,7 +236,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       transitionsBuilder: (context, animation, _, child) {
                         return SlideTransition(
                           position: Tween<Offset>(
-                            begin: Offset(1.0, 0.0), // Comienza desde la derecha
+                            begin: Offset(0.0, 1.0), // Comienza desde la derecha
                             end: Offset.zero, // Hacia la posición inicial
                           ).animate(animation),
                           child: child,

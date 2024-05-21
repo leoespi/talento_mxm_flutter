@@ -1,16 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:talento_mxm_flutter/controllers/incapacidades_controller.dart';
 import 'package:talento_mxm_flutter/views/menu.dart';
-
 import 'package:talento_mxm_flutter/views/perfil.dart';
 
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
@@ -63,123 +59,155 @@ class _MyFormState extends State<MyForm> {
     }
   }
 
- Future<void> _submitForm() async {
-  if (!_formKey.currentState!.validate()) return;
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) return;
 
-  setState(() {
-    _isLoading = true;
-  });
-
-  try {
-    await _controller.createIncapacidad(
-      diasIncapacidad: int.parse(_diasIncapacidadController.text),
-      fechaInicioIncapacidad: _fechaInicio,
-      entidadAfiliada: _selectedEntidadAfiliada!,
-      imagePath: _image!.path,
-    );
-
-    // Redirige al usuario al menú después de enviar la incapacidad
-    Get.offAll(() => MenuPage());
-
-  } catch (e) {
-    print('Error: $e');
-  } finally {
     setState(() {
-      _isLoading = false;
+      _isLoading = true;
     });
-  }
-}
 
+    try {
+      await _controller.createIncapacidad(
+        diasIncapacidad: int.parse(_diasIncapacidadController.text),
+        fechaInicioIncapacidad: _fechaInicio,
+        entidadAfiliada: _selectedEntidadAfiliada!,
+        imagePath: _image!.path,
+      );
+
+      // Redirige al usuario al menú después de enviar la incapacidad
+      Get.offAll(() => MenuPage());
+
+    } catch (e) {
+      print('Error: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _showConfirmationDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmación'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('¿Estás seguro de que deseas enviar este formulario? En caso de que los datos no coincidan, la incapacidad será eliminada y será necesario volver a subirla. Se te notificará a través del correo electrónico registrado en el sistema en caso de enviar incorrectamente el formulario.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Enviar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _submitForm();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: SingleChildScrollView(
-  padding: EdgeInsets.all(16.0),
-  child: Transform.translate(
-    offset: Offset(0.0, 25.0), // Ajusta el desplazamiento vertical según sea necesario
-    child: Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                'Formulario de Incapacidades',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 20),
-              TextFormField(
-                controller: _diasIncapacidadController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Días de Incapacidad',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Por favor ingresa los días de incapacidad';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text('Fecha de Inicio de la Incapacidad:'),
-                subtitle: Text('${_fechaInicio.toLocal()}'.split(' ')[0]),
-                trailing: Icon(Icons.calendar_today),
-                onTap: () => _selectDate(context),
-              ),
-              SizedBox(height: 20),
-              DropdownButtonFormField<String>(
-                value: _selectedEntidadAfiliada,
-                items: const [
-                  DropdownMenuItem(
-                    value: 'Nueva EPS',
-                    child: Text('Nueva EPS'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Salud Total',
-                    child: Text('Salud Total'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Eps Sura',
-                    child: Text('Eps Sura'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Eps Sanitas',
-                    child: Text('Eps Sanitas'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Compensar',
-                    child: Text('Compensar'),
-                  ),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedEntidadAfiliada = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  labelText: 'Entidad Afiliada',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor selecciona la entidad afiliada';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20),
+        padding: EdgeInsets.all(16.0),
+        child: Transform.translate(
+          offset: Offset(0.0, 25.0),
+          child: Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      'Formulario de Incapacidades',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      controller: _diasIncapacidadController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Días de Incapacidad',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value?.isEmpty ?? true) {
+                          return 'Por favor ingresa los días de incapacidad';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 20),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text('Fecha de Inicio de la Incapacidad:'),
+                      subtitle: Text('${_fechaInicio.toLocal()}'.split(' ')[0]),
+                      trailing: Icon(Icons.calendar_today),
+                      onTap: () => _selectDate(context),
+                    ),
+                    SizedBox(height: 20),
+                    DropdownButtonFormField<String>(
+                      value: _selectedEntidadAfiliada,
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'Nueva EPS',
+                          child: Text('Nueva EPS'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Salud Total',
+                          child: Text('Salud Total'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Eps Sura',
+                          child: Text('Eps Sura'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Eps Sanitas',
+                          child: Text('Eps Sanitas'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Compensar',
+                          child: Text('Compensar'),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedEntidadAfiliada = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Entidad Afiliada',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor selecciona la entidad afiliada';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   _getImage();
@@ -202,25 +230,22 @@ class _MyFormState extends State<MyForm> {
                     Image.file(_image!),
                   ],
                 ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _submitForm,
-                child: _isLoading ? CircularProgressIndicator() : Text('Enviar'),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                  textStyle: TextStyle(fontSize: 16),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: _isLoading ? null : () => _showConfirmationDialog(),
+                      child: _isLoading ? CircularProgressIndicator() : Text('Enviar'),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        textStyle: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),
-    ),
-  ),
-),
-
-
-
       bottomNavigationBar: Transform.translate(
         offset: Offset(0.0, -5.0),
         child: Container(
@@ -247,73 +272,71 @@ class _MyFormState extends State<MyForm> {
                 _buildBottomMenuItem(
                   icon: Icons.article,
                   onPressed: () {
-                   Navigator.pushReplacement(
-                    context,
-                    PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 250), // Duración de la animación
-                      transitionsBuilder: (context, animation, _, child) {
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: Offset(1.0, 0.0), // Comienza desde la derecha
-                            end: Offset.zero, // Hacia la posición inicial
-                          ).animate(animation),
-                          child: child,
-                        );
-                      },
-                      pageBuilder: (context, _, __) => MyForm(), // Página siguiente
-                    ),
-                  );
+                    Navigator.pushReplacement(
+                      context,
+                      PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 250),
+                        transitionsBuilder: (context, animation, _, child) {
+                          return SlideTransition(
+                            position: Tween<Offset>(
+                              begin: Offset(0.0, 1.0),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          );
+                        },
+                        pageBuilder: (context, _, __) => MyForm(),
+                      ),
+                    );
                   },
                   color: Colors.blue,
-                  label: 'Incapacidad', // Nombre del primer botón
+                  label: 'Incapacidad',
                 ),
-                 _buildBottomMenuItem(
+                _buildBottomMenuItem(
                   icon: Icons.home,
                   onPressed: () {
                     Navigator.pushReplacement(
-                    context,
-                    PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 250), // Duración de la animación
-                      transitionsBuilder: (context, animation, _, child) {
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: Offset(1.0, 0.0), // Comienza desde la derecha
-                            end: Offset.zero, // Hacia la posición inicial
-                          ).animate(animation),
-                          child: child,
-                        );
-                      },
-                      pageBuilder: (context, _, __) => MenuPage(), // Página siguiente
-                    ),
-                  );
+                      context,
+                      PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 250),
+                        transitionsBuilder: (context, animation, _, child) {
+                          return SlideTransition(
+                            position: Tween<Offset>(
+                              begin: Offset(1.0, 0.0),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          );
+                        },
+                        pageBuilder: (context, _, __) => MenuPage(),
+                      ),
+                    );
                   },
                   color: Colors.green,
                   label: 'Inicio',
                 ),
-               
                 _buildBottomMenuItem(
                   icon: Icons.person,
                   onPressed: () {
                     Navigator.pushReplacement(
-                    context,
-                    PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 250), // Duración de la animación
-                      transitionsBuilder: (context, animation, _, child) {
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: Offset(1.0, 0.0), // Comienza desde la derecha
-                            end: Offset.zero, // Hacia la posición inicial
-                          ).animate(animation),
-                          child: child,
-                        );
-                      },
-                      pageBuilder: (context, _, __) =>ProfileScreen(
-                                            userId: '' ), // Página siguiente
-                    ),
-                  );
+                      context,
+                      PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 250),
+                        transitionsBuilder: (context, animation, _, child) {
+                          return SlideTransition(
+                            position: Tween<Offset>(
+                              begin: Offset(1.0, 0.0),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          );
+                        },
+                        pageBuilder: (context, _, __) => ProfileScreen(userId: ''),
+                      ),
+                    );
                   },
                   color: Colors.orange,
-                  label: 'Perfil', // Nombre del segundo botón
+                  label: 'Perfil',
                 ),
               ],
             ),
@@ -322,7 +345,6 @@ class _MyFormState extends State<MyForm> {
       ),
     );
   }
-
 
   Widget _buildBottomMenuItem({
     required IconData icon,
@@ -372,9 +394,3 @@ class _MyFormState extends State<MyForm> {
     );
   }
 }
-
-
-void main() => runApp(MyApp());
-
-
-

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:talento_mxm_flutter/views/incapacidades_page.dart'; 
+
 import 'package:talento_mxm_flutter/controllers/authentication.dart';
 import 'package:get/get.dart';
 import 'package:talento_mxm_flutter/views/login_page.dart';
 import 'package:talento_mxm_flutter/views/perfil.dart';
+import 'package:talento_mxm_flutter/views/incapacidades_page.dart'; 
 
 class MenuPage extends StatelessWidget {
   final AuthenticationController _authController = Get.find();
@@ -39,7 +40,7 @@ class MenuPage extends StatelessWidget {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+            padding: const EdgeInsets.symmetric(horizontal: 1.0, vertical: 10.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -52,14 +53,9 @@ class MenuPage extends StatelessWidget {
                     );
                   },
                   color: Colors.blue,
+                  label: 'Incapacidades', // Nombre del primer botón
                 ),
-                _buildBottomMenuItem(
-                  icon: Icons.quiz,
-                  onPressed: () {
-                    // Agrega aquí la lógica para la otra opción del menú
-                  },
-                  color: Colors.green,
-                ),
+               
                 _buildBottomMenuItem(
                   icon: Icons.person,
                   onPressed: () {
@@ -73,6 +69,7 @@ class MenuPage extends StatelessWidget {
                     );
                   },
                   color: Colors.orange,
+                  label: 'Perfil', // Nombre del segundo botón
                 ),
               ],
             ),
@@ -86,31 +83,45 @@ class MenuPage extends StatelessWidget {
     required IconData icon,
     required VoidCallback onPressed,
     required Color color,
+    required String label,
   }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onPressed,
         borderRadius: BorderRadius.circular(30),
-        child: Container(
-          padding: EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 3),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: Offset(0, 3),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Icon(
-            icon,
-            color: Colors.white,
-            size: 30,
-          ),
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: 30,
+              ),
+            ),
+            SizedBox(height: 5),
+            Text(
+              label,
+              style: TextStyle(
+                color: Colors.black87,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
     );

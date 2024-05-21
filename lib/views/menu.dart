@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:talento_mxm_flutter/views/login_page.dart';
 import 'package:talento_mxm_flutter/views/perfil.dart';
 import 'package:talento_mxm_flutter/views/incapacidades_page.dart'; 
-
 class MenuPage extends StatelessWidget {
   final AuthenticationController _authController = Get.find();
 
@@ -47,26 +46,70 @@ class MenuPage extends StatelessWidget {
                 _buildBottomMenuItem(
                   icon: Icons.article,
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MyForm()),
-                    );
+                   Navigator.pushReplacement(
+                    context,
+                    PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 250), // Duración de la animación
+                      transitionsBuilder: (context, animation, _, child) {
+                        return SlideTransition(
+                          position: Tween<Offset>(
+                            begin: Offset(1.0, 0.0), // Comienza desde la derecha
+                            end: Offset.zero, // Hacia la posición inicial
+                          ).animate(animation),
+                          child: child,
+                        );
+                      },
+                      pageBuilder: (context, _, __) => MyForm(), // Página siguiente
+                    ),
+                  );
                   },
                   color: Colors.blue,
-                  label: 'Incapacidades', // Nombre del primer botón
+                  label: 'Incapacidad', // Nombre del primer botón
+                ),
+                 _buildBottomMenuItem(
+                  icon: Icons.home,
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                    context,
+                    PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 250), // Duración de la animación
+                      transitionsBuilder: (context, animation, _, child) {
+                        return SlideTransition(
+                          position: Tween<Offset>(
+                            begin: Offset(1.0, 0.0), // Comienza desde la derecha
+                            end: Offset.zero, // Hacia la posición inicial
+                          ).animate(animation),
+                          child: child,
+                        );
+                      },
+                      pageBuilder: (context, _, __) => MenuPage(), // Página siguiente
+                    ),
+                  );
+                  },
+                  color: Colors.green,
+                  label: 'Inicio',
                 ),
                
                 _buildBottomMenuItem(
                   icon: Icons.person,
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProfileScreen(
-                          userId: '',
-                        ),
-                      ),
-                    );
+                    Navigator.pushReplacement(
+                    context,
+                    PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 250), // Duración de la animación
+                      transitionsBuilder: (context, animation, _, child) {
+                        return SlideTransition(
+                          position: Tween<Offset>(
+                            begin: Offset(1.0, 0.0), // Comienza desde la derecha
+                            end: Offset.zero, // Hacia la posición inicial
+                          ).animate(animation),
+                          child: child,
+                        );
+                      },
+                      pageBuilder: (context, _, __) =>ProfileScreen(
+                                            userId: '' ), // Página siguiente
+                    ),
+                  );
                   },
                   color: Colors.orange,
                   label: 'Perfil', // Nombre del segundo botón

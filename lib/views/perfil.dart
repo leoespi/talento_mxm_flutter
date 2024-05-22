@@ -114,6 +114,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ],
                   ),
+
+                  //Informacion del Usuario Logeado
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -155,7 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ),
 ),
 
-
+      // Barra de navegación
       bottomNavigationBar: Transform.translate(
         offset: Offset(0.0, -5.0),
         child: Container(
@@ -257,6 +259,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
+  // menu items
    Widget _buildBottomMenuItem({
     required IconData icon,
     required VoidCallback onPressed,

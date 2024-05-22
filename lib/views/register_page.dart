@@ -12,6 +12,7 @@ class RegisterPage extends StatefulWidget {
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
+//Controladores para la pagina de Registro
 class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -42,6 +43,8 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
           ),
+
+          //Inputs para el Registro
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),

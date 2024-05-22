@@ -12,6 +12,7 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
+//Controladores para la pagina login
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _cedulaController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -44,6 +45,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Column(
                 children: [
+                  // Logo
                   Center(
                     child: Transform.translate(
                       offset: Offset(0, 100),
@@ -60,6 +62,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
+
+                  //Inputs nesesarios para el login
                   Expanded(
                     child: Center(
                       child: Column(

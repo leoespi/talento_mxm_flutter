@@ -35,6 +35,7 @@ class _MyFormState extends State<MyForm> {
 
   final IncapacidadesController _controller = Get.put(IncapacidadesController());
 
+  // Función para seleccionar una fecha 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -49,6 +50,7 @@ class _MyFormState extends State<MyForm> {
     }
   }
 
+  // Función para obtener una imagen de la galería
   Future<void> _getImage() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
 
@@ -58,7 +60,8 @@ class _MyFormState extends State<MyForm> {
       });
     }
   }
-
+  
+  // Función para enviar el formulario
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -86,6 +89,7 @@ class _MyFormState extends State<MyForm> {
     }
   }
 
+  // Función para mostrar un diálogo de confirmación antes de enviar el formulario
   Future<void> _showConfirmationDialog() async {
     return showDialog<void>(
       context: context,
@@ -120,6 +124,7 @@ class _MyFormState extends State<MyForm> {
     );
   }
 
+  //Formulario Incapacidades 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -246,6 +251,8 @@ class _MyFormState extends State<MyForm> {
           ),
         ),
       ),
+
+      // Barra de navegación
       bottomNavigationBar: Transform.translate(
         offset: Offset(0.0, -5.0),
         child: Container(
@@ -346,6 +353,8 @@ class _MyFormState extends State<MyForm> {
     );
   }
 
+
+  // menu items
   Widget _buildBottomMenuItem({
     required IconData icon,
     required VoidCallback onPressed,

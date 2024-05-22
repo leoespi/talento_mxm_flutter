@@ -13,6 +13,7 @@ class IncapacidadesController extends GetxController {
   // Asegúrate de definir la URL completa de la API aquí.
   final String url = 'http://10.0.2.2:8000/api/';
 
+  //// Función para crear una nueva incapacidad
   Future<void> createIncapacidad({
     required int diasIncapacidad,
     required DateTime fechaInicioIncapacidad,
@@ -20,9 +21,10 @@ class IncapacidadesController extends GetxController {
     required String imagePath,
   }) async {
     try {
-      int userId = box.read('user_id');
-      String token = box.read('token');
+      int userId = box.read('user_id');// Obtiene el ID de usuario del almacenamiento local
+      String token = box.read('token'); // Obtiene el token de acceso del almacenamiento local
 
+      // Crea una instancia del modelo de incapacidad con los datos proporcionados
       IncapacidadModel incapacidad = IncapacidadModel(
         userId: userId,
         diasIncapacidad: diasIncapacidad,
@@ -56,6 +58,7 @@ class IncapacidadesController extends GetxController {
       print('Response status: ${response.statusCode}');
       print('Response body: $responseBody');
 
+      // Muestra un mensaje de éxito si la incapacidad se crea correctamente
       if (response.statusCode == 201) {
         Get.snackbar(
           'Éxito',
@@ -65,6 +68,7 @@ class IncapacidadesController extends GetxController {
           colorText: Colors.white,
         );
       } else {
+        // Muestra un mensaje de error si hay un problema al crear la incapacidad
         Get.snackbar(
           'Error',
           'Error al crear la incapacidad: $responseBody',

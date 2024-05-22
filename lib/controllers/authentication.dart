@@ -11,6 +11,7 @@ class AuthenticationController extends GetxController {
   final box = GetStorage();
   final String url = 'http://10.0.2.2:8000/api/'; // Ajusta la URL de tu API aquí
 
+  // Función para registrar un nuevo usuario
   Future register({
     required String name,
     required int cedula,
@@ -61,6 +62,7 @@ class AuthenticationController extends GetxController {
     }
   }
 
+  // Función para iniciar sesión
   Future login({
     required int cedula,
     required String password,
@@ -84,7 +86,7 @@ class AuthenticationController extends GetxController {
         isLoading.value = false;
         token.value = json.decode(response.body)['token'];
         box.write('token', token.value);
-        Get.offAll(() => MenuPage()); // Redirige al usuario a la página principal o menú aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        Get.offAll(() => MenuPage()); // Redirige al usuario a la página principal o menú 
         box.write('user_id', json.decode(response.body)['user']['id']);
       } else {
         isLoading.value = false;
@@ -103,6 +105,7 @@ class AuthenticationController extends GetxController {
     }
   }
 
+  // Función para cerrar sesión
   Future<void> logout() async {
     box.remove('token');
     Get.offAll(() => LoginPage());

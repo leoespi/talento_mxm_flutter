@@ -19,6 +19,7 @@ class MenuPage extends StatelessWidget {
         ],
       ),
       
+      // Barra de navegación
       bottomNavigationBar: Transform.translate(
         offset: Offset(0.0, -5.0),
         child: Container(
@@ -121,6 +122,7 @@ class MenuPage extends StatelessWidget {
     );
   }
 
+  // menu items
   Widget _buildBottomMenuItem({
     required IconData icon,
     required VoidCallback onPressed,

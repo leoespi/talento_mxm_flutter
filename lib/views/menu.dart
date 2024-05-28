@@ -19,6 +19,10 @@ class MenuPage extends StatelessWidget {
         ],
       ),
       
+
+
+
+      
       // Barra de navegación
       bottomNavigationBar: Transform.translate(
         offset: Offset(0.0, -5.0),

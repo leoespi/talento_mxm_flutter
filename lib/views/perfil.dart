@@ -50,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
      
       body: Transform.translate(
-  offset: Offset(0.0, 50.0), // Ajusta el desplazamiento vertical según sea necesario
+  offset: Offset(0.0, 50.0), // Ajusta el desplazamiento vertical 
   child: FutureBuilder<UserData>(
     future: userData,
     builder: (context, snapshot) {
@@ -78,7 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     CircleAvatar (
                       radius: 50.0,
-                      backgroundImage: AssetImage('assets/profile_placeholder.png'), // Asegúrate de tener una imagen en assets con este nombre
+                      backgroundImage: AssetImage('assets/profile_placeholder.png'), //  imagen en assets con este nombre
                     ),
                     SizedBox(height: 30.0),
                     Text(
@@ -126,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           style: TextStyle(
                             fontSize: 20.0,
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue, // Cambio de color del texto
+                            color: Colors.blue, 
                           ),
                         ),
                         SizedBox(height: 10.0),

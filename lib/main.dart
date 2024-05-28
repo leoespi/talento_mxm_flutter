@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
      final box = GetStorage();
      final token = box.read('token');
-    return   GetMaterialApp( // Usa GetMaterialApp en lugar de MaterialApp
+    return   GetMaterialApp( 
       debugShowCheckedModeBanner: false,
       title: 'Talento MxM',
       home: token == null ? const LoginPage() :  MenuPage(),

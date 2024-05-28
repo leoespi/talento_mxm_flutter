@@ -29,6 +29,7 @@ class _MyFormState extends State<MyForm> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _diasIncapacidadController = TextEditingController();
   String? _selectedEntidadAfiliada;
+  String? _selectedtipoincapacidadreportada;
   DateTime _fechaInicio = DateTime.now();
   File? _image;
   bool _isLoading = false;
@@ -71,6 +72,7 @@ class _MyFormState extends State<MyForm> {
 
     try {
       await _controller.createIncapacidad(
+        tipoincapacidadreportada: _selectedtipoincapacidadreportada!,
         diasIncapacidad: int.parse(_diasIncapacidadController.text),
         fechaInicioIncapacidad: _fechaInicio,
         entidadAfiliada: _selectedEntidadAfiliada!,
@@ -147,6 +149,50 @@ class _MyFormState extends State<MyForm> {
                     Text(
                       'Formulario de Incapacidades',
                       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 20),
+                    DropdownButtonFormField<String>(
+                      value: _selectedtipoincapacidadreportada,
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'Incapacidad por Enfermedad General',
+                          child: Text('Incapacidad por Enfermedad General'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Incapacidad por Accidente de Transito',
+                          child: Text('Incapacidad por Accidente de Transito'),
+                        ),
+                         DropdownMenuItem(
+                          value: 'Licencia Por Maternidad',
+                          child: Text('Licencia Por Maternidad'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Licencia Por Paternidad',
+                          child: Text('Licencia Por Paternidad'),
+                        ),
+                         DropdownMenuItem(
+                          value: 'Licencia Por Luto',
+                          child: Text('Licencia Por Luto'),
+                        ),
+                        
+                       
+                       
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedtipoincapacidadreportada = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Tipo de Incapacidad',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor selecciona el tipo de Incapacidad';
+                        }
+                        return null;
+                      },
                     ),
                     SizedBox(height: 20),
                     TextFormField(

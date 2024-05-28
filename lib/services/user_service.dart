@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 
 class UserService {
   static Future<UserData> obtenerUsuarios(String token) async {
+    
+    //url usuarios
     final url = 'http://10.0.2.2:8000/api/get/user';
     var headers = {
       'Content-Type': 'application/json',
@@ -19,7 +21,7 @@ class UserService {
 
         return UserData(
           name: data["name"],
-          cedula: data["cedula"].toString(), // Asegúrate de convertir a String si es necesario
+          cedula: data["cedula"].toString(), 
           email: data["email"],
         );
       } else {

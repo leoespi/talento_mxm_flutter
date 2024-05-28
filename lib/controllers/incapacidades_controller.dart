@@ -10,23 +10,25 @@ class IncapacidadesController extends GetxController {
   final isLoading = false.obs;
   final box = GetStorage();
   
-  // Asegúrate de definir la URL completa de la API aquí.
+  //  URL de la API
   final String url = 'http://10.0.2.2:8000/api/';
 
   //// Función para crear una nueva incapacidad
   Future<void> createIncapacidad({
+    required String tipoincapacidadreportada,
     required int diasIncapacidad,
     required DateTime fechaInicioIncapacidad,
     required String entidadAfiliada,
     required String imagePath,
   }) async {
     try {
-      int userId = box.read('user_id');// Obtiene el ID de usuario del almacenamiento local
-      String token = box.read('token'); // Obtiene el token de acceso del almacenamiento local
+      int userId = box.read('user_id');// Obtiene el ID de usuario
+      String token = box.read('token'); // Obtiene el token de acceso 
 
       // Crea una instancia del modelo de incapacidad con los datos proporcionados
       IncapacidadModel incapacidad = IncapacidadModel(
         userId: userId,
+        tipoincapacidadreportada: tipoincapacidadreportada,
         diasIncapacidad: diasIncapacidad,
         fechaInicioIncapacidad: fechaInicioIncapacidad,
         entidadAfiliada: entidadAfiliada,

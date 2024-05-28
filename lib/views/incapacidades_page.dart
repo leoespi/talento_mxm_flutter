@@ -194,6 +194,22 @@ class _MyFormState extends State<MyForm> {
                         return null;
                       },
                     ),
+
+                    // Debajo del DropdownButtonFormField
+                      SizedBox(height: 20),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Documentos requeridos:',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 5),
+                          _buildDocumentItem(_selectedtipoincapacidadreportada),
+                        ],
+                      ),
+
+
                     SizedBox(height: 20),
                     TextFormField(
                       controller: _diasIncapacidadController,
@@ -398,6 +414,70 @@ class _MyFormState extends State<MyForm> {
       ),
     );
   }
+
+  Widget _buildDocumentItem(String? selectedOption) {
+  List<String> documents = [];
+
+  switch (selectedOption) {
+
+    case 'Incapacidad por Enfermedad General':
+      documents.addAll([
+        '- Incapacidad emitida por la EPS',
+        '- Historia clínica',
+      ]);
+      break;
+
+    case 'Incapacidad por Accidente de Transito':
+      documents.addAll([
+        '- Incapacidad emitida por la EPS',
+        '- Historia clínica',
+        '- Formulario Furips',
+        '- Fotocopia del SOAT',
+        '- Fotocopia de la Cedula',
+
+      ]);
+      break;
+
+    case 'Licencia Por Maternidad':
+       documents.addAll([
+        '- Incapacidad emitida por la EPS',
+        '- Epicrisis',
+        '- Registro civil',
+        '- Certificado de nacido vivo',
+        
+
+      ]);
+      break;
+
+    case 'Licencia Por Paternidad':
+      documents.addAll([
+        '- Transcripción de la licencia',
+        '- Incapacidad emitida por la EPS',
+        '- Epicrisis',
+        '- Certificado de nacido vivo',
+        '- Registro civil',
+
+      ]);
+      break;
+
+    case 'Licencia Por Luto':
+       documents.addAll([
+        '- Carta dirigida a la compañía solicitando la licencia e indicando el parentesco con el occiso',
+        '- Registro de defunción',
+        '- Registros civiles que prueben su parentesco',
+        '- Fotocopia de la C.C del colaborador',
+        
+
+      ]);
+      break;
+  }
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: documents.map((document) => Text(document)).toList(),
+  );
+}
+
 
 
   // menu items

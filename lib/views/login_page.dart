@@ -6,7 +6,7 @@ import 'package:talento_mxm_flutter/controllers/authentication.dart';
 import 'package:get/get.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({Key? key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -22,107 +22,115 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size.width;
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20.0,
+      body: Stack(
+        children: [
+          // Fondo gradiente
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF3366FF),
+                  Color(0xFF00CCFF),
+                ],
+              ),
+            ),
           ),
-          child: Column(
-            children: [
-              // Agrega la imagen en la parte superior
-              Center(
-                child: Transform.translate(
-                  offset: Offset(0, 100),
-                  child: Container(
-                    width: 200,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(
-                            'https://storage.googleapis.com/mxm-2022/personalizacion/123399420963f51c1d9a4412.043673570.631880001677007901.png'),
-                        fit: BoxFit.contain,
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                children: [
+                  Center(
+                    child: Transform.translate(
+                      offset: Offset(0, 100),
+                      child: Container(
+                        width: 200,
+                        height: 130,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage(
+                                'https://storage.googleapis.com/mxm-2022/personalizacion/123399420963f51c1d9a4412.043673570.631880001677007901.png'),
+                            fit: BoxFit.fill,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(""),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      InputWidget(
-                        hintText: 'Cedula',
-                        obscureText: false,
-                        controller: _cedulaController,
-                      ),
-                      const SizedBox(
-                        height: 35,
-                      ),
-                      InputWidget(
-                        hintText: 'Contraseña',
-                        obscureText: true,
-                        controller: _passwordController,
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(255, 3, 0, 168),
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 50,
-                            vertical: 15,
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(""),
+                          const SizedBox(height: 30),
+                          InputWidget(
+                            hintText: 'Cédula',
+                            obscureText: false,
+                            controller: _cedulaController,
                           ),
-                        ),
-                        onPressed: () async {
-                        await _authenticationController.login(
-                          cedula: int.parse(_cedulaController.text.trim()), 
-                          password: _passwordController.text.trim(),
-                        );
-                        },
-                        child: Obx(() {
-                          return _authenticationController.isLoading.value
-                              ? const CircularProgressIndicator(
-                                  color: Color.fromARGB(255, 255, 255, 255),
-                                )
-                              : Text(
-                                  'Iniciar Sesion',
-                                  style: GoogleFonts.poppins(
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                    fontSize: size * 0.040,
-                                  ),
-                                );
-                        }),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextButton(
-                        onPressed: () {
-                         print("Botón Registrarse presionado"); // Agrega esta línea para debug Borrarlo cuando quiera
-                        Get.to(RegisterPage());
-                        },
-                        child: Text(
-                          'Registrarse',
-                          style: GoogleFonts.poppins(
-                            color: Color.fromARGB(255, 0, 0, 0),
-                            fontSize: size * 0.040,
+                          const SizedBox(height: 20),
+                          InputWidget(
+                            hintText: 'Contraseña',
+                            obscureText: true,
+                            controller: _passwordController,
                           ),
-                        ),
-                      )
-                    ],
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ), backgroundColor: Color(0xFF3366FF),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 50,
+                                vertical: 15,
+                              ),
+                            ),
+                            onPressed: () async {
+                              await _authenticationController.login(
+                                cedula: int.parse(_cedulaController.text.trim()),
+                                password: _passwordController.text.trim(),
+                              );
+                            },
+                            child: Obx(() {
+                              return _authenticationController.isLoading.value
+                                  ? const CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )
+                                  : Text(
+                                      'Iniciar Sesión',
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                        fontSize: size * 0.040,
+                                      ),
+                                    );
+                            }),
+                          ),
+                          const SizedBox(height: 20),
+                          TextButton(
+                            onPressed: () {
+                              Get.to(RegisterPage());
+                            },
+                            child: Text(
+                              'Registrarse',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: size * 0.040,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

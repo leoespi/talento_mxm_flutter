@@ -31,7 +31,7 @@ class _MyFormState extends State<MyForm> {
   String? _selectedEntidadAfiliada;
   String? _selectedtipoincapacidadreportada;
   DateTime _fechaInicio = DateTime.now();
-  File? _image;
+  List<File> _images = [];
   bool _isLoading = false;
 
   final IncapacidadesController _controller = Get.put(IncapacidadesController());
@@ -51,17 +51,17 @@ class _MyFormState extends State<MyForm> {
     }
   }
 
-  // Función para obtener una imagen de la galería
-  Future<void> _getImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+  // Función para obtener las imágenes de la galería
+  Future<void> _getImages() async {
+    final pickedFiles = await ImagePicker().pickMultiImage();
 
-    if (pickedFile != null) {
+    if (pickedFiles != null) {
       setState(() {
-        _image = File(pickedFile.path);
+        _images = pickedFiles.map((pickedFile) => File(pickedFile.path)).toList();
       });
     }
   }
-  
+
   // Función para enviar el formulario
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
@@ -76,7 +76,7 @@ class _MyFormState extends State<MyForm> {
         diasIncapacidad: int.parse(_diasIncapacidadController.text),
         fechaInicioIncapacidad: _fechaInicio,
         entidadAfiliada: _selectedEntidadAfiliada!,
-        imagePath: _image!.path,
+        images: _images, imagePath: '',
       );
 
       // Redirige al usuario al menú después de enviar la incapacidad
@@ -162,7 +162,7 @@ class _MyFormState extends State<MyForm> {
                           value: 'Incapacidad por Accidente de Transito',
                           child: Text('Incapacidad por Accidente de Transito'),
                         ),
-                         DropdownMenuItem(
+                        DropdownMenuItem(
                           value: 'Licencia Por Maternidad',
                           child: Text('Licencia Por Maternidad'),
                         ),
@@ -170,13 +170,10 @@ class _MyFormState extends State<MyForm> {
                           value: 'Licencia Por Paternidad',
                           child: Text('Licencia Por Paternidad'),
                         ),
-                         DropdownMenuItem(
+                        DropdownMenuItem(
                           value: 'Licencia Por Luto',
                           child: Text('Licencia Por Luto'),
                         ),
-                        
-                       
-                       
                       ],
                       onChanged: (value) {
                         setState(() {
@@ -196,19 +193,18 @@ class _MyFormState extends State<MyForm> {
                     ),
 
                     // Debajo del DropdownButtonFormField
-                      SizedBox(height: 20),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Documentos requeridos:',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 5),
-                          _buildDocumentItem(_selectedtipoincapacidadreportada),
-                        ],
-                      ),
-
+                    SizedBox(height: 20),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Documentos requeridos:',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 5),
+                        _buildDocumentItem(_selectedtipoincapacidadreportada),
+                      ],
+                    ),
 
                     SizedBox(height: 20),
                     TextFormField(
@@ -275,28 +271,40 @@ class _MyFormState extends State<MyForm> {
                       },
                     ),
                     SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  _getImage();
-                },
-                child: Text('Seleccionar Imagen'),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                  textStyle: TextStyle(fontSize: 16),
-                ),
-              ),
-              SizedBox(height: 20),
-              if (_image != null)
-                Column(
-                  children: [
-                    Text(
-                      'Imagen seleccionada:',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ElevatedButton(
+                      onPressed: () {
+                        _getImages();
+                      },
+                      child: Text('Seleccionar Imágenes'),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        textStyle: TextStyle(fontSize: 16),
+                      ),
                     ),
-                    SizedBox(height: 10),
-                    Image.file(_image!),
-                  ],
-                ),
+                    SizedBox(height: 20),
+                    if (_images.isNotEmpty)
+                      Column(
+                        children: [
+                          Text(
+                            'Imágenes seleccionadas:',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 10),
+                          Container(
+                            height: 200,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: _images.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Image.file(_images[index]),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _isLoading ? null : () => _showConfirmationDialog(),
@@ -416,116 +424,78 @@ class _MyFormState extends State<MyForm> {
   }
 
   Widget _buildDocumentItem(String? selectedOption) {
-  List<String> documents = [];
+    List<String> documents = [];
 
-  switch (selectedOption) {
+    switch (selectedOption) {
+      case 'Incapacidad por Enfermedad General':
+        documents.addAll([
+          '- Incapacidad emitida por la EPS',
+          '- Historia clínica',
+        ]);
+        break;
 
-    case 'Incapacidad por Enfermedad General':
-      documents.addAll([
-        '- Incapacidad emitida por la EPS',
-        '- Historia clínica',
-      ]);
-      break;
+      case 'Incapacidad por Accidente de Transito':
+        documents.addAll([
+          '- Incapacidad emitida por la EPS',
+          '- Historia clínica',
+          '- Formulario Furips',
+          '- Fotocopia del SOAT',
+          '- Fotocopia de la Cedula',
+        ]);
+        break;
 
-    case 'Incapacidad por Accidente de Transito':
-      documents.addAll([
-        '- Incapacidad emitida por la EPS',
-        '- Historia clínica',
-        '- Formulario Furips',
-        '- Fotocopia del SOAT',
-        '- Fotocopia de la Cedula',
+      case 'Licencia Por Maternidad':
+        documents.addAll([
+          '- Incapacidad emitida por la EPS',
+          '- Epicrisis',
+          '- Registro civil',
+          '- Certificado de nacido vivo',
+        ]);
+        break;
 
-      ]);
-      break;
+      case 'Licencia Por Paternidad':
+        documents.addAll([
+          '- Transcripción de la licencia',
+          '- Incapacidad emitida por la EPS',
+          '- Epicrisis',
+          '- Certificado de nacido vivo',
+          '- Registro civil del hijo(a)',
+          '- Fotocopia de la cédula del hijo(a)',
+        ]);
+        break;
 
-    case 'Licencia Por Maternidad':
-       documents.addAll([
-        '- Incapacidad emitida por la EPS',
-        '- Epicrisis',
-        '- Registro civil',
-        '- Certificado de nacido vivo',
-        
+      case 'Licencia Por Luto':
+        documents.addAll([
+          '- Incapacidad emitida por la EPS',
+          '- Registro civil de defunción',
+          '- Registro civil del hijo(a)',
+          '- Fotocopia de la cédula del hijo(a)',
+        ]);
+        break;
 
-      ]);
-      break;
+      default:
+        documents.add('- Seleccione un tipo de incapacidad para ver los documentos requeridos');
+        break;
+    }
 
-    case 'Licencia Por Paternidad':
-      documents.addAll([
-        '- Transcripción de la licencia',
-        '- Incapacidad emitida por la EPS',
-        '- Epicrisis',
-        '- Certificado de nacido vivo',
-        '- Registro civil',
-
-      ]);
-      break;
-
-    case 'Licencia Por Luto':
-       documents.addAll([
-        '- Carta dirigida a la compañía solicitando la licencia e indicando el parentesco con el occiso',
-        '- Registro de defunción',
-        '- Registros civiles que prueben su parentesco',
-        '- Fotocopia de la C.C del colaborador',
-        
-
-      ]);
-      break;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: documents.map((doc) => Text(doc)).toList(),
+    );
   }
 
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: documents.map((document) => Text(document)).toList(),
-  );
-}
-
-
-
-  // menu items
-  Widget _buildBottomMenuItem({
-    required IconData icon,
-    required VoidCallback onPressed,
-    required Color color,
-    required String label,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(30),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 30,
-              ),
-            ),
-            SizedBox(height: 5),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.black87,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+  Widget _buildBottomMenuItem({required IconData icon, required VoidCallback onPressed, required Color color, required String label}) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          onPressed: onPressed,
+          icon: Icon(icon),
+          color: color,
+          iconSize: 30.0,
         ),
-      ),
+        Text(label, style: TextStyle(color: color)),
+      ],
     );
   }
 }

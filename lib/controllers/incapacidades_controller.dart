@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -11,7 +13,7 @@ class IncapacidadesController extends GetxController {
   final box = GetStorage();
   
   //  URL de la API
-  final String url = 'http://10.0.2.2:8000/api/';
+  final String url = 'http://10.0.2.2:8000/api/ ';
 
   //// Función para crear una nueva incapacidad
   Future<void> createIncapacidad({
@@ -19,7 +21,7 @@ class IncapacidadesController extends GetxController {
     required int diasIncapacidad,
     required DateTime fechaInicioIncapacidad,
     required String entidadAfiliada,
-    required String imagePath,
+    required String imagePath, required List<File> images,
   }) async {
     try {
       int userId = box.read('user_id');// Obtiene el ID de usuario

@@ -1,41 +1,34 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
-import 'package:path/path.dart';
-import 'package:talento_mxm_flutter/models/incapaacidades_model.dart';
+import 'package:http/io_client.dart';
 
 class IncapacidadesController extends GetxController {
-  final isLoading = false.obs;
   final box = GetStorage();
-  
-  //  URL de la API
-  final String url = 'http://10.0.2.2:8000/api/ ';
+  final url = 'http://10.0.2.2:8000/api/';
 
-  //// Función para crear una nueva incapacidad
   Future<void> createIncapacidad({
     required String tipoincapacidadreportada,
     required int diasIncapacidad,
     required DateTime fechaInicioIncapacidad,
     required String entidadAfiliada,
-    required String imagePath, required List<File> images,
+    required List<File> images,
+    required List<String> imagePaths,
   }) async {
     try {
-      int userId = box.read('user_id');// Obtiene el ID de usuario
-      String token = box.read('token'); // Obtiene el token de acceso 
+      int? userId = box.read('user_id'); // Asegúrate de que userId sea leído correctamente
+      String? token = box.read('token'); // Asegúrate de que token sea leído correctamente
 
-      // Crea una instancia del modelo de incapacidad con los datos proporcionados
-      IncapacidadModel incapacidad = IncapacidadModel(
-        userId: userId,
-        tipoincapacidadreportada: tipoincapacidadreportada,
-        diasIncapacidad: diasIncapacidad,
-        fechaInicioIncapacidad: fechaInicioIncapacidad,
-        entidadAfiliada: entidadAfiliada,
-        image: basename(imagePath),
-      );
+      if (userId == null) {
+        print('Error: user_id is null');
+        return;
+      }
+
+      var client = HttpClient();
+      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      var ioClient = IOClient(client);
 
       var request = http.MultipartRequest(
         'POST',
@@ -44,42 +37,26 @@ class IncapacidadesController extends GetxController {
 
       request.headers['Authorization'] = 'Bearer $token';
 
-      request.fields.addAll(incapacidad.toJson().map((key, value) => MapEntry(key, value.toString())));
+      request.fields.addAll({
+        'user_id': '$userId', // Cambia 'userId' a 'user_id' para que coincida con el backend
+        'tipoincapacidadreportada': tipoincapacidadreportada,
+        'diasIncapacidad': '$diasIncapacidad',
+        'fechaInicioIncapacidad': '${fechaInicioIncapacidad.toIso8601String()}',
+        'entidadAfiliada': entidadAfiliada,
+      });
 
+      for (int i = 0; i < images.length; i++) {
+        var image = images[i];
+        var imagePath = imagePaths[i];
+        request.files.add(await http.MultipartFile.fromPath('images[$i]', imagePath));
+      }
 
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'image',
-          imagePath,
-          contentType: MediaType('image', 'jpeg'),
-        ),
-      );
-
-      var response = await request.send();
-
-      // Leer la respuesta completa del servidor
-      var responseBody = await response.stream.bytesToString();
-      print('Response status: ${response.statusCode}');
-      print('Response body: $responseBody');
-
-      // Muestra un mensaje de éxito si la incapacidad se crea correctamente
-      if (response.statusCode == 201) {
-        Get.snackbar(
-          'Éxito',
-          'Incapacidad creada con éxito',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
+      var response = await ioClient.send(request);
+      if (response.statusCode == 200) {
+        print('Incapacidad creada exitosamente');
       } else {
-        // Muestra un mensaje de error si hay un problema al crear la incapacidad
-        Get.snackbar(
-          'Error',
-          'Error al crear la incapacidad: $responseBody',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        print('Error al crear la incapacidad. Código de estado: ${response.statusCode}');
+        print('Cuerpo de la respuesta: ${await response.stream.bytesToString()}');
       }
     } catch (e) {
       print('Error: $e');

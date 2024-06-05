@@ -36,7 +36,6 @@ class _MyFormState extends State<MyForm> {
 
   final IncapacidadesController _controller = Get.put(IncapacidadesController());
 
-  // Función para seleccionar una fecha 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -51,18 +50,17 @@ class _MyFormState extends State<MyForm> {
     }
   }
 
-  // Función para obtener las imágenes de la galería
   Future<void> _getImages() async {
     final pickedFiles = await ImagePicker().pickMultiImage();
 
     if (pickedFiles != null) {
       setState(() {
-        _images = pickedFiles.map((pickedFile) => File(pickedFile.path)).toList();
+        _images.clear();
+        _images.addAll(pickedFiles.map((pickedFile) => File(pickedFile.path)));
       });
     }
   }
 
-  // Función para enviar el formulario
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -71,17 +69,18 @@ class _MyFormState extends State<MyForm> {
     });
 
     try {
+      List<String> imagePaths = _images.map((image) => image.path).toList();
+
       await _controller.createIncapacidad(
         tipoincapacidadreportada: _selectedtipoincapacidadreportada!,
         diasIncapacidad: int.parse(_diasIncapacidadController.text),
         fechaInicioIncapacidad: _fechaInicio,
         entidadAfiliada: _selectedEntidadAfiliada!,
-        images: _images, imagePath: '',
+        images: _images,
+        imagePaths: imagePaths,
       );
 
-      // Redirige al usuario al menú después de enviar la incapacidad
       Get.offAll(() => MenuPage());
-
     } catch (e) {
       print('Error: $e');
     } finally {
@@ -91,7 +90,6 @@ class _MyFormState extends State<MyForm> {
     }
   }
 
-  // Función para mostrar un diálogo de confirmación antes de enviar el formulario
   Future<void> _showConfirmationDialog() async {
     return showDialog<void>(
       context: context,
@@ -126,7 +124,6 @@ class _MyFormState extends State<MyForm> {
     );
   }
 
-  //Formulario Incapacidades 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -191,8 +188,6 @@ class _MyFormState extends State<MyForm> {
                         return null;
                       },
                     ),
-
-                    // Debajo del DropdownButtonFormField
                     SizedBox(height: 20),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,7 +200,6 @@ class _MyFormState extends State<MyForm> {
                         _buildDocumentItem(_selectedtipoincapacidadreportada),
                       ],
                     ),
-
                     SizedBox(height: 20),
                     TextFormField(
                       controller: _diasIncapacidadController,
@@ -321,8 +315,6 @@ class _MyFormState extends State<MyForm> {
           ),
         ),
       ),
-
-      // Barra de navegación
       bottomNavigationBar: Transform.translate(
         offset: Offset(0.0, -5.0),
         child: Container(
@@ -492,9 +484,12 @@ class _MyFormState extends State<MyForm> {
           onPressed: onPressed,
           icon: Icon(icon),
           color: color,
-          iconSize: 30.0,
+          iconSize: 30,
         ),
-        Text(label, style: TextStyle(color: color)),
+        Text(
+          label,
+          style: TextStyle(color: color),
+        ),
       ],
     );
   }

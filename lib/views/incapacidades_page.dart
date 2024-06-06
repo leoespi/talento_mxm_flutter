@@ -78,6 +78,15 @@ class _MyFormState extends State<MyForm> {
         entidadAfiliada: _selectedEntidadAfiliada!,
         images: _images,
         imagePaths: imagePaths,
+        context: context, // Agregar este parámetro
+      );
+
+      // Mostrar un SnackBar de éxito después de que la incapacidad se haya creado
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Incapacidad creada con éxito'),
+          duration: Duration(seconds: 2),
+        ),
       );
 
       Get.offAll(() => MenuPage());

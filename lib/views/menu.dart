@@ -24,7 +24,7 @@ class MenuPage extends StatelessWidget {
 
       
       // Barra de navegación
-      bottomNavigationBar: Transform.translate(
+            bottomNavigationBar: Transform.translate(
         offset: Offset(0.0, -5.0),
         child: Container(
           decoration: BoxDecoration(
@@ -50,73 +50,71 @@ class MenuPage extends StatelessWidget {
                 _buildBottomMenuItem(
                   icon: Icons.article,
                   onPressed: () {
-                   Navigator.pushReplacement(
-                    context,
-                    PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 250), // Duración de la animación
-                      transitionsBuilder: (context, animation, _, child) {
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: Offset(-1.0, 0.0), // Comienza desde la derecha
-                            end: Offset.zero, // Hacia la posición inicial
-                          ).animate(animation),
-                          child: child,
-                        );
-                      },
-                      pageBuilder: (context, _, __) => MyForm(), // Página siguiente
-                    ),
-                  );
+                    Navigator.pushReplacement(
+                      context,
+                      PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 250),
+                        transitionsBuilder: (context, animation, _, child) {
+                          return SlideTransition(
+                            position: Tween<Offset>(
+                              begin: Offset(0.0, 1.0),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          );
+                        },
+                        pageBuilder: (context, _, __) => MyForm(),
+                      ),
+                    );
                   },
                   color: Colors.blue,
-                  label: 'Incapacidad', // Nombre del primer botón
+                  label: 'Incapacidad',
                 ),
-                 _buildBottomMenuItem(
+                _buildBottomMenuItem(
                   icon: Icons.home,
                   onPressed: () {
                     Navigator.pushReplacement(
-                    context,
-                    PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 250), // Duración de la animación
-                      transitionsBuilder: (context, animation, _, child) {
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: Offset(0.0, 1.0), // Comienza desde la derecha
-                            end: Offset.zero, // Hacia la posición inicial
-                          ).animate(animation),
-                          child: child,
-                        );
-                      },
-                      pageBuilder: (context, _, __) => MenuPage(), // Página siguiente
-                    ),
-                  );
+                      context,
+                      PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 250),
+                        transitionsBuilder: (context, animation, _, child) {
+                          return SlideTransition(
+                            position: Tween<Offset>(
+                              begin: Offset(1.0, 0.0),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          );
+                        },
+                        pageBuilder: (context, _, __) => MenuPage(),
+                      ),
+                    );
                   },
                   color: Colors.green,
                   label: 'Inicio',
                 ),
-               
                 _buildBottomMenuItem(
                   icon: Icons.person,
                   onPressed: () {
                     Navigator.pushReplacement(
-                    context,
-                    PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 250), // Duración de la animación
-                      transitionsBuilder: (context, animation, _, child) {
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: Offset(1.0, 0.0), // Comienza desde la derecha
-                            end: Offset.zero, // Hacia la posición inicial
-                          ).animate(animation),
-                          child: child,
-                        );
-                      },
-                      pageBuilder: (context, _, __) =>ProfileScreen(
-                                            userId: '' ), // Página siguiente
-                    ),
-                  );
+                      context,
+                      PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 250),
+                        transitionsBuilder: (context, animation, _, child) {
+                          return SlideTransition(
+                            position: Tween<Offset>(
+                              begin: Offset(1.0, 0.0),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          );
+                        },
+                        pageBuilder: (context, _, __) => ProfileScreen(userId: ''),
+                      ),
+                    );
                   },
                   color: Colors.orange,
-                  label: 'Perfil', // Nombre del segundo botón
+                  label: 'Perfil',
                 ),
               ],
             ),
@@ -126,52 +124,20 @@ class MenuPage extends StatelessWidget {
     );
   }
 
-  // menu items
-  Widget _buildBottomMenuItem({
-    required IconData icon,
-    required VoidCallback onPressed,
-    required Color color,
-    required String label,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(30),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 30,
-              ),
-            ),
-            SizedBox(height: 5),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.black87,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+
+Widget _buildBottomMenuItem({required IconData icon, required VoidCallback onPressed, required Color color, required String label}) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          onPressed: onPressed,
+          icon: Icon(icon),
+          color: color,
+          iconSize: 30.0,
         ),
-      ),
+        Text(label, style: TextStyle(color: color)),
+      ],
     );
   }
 }
+

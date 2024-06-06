@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
@@ -16,10 +17,11 @@ class IncapacidadesController extends GetxController {
     required String entidadAfiliada,
     required List<File> images,
     required List<String> imagePaths,
+    required BuildContext context,
   }) async {
     try {
-      int? userId = box.read('user_id'); // Asegúrate de que userId sea leído correctamente
-      String? token = box.read('token'); // Asegúrate de que token sea leído correctamente
+      int? userId = box.read('user_id');
+      String? token = box.read('token');
 
       if (userId == null) {
         print('Error: user_id is null');
@@ -38,7 +40,7 @@ class IncapacidadesController extends GetxController {
       request.headers['Authorization'] = 'Bearer $token';
 
       request.fields.addAll({
-        'user_id': '$userId', // Cambia 'userId' a 'user_id' para que coincida con el backend
+        'user_id': '$userId',
         'tipoincapacidadreportada': tipoincapacidadreportada,
         'diasIncapacidad': '$diasIncapacidad',
         'fechaInicioIncapacidad': '${fechaInicioIncapacidad.toIso8601String()}',
@@ -52,8 +54,24 @@ class IncapacidadesController extends GetxController {
       }
 
       var response = await ioClient.send(request);
-      if (response.statusCode == 200) {
-        print('Incapacidad creada exitosamente');
+      if (response.statusCode == 201) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Creación Exitosa'),
+              content: Text('La incapacidad se creó exitosamente.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Aceptar'),
+                ),
+              ],
+            );
+          },
+        );
       } else {
         print('Error al crear la incapacidad. Código de estado: ${response.statusCode}');
         print('Cuerpo de la respuesta: ${await response.stream.bytesToString()}');

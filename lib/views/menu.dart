@@ -57,7 +57,7 @@ class MenuPage extends StatelessWidget {
                         transitionsBuilder: (context, animation, _, child) {
                           return SlideTransition(
                             position: Tween<Offset>(
-                              begin: Offset(0.0, 1.0),
+                              begin: Offset(1.0, 0.0),
                               end: Offset.zero,
                             ).animate(animation),
                             child: child,

@@ -285,7 +285,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onPressed: () {
                         // Acción para la nueva opción 3
                       },
-                      color: Colors.purple,
+                      color: const Color.fromARGB(255, 58, 58, 58),
                       label: 'Configuracion',
                     ),
                   ],

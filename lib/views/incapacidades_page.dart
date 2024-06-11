@@ -455,7 +455,7 @@ class _MyFormState extends State<MyForm> {
                       onPressed: () {
                         // Acción para la nueva opción 3
                       },
-                      color: Colors.purple,
+                      color: const Color.fromARGB(255, 58, 58, 58),
                       label: 'Configuracion',
                     ),
                   ],
@@ -558,5 +558,4 @@ class _MyFormState extends State<MyForm> {
         ),
       ],
     );
-  }
-}
+  }}

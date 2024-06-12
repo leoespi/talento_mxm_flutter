@@ -1,11 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:talento_mxm_flutter/services/user_service.dart';
 import 'package:talento_mxm_flutter/controllers/authentication.dart';
-import 'package:talento_mxm_flutter/utils/screen_size.dart';
 import 'package:get_storage/get_storage.dart';
 
-import 'package:talento_mxm_flutter/views/incapacidades_page.dart'; 
+import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
+import 'package:talento_mxm_flutter/views/login_page.dart'; 
 import 'package:talento_mxm_flutter/views/menu.dart';
 
 class UserData {
@@ -25,7 +24,7 @@ class ProfileScreen extends StatefulWidget {
   final String userId;
   
 
-  const ProfileScreen({super.key, required this.userId});
+  const ProfileScreen({Key? key, required this.userId});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -33,8 +32,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-    bool _isExpanded = false;
-
+  bool _isExpanded = false;
   final AuthenticationController _authController = AuthenticationController();
   var storage = GetStorage();
   String token = '';
@@ -50,79 +48,82 @@ class _ProfileScreenState extends State<ProfileScreen> {
     userData = UserService.obtenerUsuarios(token);
   }
 
+  // Función para cerrar sesión
+  void logout() {
+    _authController.logout(); // Lógica para cerrar sesión
+    // Navegar a la pantalla de inicio de sesión, por ejemplo:
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()), // Reemplazar LoginPage con tu página de inicio de sesión
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     
-      body: Transform.translate(
-  offset: Offset(0.0, 50.0), // Ajusta el desplazamiento vertical 
-  child: FutureBuilder<UserData>(
-    future: userData,
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return const Center(child: CircularProgressIndicator());
-      } else if (snapshot.hasError) {
-        return Center(child: Text('Error: ${snapshot.error}'));
-      } else {
-        final usuario = snapshot.data;
-        return SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(vertical: 30.0),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.blue, Colors.blueAccent],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+      body: FutureBuilder<UserData>(
+        future: userData,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            final usuario = snapshot.data;
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.deepPurple, Colors.indigo],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            
+                            IconButton(
+                               
+                              onPressed: logout,
+                              icon: Icon(Icons.logout),
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        CircleAvatar (
+                          radius: 50.0,
+                          backgroundImage: AssetImage('assets/profile_placeholder.png'), //  imagen en assets con este nombre
+                        ),
+                        SizedBox(height: 20),
+                        Text(
+                          usuario?.name ?? '',
+                          style: TextStyle(
+                            fontSize: 25.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          usuario?.email ?? '',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                child: Column(
-                  children: [
-                    CircleAvatar (
-                      radius: 50.0,
-                      backgroundImage: AssetImage('assets/profile_placeholder.png'), //  imagen en assets con este nombre
-                    ),
-                    SizedBox(height: 30.0),
-                    Text(
-                      usuario?.name ?? '',
-                      style: TextStyle(
-                        fontSize: 25.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      usuario?.email ?? '',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.white70,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 2,
-                        blurRadius: 5,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
-                  ),
-
-                  //Informacion del Usuario Logeado
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                  Container(
+                    padding: EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
@@ -131,20 +132,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           style: TextStyle(
                             fontSize: 20.0,
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue, 
+                            color: Colors.indigo, 
                           ),
                         ),
-                        SizedBox(height: 10.0),
+                        SizedBox(height: 10),
                         Text(
                           'Nombre: ${usuario?.name}',
                           style: TextStyle(fontSize: 18.0),
                         ),
-                        SizedBox(height: 5.0),
+                        SizedBox(height: 5),
                         Text(
                           'Cédula: ${usuario?.cedula}',
                           style: TextStyle(fontSize: 18.0),
                         ),
-                        SizedBox(height: 3.0),
+                        SizedBox(height: 5),
                         Text(
                           'Correo Electrónico: ${usuario?.email}',
                           style: TextStyle(fontSize: 18.0),
@@ -152,17 +153,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        );
-      }
-    },
-  ),
-),
-    //menu 
-    bottomNavigationBar: Container(
+            );
+          }
+        },
+      ),
+       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -309,13 +306,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
 
-
-
     );
   }
 
-  // menu items
-   
   Widget _buildBottomMenuItem({required IconData icon, required VoidCallback onPressed, required Color color, required String label}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -331,6 +324,3 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
-
-
-

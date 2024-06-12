@@ -17,14 +17,6 @@ class _MenuPageState extends State<MenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () => widget._authController.logout(),
-          ),
-        ],
-      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,

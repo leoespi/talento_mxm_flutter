@@ -6,53 +6,52 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/io_client.dart';
 
-class IncapacidadesController extends GetxController {
+
+class CesantiasController extends GetxController {
   final box = GetStorage();
   final url = 'http://10.0.2.2:8000/api/';
 
-  Future<void> createIncapacidad({
-    required String tipoincapacidadreportada,
-    required int diasIncapacidad,
-    required DateTime fechaInicioIncapacidad,
-    required String entidadAfiliada,
+  Future<void> createCesantias({
+
+    required String tipocesantiareportada,
     required List<File> images,
     required List<String> imagePaths,
     required BuildContext context,
   }) async {
     try {
-      int? userId = box.read('user_id');
-      String? token = box.read('token');
+  int? userId = box.read('user_id');
+  String? token = box.read('token');
 
-      if (userId == null) {
-        print('Error: user_id is null');
-        return;
-      }
+  if (userId == null) {
+    print('Error: user_id is null');
+    return;
+  }
 
+      
       var client = HttpClient();
       client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
       var ioClient = IOClient(client);
 
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('${url}incapacidades'),
+        Uri.parse('${url}cesantias'),
       );
 
       request.headers['Authorization'] = 'Bearer $token';
 
       request.fields.addAll({
         'user_id': '$userId',
-        'tipoincapacidadreportada': tipoincapacidadreportada,
-        'diasIncapacidad': '$diasIncapacidad',
-        'fechaInicioIncapacidad': '${fechaInicioIncapacidad.toIso8601String()}',
-        'entidadAfiliada': entidadAfiliada,
+        'tipocesantiareportada': tipocesantiareportada,
+      
       });
 
       for (int i = 0; i < images.length; i++) {
         var image = images[i];
         var imagePath = imagePaths[i];
         request.files.add(await http.MultipartFile.fromPath('images[$i]', imagePath));
+      
       }
-
+      
       var response = await ioClient.send(request);
       
       if (response.statusCode == 201) {
@@ -61,7 +60,7 @@ class IncapacidadesController extends GetxController {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Creación Exitosa'),
-              content: Text('La incapacidad se creó exitosamente.'),
+              content: Text('La Cesantia se creó exitosamente.'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -74,11 +73,16 @@ class IncapacidadesController extends GetxController {
           },
         );
       } else {
-        print('Error al crear la incapacidad. Código de estado: ${response.statusCode}');
+        print('Error al crear la Cesantia. Código de estado: ${response.statusCode}');
         print('Cuerpo de la respuesta: ${await response.stream.bytesToString()}');
       }
     } catch (e) {
       print('Error: $e');
+      
+
     }
   }
+
+
+
 }

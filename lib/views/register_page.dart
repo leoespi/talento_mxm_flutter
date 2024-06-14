@@ -28,118 +28,103 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Fondo gradiente
+          // Fondo color sólido
           Container(
             width: double.infinity,
             height: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF3366FF),
-                  Color(0xFF00CCFF),
-                ],
-              ),
-            ),
+            color: Colors.white,
           ),
 
           //Inputs para el Registro
           Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Transform.translate(
-                    offset: Offset(0, -60),
-                    child: Text(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: size * 0.1),
+                    Text(
                       'Registrarse',
                       style: GoogleFonts.poppins(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontSize: size * 0.080,
+                        color: Colors.black,
+                        fontSize: size * 0.08,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 30),
-                  InputWidget(
-                    hintText: 'Nombre Completo',
-                    obscureText: false,
-                    controller: _nameController,
-                  ),
-                  const SizedBox(height: 30),
-                  InputWidget(
-                    hintText: 'Cedula',
-                    obscureText: false,
-                    controller: _cedulaController,
-                  ),
-                  const SizedBox(height: 30),
-                  InputWidget(
-                    hintText: 'Correo Electronico',
-                    obscureText: false,
-                    controller: _emailController,
-                  ),
-                  const SizedBox(height: 20),
-                  InputWidget(
-                    hintText: 'Contraseña',
-                    obscureText: true,
-                    controller: _passwordController,
-                  ),
-                  const SizedBox(height: 30),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      backgroundColor: Color(0xFF3366FF),
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 50,
-                        vertical: 15,
-                      ),
+                    SizedBox(height: 30),
+                    InputWidget(
+                      hintText: 'Nombre Completo',
+                      obscureText: false,
+                      controller: _nameController,
                     ),
-                    onPressed: () async {
-                      await _authenticationController.register(
-                        name: _nameController.text.trim(),
-                        cedula: int.parse(_cedulaController.text.trim()),
-                        email: _emailController.text.trim(),
-                        password: _passwordController.text.trim(),
-                      );
-                    },
-                    child: Obx(() {
-                      return _authenticationController.isLoading.value
-                          ? const Center(
-                              child: CircularProgressIndicator(
+                    SizedBox(height: 20),
+                    InputWidget(
+                      hintText: 'Cédula',
+                      obscureText: false,
+                      controller: _cedulaController,
+                    ),
+                    SizedBox(height: 20),
+                    InputWidget(
+                      hintText: 'Correo Electrónico',
+                      obscureText: false,
+                      controller: _emailController,
+                    ),
+                    SizedBox(height: 20),
+                    InputWidget(
+                      hintText: 'Contraseña',
+                      obscureText: true,
+                      controller: _passwordController,
+                    ),
+                    SizedBox(height: 30),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ), backgroundColor: Color.fromARGB(255, 5, 13, 121),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 50,
+                          vertical: 15,
+                        ),
+                      ),
+                      onPressed: () async {
+                        await _authenticationController.register(
+                          name: _nameController.text.trim(),
+                          cedula: int.parse(_cedulaController.text.trim()),
+                          email: _emailController.text.trim(),
+                          password: _passwordController.text.trim(),
+                        );
+                      },
+                      child: Obx(() {
+                        return _authenticationController.isLoading.value
+                            ? CircularProgressIndicator(
                                 color: Colors.white,
-                              ),
-                            )
-                          : Transform.translate(
-                              offset: Offset(0, 0),
-                              child: Text(
+                              )
+                            : Text(
                                 'Registrarse',
                                 style: GoogleFonts.poppins(
-                                  color: Color.fromARGB(255, 255, 255, 255),
-                                  fontSize: size * 0.040,
+                                  color: Colors.white,
+                                  fontSize: size * 0.04,
                                 ),
-                              ),
-                            );
-                    }),
-                  ),
-                  const SizedBox(height: 20),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Get.to(LoginPage());
-                    },
-                    child: Text(
-                      'Volver',
-                      style: GoogleFonts.poppins(
-                        fontSize: size * 0.040,
-                        color: Colors.black,
-                      ),
+                              );
+                      }),
                     ),
-                  )
-                ],
+                    SizedBox(height: 20),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Get.to(LoginPage());
+                      },
+                      child: Text(
+                        'Volver',
+                        style: GoogleFonts.poppins(
+                          fontSize: size * 0.04,
+                          color: Colors.black,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),

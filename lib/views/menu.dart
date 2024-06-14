@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:talento_mxm_flutter/controllers/authentication.dart';
 import 'package:talento_mxm_flutter/views/perfil.dart';
 import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
+import 'package:talento_mxm_flutter/views/cesantias_page.dart';
 
 class MenuPage extends StatefulWidget {
   final AuthenticationController _authController = Get.find();
@@ -120,13 +121,28 @@ class _MenuPageState extends State<MenuPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     _buildBottomMenuItem(
-                      icon: Icons.document_scanner,
-                      onPressed: () {
-                        // Acción para la nueva opción 1
-                      },
-                      color: Colors.red,
-                      label: 'Cesantias',
-                    ),
+                    icon: Icons.document_scanner,
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 250),
+                          transitionsBuilder: (context, animation, _, child) {
+                            return SlideTransition(
+                              position: Tween<Offset>(
+                                begin: Offset(1.0, 0.0),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: child,
+                            );
+                          },
+                          pageBuilder: (context, _, __) => MyCesantiaspage(), //Cesantiaspage
+                        ),
+                      );
+                    },
+                    color: Colors.red,
+                    label: 'Cesantias',
+                  ),
                     _buildBottomMenuItem(
                       icon: Icons.person_2,
                       onPressed: () {

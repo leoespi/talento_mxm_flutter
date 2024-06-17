@@ -65,7 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 5, 13, 121),
-        title: Text('Perfil'),
+        title: Text(''),
         actions: [
           IconButton(
                                
@@ -105,14 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: const Color.fromARGB(255, 5, 13, 121),
                     ),
                   ),
-                  SizedBox(height: 10.0),
-                  Text(
-                    usuario.email,
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      color: Colors.grey[600],
-                    ),
-                  ),
+                 
                   SizedBox(height: 20.0),
                   Divider(color: Colors.grey[400]),
                   SizedBox(height: 20.0),

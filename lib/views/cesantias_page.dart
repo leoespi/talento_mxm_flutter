@@ -3,12 +3,12 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:talento_mxm_flutter/controllers/cesantias_controller.dart';
-import 'package:talento_mxm_flutter/controllers/incapacidades_controller.dart';
-import 'package:talento_mxm_flutter/main.dart';
+
 import 'package:talento_mxm_flutter/views/menu.dart';
 import 'package:talento_mxm_flutter/views/perfil.dart';
+import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(MyCesantiaspage());
   bool _isExpanded = false;
 
 
@@ -36,7 +36,7 @@ class MyCesantiaspage extends StatefulWidget {
 
 class _MyAppState extends State<MyCesantiaspage> {
   final _formKey = GlobalKey<FormState>();
-  String? _selectedtipoincapacidadreportada;
+  String? _selectedtipocesantiareportada;
  
   List<File> _images = [];
   bool _isLoading = false;
@@ -57,43 +57,48 @@ class _MyAppState extends State<MyCesantiaspage> {
 
 
   Future<void> _submitForm() async {
-  if (_selectedtipoincapacidadreportada == null || !_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
   setState(() {
     _isLoading = true;
   });
 
   try {
-
     List<String> imagePaths = _images.map((image) => image.path).toList();
 
-      await _controller.createCesantias(
-      tipocesantiareportada: _selectedtipoincapacidadreportada!,
-      
+    await _controller.createCesantias(
+      tipocesantiareportada: _selectedtipocesantiareportada!,
       images: _images,
       imagePaths: imagePaths,
       context: context,
     );
 
+    // La solicitud se completó sin errores, ahora puedes mostrar el SnackBar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Cesantia creada exitosamente'),
+        duration: Duration(seconds: 2),
+      ),
+    );
 
-      // Mostrar un SnackBar de éxito después de que la incapacidad se haya creado
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Cesantias creada con éxito'),
-          duration: Duration(seconds: 2),
-        ),
-      );
-
-
-      Get.offAll(() => MenuPage());
-    } catch (e) {
-      print('Error: $e');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    // Navegar a la página de menú u otro destino después del éxito
+    Get.offAll(() => MenuPage());
+  } catch (e) {
+    // Error al crear la cesantía, muestra un mensaje de error
+    print('Error: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error al crear la cesantía'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
+
 
 
    Future<void> _showConfirmationDialog() async {
@@ -152,12 +157,12 @@ class _MyAppState extends State<MyCesantiaspage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Formulario de Cesantias',
+                      'Formulario Solicitud de Cesantias',
                       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 20),
                     DropdownButtonFormField<String>(
-                      value: _selectedtipoincapacidadreportada,
+                      value: _selectedtipocesantiareportada,
                       items: const [
                         DropdownMenuItem(
                           value: 'Para Arreglos',
@@ -174,7 +179,7 @@ class _MyAppState extends State<MyCesantiaspage> {
                       ],
                       onChanged: (value) {
                         setState(() {
-                          _selectedtipoincapacidadreportada = value;
+                          _selectedtipocesantiareportada = value;
                         });
                       },
                       decoration: InputDecoration(
@@ -197,7 +202,7 @@ class _MyAppState extends State<MyCesantiaspage> {
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 5),
-                        _buildDocumentItem(_selectedtipoincapacidadreportada),
+                        _buildDocumentItem(_selectedtipocesantiareportada),
                       ],
                     ),
                    
@@ -252,6 +257,168 @@ class _MyAppState extends State<MyCesantiaspage> {
           ),
         ),
       ),
+
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 1.0, vertical: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildBottomMenuItem(
+                    icon: Icons.article,
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 250),
+                          transitionsBuilder: (context, animation, _, child) {
+                            return SlideTransition(
+                              position: Tween<Offset>(
+                                begin: Offset(1.0, 0.0),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: child,
+                            );
+                          },
+                          pageBuilder: (context, _, __) => MyForm(),
+                        ),
+                      );
+                    },
+                    color: Colors.blue,
+                    label: 'Incapacidad',
+                  ),
+                  _buildBottomMenuItem(
+                    icon: Icons.home,
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 250),
+                          transitionsBuilder: (context, animation, _, child) {
+                            return SlideTransition(
+                              position: Tween<Offset>(
+                                begin: Offset(1.0, 0.0),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: child,
+                            );
+                          },
+                          pageBuilder: (context, _, __) => MenuPage(),
+                        ),
+                      );
+                    },
+                    color: Colors.green,
+                    label: 'Inicio',
+                  ),
+                  _buildBottomMenuItem(
+                    icon: Icons.person,
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 250),
+                          transitionsBuilder: (context, animation, _, child) {
+                            return SlideTransition(
+                              position: Tween<Offset>(
+                                begin: Offset(1.0, 0.0),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: child,
+                            );
+                          },
+                          pageBuilder: (context, _, __) => ProfileScreen(userId: ''),
+                        ),
+                      );
+                    },
+                    color: Colors.orange,
+                    label: 'Perfil',
+                  ),
+                ],
+              ),
+            ),
+            if (_isExpanded)
+              Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                     _buildBottomMenuItem(
+                    icon: Icons.document_scanner,
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 250),
+                          transitionsBuilder: (context, animation, _, child) {
+                            return SlideTransition(
+                              position: Tween<Offset>(
+                                begin: Offset(1.0, 0.0),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: child,
+                            );
+                          },
+                          pageBuilder: (context, _, __) => MyCesantiaspage(), //Cesantiaspage
+                        ),
+                      );
+                    },
+                    color: Colors.red,
+                    label: 'Cesantias',
+                  ),
+                    _buildBottomMenuItem(
+                      icon: Icons.person_2,
+                      onPressed: () {
+                        // Acción para la nueva opción 2
+                      },
+                      color: Colors.yellow,
+                      label: 'P. Referidos',
+                    ),
+                    _buildBottomMenuItem(
+                      icon: Icons.settings,
+                      onPressed: () {
+                        // Acción para la nueva opción 3
+                      },
+                      color: const Color.fromARGB(255, 58, 58, 58),
+                      label: 'Configuracion',
+                    ),
+                  ],
+                ),
+              ),
+            InkWell(
+              onTap: () {
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                });
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  _isExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
      
           );
   }
@@ -300,6 +467,24 @@ class _MyAppState extends State<MyCesantiaspage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: documents.map((doc) => Text(doc)).toList(),
+    );
+  }
+
+  Widget _buildBottomMenuItem({required IconData icon, required VoidCallback onPressed, required Color color, required String label}) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          onPressed: onPressed,
+          icon: Icon(icon),
+          color: color,
+          iconSize: 30,
+        ),
+        Text(
+          label,
+          style: TextStyle(color: color),
+        ),
+      ],
     );
   }
 

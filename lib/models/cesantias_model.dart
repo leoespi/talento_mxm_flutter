@@ -1,41 +1,43 @@
-import 'dart:convert';
+  import 'dart:convert';
 
-CesantiasModel cesantiasModelFromJson(String str) => CesantiasModel.fromJson(json.decode(str));
+  CesantiasModel cesantiasModelFromJson(String str) => CesantiasModel.fromJson(json.decode(str));
 
-class CesantiasModel {
-  CesantiasModel({
-      this.id,
-      required this.userId,
-      required this.tipocesantiareportada,
-    
-      this.uuid,
-      this.image,
-  });
+  String cesantiasModelToJson(CesantiasModel data) => json.encode(data.toJson());
 
-  int? id;
-  int userId;
-  String tipocesantiareportada;
+  class CesantiasModel {
+    CesantiasModel({
+        this.id,
+        required this.userId,
+        required this.tipocesantiareportada,
+      
+        this.uuid,
+        this.image,
+    });
 
-  String? uuid;
-  String? image;
+    int? id;
+    int userId;
+    String tipocesantiareportada;
 
-  factory CesantiasModel.fromJson(Map<String, dynamic> json) => CesantiasModel(
-        id: json["id"],
-        userId: json["user_id"],
-        tipocesantiareportada: json["tipo_cesantia_reportada"],
-        
-        uuid: json["uuid"],
-        image: json["image"],
-      );
+    String? uuid;
+    String? image;
+
+    factory CesantiasModel.fromJson(Map<String, dynamic> json) => CesantiasModel(
+          id: json["id"],
+          userId: json["user_id"],
+          tipocesantiareportada: json["tipo_cesantia_reportada"],
+          
+          uuid: json["uuid"],
+          image: json["image"],
+        );
 
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "user_id": userId,
-        "tipo_cesantia_reportada": tipocesantiareportada,
-        "uuid": uuid,
-        "image": image,
-      };
+    Map<String, dynamic> toJson() => {
+          "id": id,
+          "user_id": userId,
+          "tipo_cesantia_reportada": tipocesantiareportada,
+          "uuid": uuid,
+          "image": image,
+        };
 
-}
+  }
 

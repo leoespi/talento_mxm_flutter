@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:talento_mxm_flutter/services/user_service.dart';
-import 'package:talento_mxm_flutter/controllers/authentication.dart';
 import 'package:get_storage/get_storage.dart';
-
+import 'package:talento_mxm_flutter/views/login_page.dart';
+import 'package:talento_mxm_flutter/controllers/authentication.dart';
+import 'package:talento_mxm_flutter/views/cesantias_page.dart';
 import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
-import 'package:talento_mxm_flutter/views/login_page.dart'; 
 import 'package:talento_mxm_flutter/views/menu.dart';
+
 
 class UserData {
   final String name;
@@ -19,8 +20,10 @@ class UserData {
   });
 }
 
+
+
+
 class ProfileScreen extends StatefulWidget {
-  
   final String userId;
   
 
@@ -32,23 +35,21 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool _isExpanded = false;
   final AuthenticationController _authController = AuthenticationController();
-  var storage = GetStorage();
-  String token = '';
   late Future<UserData> userData;
-  bool isLoaded = false;
+  var storage = GetStorage();
+    bool _isExpanded = false;
+
+  
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (isLoaded) return;
-    isLoaded = true;
-    token = storage.read('token');
+  void initState() {
+    super.initState();
+    String token = storage.read('token');
     userData = UserService.obtenerUsuarios(token);
   }
 
-  // Función para cerrar sesión
+   // Función para cerrar sesión
   void logout() {
     _authController.logout(); // Lógica para cerrar sesión
     // Navegar a la pantalla de inicio de sesión, por ejemplo:
@@ -58,108 +59,96 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 5, 13, 121),
+        title: Text('Perfil'),
+        actions: [
+          IconButton(
+                               
+           onPressed: logout,
+           icon: Icon(Icons.logout),
+           color: Colors.white,
+          ),
+
+        ],
+      ),
       body: FutureBuilder<UserData>(
         future: userData,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
-            final usuario = snapshot.data;
+            final usuario = snapshot.data!;
             return SingleChildScrollView(
+              padding: EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.deepPurple, Colors.indigo],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            
-                            IconButton(
-                               
-                              onPressed: logout,
-                              icon: Icon(Icons.logout),
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        CircleAvatar (
-                          radius: 50.0,
-                          backgroundImage: AssetImage('assets/profile_placeholder.png'), //  imagen en assets con este nombre
-                        ),
-                        SizedBox(height: 20),
-                        Text(
-                          usuario?.name ?? '',
-                          style: TextStyle(
-                            fontSize: 25.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Text(
-                          usuario?.email ?? '',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.white70,
-                          ),
-                        ),
-                      ],
+                  Center(
+                    child: CircleAvatar(
+                      radius: 80.0,
+                      backgroundImage: AssetImage('assets/profile_placeholder.png'),
                     ),
                   ),
-                  Container(
-                    padding: EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          'Información del usuario:',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.indigo, 
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Nombre: ${usuario?.name}',
-                          style: TextStyle(fontSize: 18.0),
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          'Cédula: ${usuario?.cedula}',
-                          style: TextStyle(fontSize: 18.0),
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          'Correo Electrónico: ${usuario?.email}',
-                          style: TextStyle(fontSize: 18.0),
-                        ),
-                      ],
+                  SizedBox(height: 20.0),
+                  Text(
+                    usuario.name,
+                    style: TextStyle(
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 5, 13, 121),
                     ),
+                  ),
+                  SizedBox(height: 10.0),
+                  Text(
+                    usuario.email,
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  SizedBox(height: 20.0),
+                  Divider(color: Colors.grey[400]),
+                  SizedBox(height: 20.0),
+                  Text(
+                    'Información Personal',
+                    style: TextStyle(
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 5, 13, 121),
+                    ),
+                  ),
+                  SizedBox(height: 10.0),
+                  ListTile(
+                    leading: Icon(Icons.person, color: const Color.fromARGB(255, 5, 13, 121)),
+                    title: Text('Nombre'),
+                    subtitle: Text(usuario.name),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.perm_identity, color: const Color.fromARGB(255, 5, 13, 121)),
+                    title: Text('Cédula'),
+                    subtitle: Text(usuario.cedula),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.email, color: const Color.fromARGB(255, 5, 13, 121)),
+                    title: Text('Correo Electrónico'),
+                    subtitle: Text(usuario.email),
                   ),
                 ],
               ),
             );
+            
           }
         },
       ),
-       bottomNavigationBar: Container(
+
+      bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -261,14 +250,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildBottomMenuItem(
-                      icon: Icons.document_scanner,
-                      onPressed: () {
-                        // Acción para la nueva opción 1
-                      },
-                      color: Colors.red,
-                      label: 'Cesantias',
-                    ),
+                     _buildBottomMenuItem(
+                    icon: Icons.document_scanner,
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 250),
+                          transitionsBuilder: (context, animation, _, child) {
+                            return SlideTransition(
+                              position: Tween<Offset>(
+                                begin: Offset(1.0, 0.0),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: child,
+                            );
+                          },
+                          pageBuilder: (context, _, __) => MyCesantiaspage(), //Cesantiaspage
+                        ),
+                      );
+                    },
+                    color: Colors.red,
+                    label: 'Cesantias',
+                  ),
                     _buildBottomMenuItem(
                       icon: Icons.person_2,
                       onPressed: () {
@@ -306,8 +310,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
 
+      
     );
   }
+}
+
 
   Widget _buildBottomMenuItem({required IconData icon, required VoidCallback onPressed, required Color color, required String label}) {
     return Column(
@@ -317,10 +324,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           onPressed: onPressed,
           icon: Icon(icon),
           color: color,
-          iconSize: 30.0,
+          iconSize: 30,
         ),
-        Text(label, style: TextStyle(color: color)),
+        Text(
+          label,
+          style: TextStyle(color: color),
+        ),
       ],
     );
   }
-}

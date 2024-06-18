@@ -165,16 +165,16 @@ class _MyAppState extends State<MyCesantiaspage> {
                       value: _selectedtipocesantiareportada,
                       items: const [
                         DropdownMenuItem(
-                          value: 'Para Arreglos',
-                          child: Text('Para Arreglos'),
+                          value: 'Para Arreglos de Vivienda',
+                          child: Text('Para Arreglos de Vivienda'),
                         ),
                         DropdownMenuItem(
-                          value: 'Para Vivienda',
-                          child: Text('Para Vivienda'),
+                          value: 'Para Compra de Vivienda',
+                          child: Text('Para Compra de Vivienda'),
                         ),
                         DropdownMenuItem(
-                          value: 'Para Educacion Superior',
-                          child: Text('Para Educacion Superior'),
+                          value: 'Para Educacion',
+                          child: Text('Para Educacion'),
                         ),
                       ],
                       onChanged: (value) {
@@ -428,7 +428,7 @@ class _MyAppState extends State<MyCesantiaspage> {
     List<String> documents = [];
 
     switch (selectedOption) {
-      case 'Para Arreglos':
+      case 'Para Arreglos de Vivienda':
         documents.addAll([
           '- Carta Solicitud retiro total o parcial',
           '- Fotocopia documento de identificacion',
@@ -441,7 +441,7 @@ class _MyAppState extends State<MyCesantiaspage> {
         ]);
         break;
 
-      case 'Para Vivienda':
+      case 'Para Compra de Vivienda':
         documents.addAll([
           '- Carta Solicitud retiro total o parcial',
           '- Fotocopia documento de identificacion',
@@ -450,7 +450,7 @@ class _MyAppState extends State<MyCesantiaspage> {
         ]);
         break;
 
-      case 'Para Educacion Superior':
+      case 'Para Educacion':
         documents.addAll([
           '- Carta Solicitud retiro total o parcial',
           '- Fotocopia documento de identificacion',

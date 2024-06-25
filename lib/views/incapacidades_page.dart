@@ -238,7 +238,7 @@ class _MyFormState extends State<MyForm> {
                       contentPadding: EdgeInsets.zero,
                       title: Text('Fecha de Inicio de la Incapacidad:'),
                       subtitle: Text('${_fechaInicio.toLocal()}'.split(' ')[0]),
-                      trailing: Icon(Icons.calendar_today),
+                      trailing: Icon(Icons.calendar_month),
                       onTap: () => _selectDate(context),
                     ),
                     SizedBox(height: 20),

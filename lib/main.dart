@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {  
      final box = GetStorage();
      final token = box.read('token');
     return   GetMaterialApp( 

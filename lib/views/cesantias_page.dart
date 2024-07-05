@@ -3,6 +3,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:talento_mxm_flutter/controllers/cesantias_controller.dart';
+import 'package:talento_mxm_flutter/controllers/authentication.dart';
+import 'package:talento_mxm_flutter/views/login_page.dart';
 
 import 'package:talento_mxm_flutter/views/menu.dart';
 import 'package:talento_mxm_flutter/views/perfil.dart';
@@ -13,6 +15,7 @@ void main() => runApp(MyCesantiaspage());
 
 
 class CreateCesantiaPage extends StatelessWidget {
+  
 
 
   @override
@@ -28,6 +31,7 @@ class CreateCesantiaPage extends StatelessWidget {
 
 
 class MyCesantiaspage extends StatefulWidget {
+  
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -35,6 +39,10 @@ class MyCesantiaspage extends StatefulWidget {
 
 
 class _MyAppState extends State<MyCesantiaspage> {
+      final AuthenticationController _authController = AuthenticationController();
+
+  
+  
   final _formKey = GlobalKey<FormState>();
   String? _selectedtipocesantiareportada;
  
@@ -135,11 +143,35 @@ class _MyAppState extends State<MyCesantiaspage> {
     );
   }
 
+  // Función para cerrar sesión
+  void logout() {
+    _authController.logout(); // Lógica para cerrar sesión
+    // Navegar a la pantalla de inicio de sesión, por ejemplo:
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()), // Reemplazar LoginPage con tu página de inicio de sesión
+    );
+  }
+
+
 
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 5, 13, 121),
+        title: Text(''),
+        actions: [
+          IconButton(
+                               
+           onPressed: logout,
+           icon: Icon(Icons.logout),
+           color: Colors.white,
+          ),
+
+        ],
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Transform.translate(
@@ -157,7 +189,7 @@ class _MyAppState extends State<MyCesantiaspage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Formulario Solicitud de Cesantias',
+                      'Formulario Solicitud  de Cesantias',
                       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 20),

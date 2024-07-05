@@ -3,21 +3,53 @@ import 'package:get/get.dart';
 import 'package:talento_mxm_flutter/controllers/authentication.dart';
 import 'package:talento_mxm_flutter/views/perfil.dart';
 import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
+import 'package:talento_mxm_flutter/views/login_page.dart';
+
 import 'package:talento_mxm_flutter/views/cesantias_page.dart';
 
 class MenuPage extends StatefulWidget {
   final AuthenticationController _authController = Get.find();
+  
 
   @override
   _MenuPageState createState() => _MenuPageState();
 }
 
+
+
 class _MenuPageState extends State<MenuPage> {
+    final AuthenticationController _authController = AuthenticationController();
+
+  
   bool _isExpanded = false;
+
+void logout() {
+    _authController.logout(); // Lógica para cerrar sesión
+    // Navegar a la pantalla de inicio de sesión, por ejemplo:
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()), // Reemplazar LoginPage con tu página de inicio de sesión
+    );
+  }
+  
+   
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 5, 13, 121),
+        title: Text(''),
+        actions: [
+          IconButton(
+                               
+           onPressed: logout,
+           icon: Icon(Icons.logout),
+           color: Colors.white,
+          ),
+
+        ],
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,

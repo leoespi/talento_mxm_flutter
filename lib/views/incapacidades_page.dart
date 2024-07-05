@@ -3,6 +3,9 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:talento_mxm_flutter/controllers/incapacidades_controller.dart';
+import 'package:talento_mxm_flutter/controllers/authentication.dart';
+import 'package:talento_mxm_flutter/views/login_page.dart';
+
 import 'package:talento_mxm_flutter/views/menu.dart';
 import 'package:talento_mxm_flutter/views/perfil.dart';
 import 'package:talento_mxm_flutter/views/cesantias_page.dart';
@@ -12,6 +15,9 @@ void main() => runApp(MyApp());
 
 
 class MyApp extends StatelessWidget {
+      final AuthenticationController _authController = AuthenticationController();
+
+  
 
 
   
@@ -27,14 +33,22 @@ class MyApp extends StatelessWidget {
 }
 
 class MyForm extends StatefulWidget {
+
+  
     
   @override
   _MyFormState createState() => _MyFormState();
+  
+  
+  
 
 
 }
 
 class _MyFormState extends State<MyForm> {
+      final AuthenticationController _authController = AuthenticationController();
+
+  
   final _formKey = GlobalKey<FormState>();
   TextEditingController _diasIncapacidadController = TextEditingController();
   String? _selectedEntidadAfiliada;
@@ -44,7 +58,7 @@ class _MyFormState extends State<MyForm> {
   bool _isLoading = false;
 
   final IncapacidadesController _controller = Get.put(IncapacidadesController());
-
+  
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -142,9 +156,32 @@ class _MyFormState extends State<MyForm> {
     );
   }
 
+   // Función para cerrar sesión
+  void logout() {
+    _authController.logout(); // Lógica para cerrar sesión
+    // Navegar a la pantalla de inicio de sesión, por ejemplo:
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()), // Reemplazar LoginPage con tu página de inicio de sesión
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 5, 13, 121),
+        title: Text(''),
+        actions: [
+          IconButton(
+                               
+           onPressed: logout,
+           icon: Icon(Icons.logout),
+           color: Colors.white,
+          ),
+
+        ],
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Transform.translate(

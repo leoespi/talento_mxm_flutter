@@ -9,6 +9,8 @@ import 'package:talento_mxm_flutter/views/login_page.dart';
 import 'package:talento_mxm_flutter/views/menu.dart';
 import 'package:talento_mxm_flutter/views/perfil.dart';
 import 'package:talento_mxm_flutter/views/cesantias_page.dart';
+import 'package:image/image.dart' as img;
+
 
 void main() => runApp(MyApp());
   bool _isExpanded = false;
@@ -73,13 +75,51 @@ class _MyFormState extends State<MyForm> {
     }
   }
 
-  Future<void> _getImages() async {
+  File compressAndResizeImage(File file) {
+    img.Image? image = img.decodeImage(file.readAsBytesSync());
+
+    // Redimensionar la imagen para que el lado más largo sea de 800 píxeles
+    int width;
+    int height;
+
+    if (image!.width > image.height) {
+      width = 800;
+      height = (image.height / image.width * 800).round();
+    } else {
+      height = 800;
+      width = (image.width / image.height * 800).round();
+    }
+
+    img.Image resizedImage = img.copyResize(image, width: width, height: height);
+
+    // Comprimir la imagen con formato JPEG
+    List<int> compressedBytes = img.encodeJpg(resizedImage, quality: 85);
+
+    // Guardar la imagen comprimida en un archivo
+    File compressedFile = File(file.path.replaceFirst('.jpg', '_compressed.jpg'));
+    compressedFile.writeAsBytesSync(compressedBytes);
+
+    return compressedFile;
+  }
+
+
+  void _getImages() async {
     final pickedFiles = await ImagePicker().pickMultiImage();
 
     if (pickedFiles != null) {
       setState(() {
         _images.clear();
         _images.addAll(pickedFiles.map((pickedFile) => File(pickedFile.path)));
+
+        // Comprimir y redimensionar las imágenes justo después de seleccionarlas
+        List<File> compressedFiles = [];
+        for (File imageFile in _images) {
+          File compressedFile = compressAndResizeImage(imageFile);
+          compressedFiles.add(compressedFile);
+        }
+
+        _images.clear();
+        _images.addAll(compressedFiles);
       });
     }
   }
@@ -92,7 +132,16 @@ class _MyFormState extends State<MyForm> {
     });
 
     try {
-      List<String> imagePaths = _images.map((image) => image.path).toList();
+      List<String> imagePaths = [];
+      List<File> compressedFiles = [];
+
+       // Procesar cada imagen seleccionada
+      for (File imageFile in _images) {
+        // Comprimir y redimensionar la imagen
+        File compressedFile = compressAndResizeImage(imageFile);
+        compressedFiles.add(compressedFile);
+        imagePaths.add(compressedFile.path); // Guardar la ruta del archivo comprimido
+      }
 
       await _controller.createIncapacidad(
         tipoincapacidadreportada: _selectedtipoincapacidadreportada!,
@@ -155,6 +204,10 @@ class _MyFormState extends State<MyForm> {
       },
     );
   }
+
+
+
+
 
    // Función para cerrar sesión
   void logout() {

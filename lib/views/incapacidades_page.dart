@@ -93,7 +93,7 @@ class _MyFormState extends State<MyForm> {
     img.Image resizedImage = img.copyResize(image, width: width, height: height);
 
     // Comprimir la imagen con formato JPEG
-    List<int> compressedBytes = img.encodeJpg(resizedImage, quality: 85);
+    List<int> compressedBytes = img.encodeJpg(resizedImage, quality: 80);
 
     // Guardar la imagen comprimida en un archivo
     File compressedFile = File(file.path.replaceFirst('.jpg', '_compressed.jpg'));

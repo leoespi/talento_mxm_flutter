@@ -6,6 +6,8 @@ import 'package:talento_mxm_flutter/controllers/authentication.dart';
 import 'package:talento_mxm_flutter/views/cesantias_page.dart';
 import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
 import 'package:talento_mxm_flutter/views/menu.dart';
+import 'package:talento_mxm_flutter/views/CrearReferidos_page.dart';
+
 
 
 class UserData {
@@ -267,13 +269,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     label: 'Cesantias',
                   ),
                     _buildBottomMenuItem(
-                      icon: Icons.person_2,
-                      onPressed: () {
-                        // Acción para la nueva opción 2
-                      },
-                      color: Colors.yellow,
-                      label: 'P. Referidos',
-                    ),
+                    icon: Icons.document_scanner,
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 250),
+                          transitionsBuilder: (context, animation, _, child) {
+                            return SlideTransition(
+                              position: Tween<Offset>(
+                                begin: Offset(1.0, 0.0),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: child,
+                            );
+                          },
+                          pageBuilder: (context, _, __) => CrearReferidoScreen(), //Cesantiaspage
+                        ),
+                      );
+                    },
+                    color: const Color.fromARGB(255, 73, 54, 244),
+                    label: 'P. Referidos',
+                  ),
                     _buildBottomMenuItem(
                       icon: Icons.settings,
                       onPressed: () {

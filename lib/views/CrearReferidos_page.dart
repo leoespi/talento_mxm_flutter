@@ -109,7 +109,7 @@ class _CrearReferidoScreenState extends State<CrearReferidoScreen> {
                   onPressed: () {
                     if (selectedFile != null) {
                       _controller.createReferido(
-                        tipoCargo: '', // Aquí puedes enviar cualquier dato adicional si es necesario
+                         // Aquí puedes enviar cualquier dato adicional si es necesario
                         documento: selectedFile!,
                         context: context,
                       );

@@ -13,7 +13,7 @@ class ReferidosController extends GetxController {
   final url = 'http://10.0.2.2:8000/api/';
 
   Future<void> createReferido({
-    required String tipoCargo,
+ 
     required File documento,
     required BuildContext context,
   }) async {
@@ -40,7 +40,7 @@ class ReferidosController extends GetxController {
 
       request.fields.addAll({
         'user_id': '$userId',
-        'tipo_cargo': tipoCargo,
+        
       });
 
       request.files.add(await http.MultipartFile.fromPath(

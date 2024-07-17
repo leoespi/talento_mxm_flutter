@@ -21,6 +21,7 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
       final AuthenticationController _authController = AuthenticationController();
 
+
   
 
 
@@ -60,6 +61,8 @@ class _MyFormState extends State<MyForm> {
   DateTime _fechaInicio = DateTime.now();
   List<File> _images = [];
   bool _isLoading = false;
+  bool _isExpanded = false;
+
 
   final IncapacidadesController _controller = Get.put(IncapacidadesController());
   
@@ -664,20 +667,25 @@ class _MyFormState extends State<MyForm> {
     );
   }
 
-  Widget _buildBottomMenuItem({required IconData icon, required VoidCallback onPressed, required Color color, required String label}) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          onPressed: onPressed,
-          icon: Icon(icon),
-          color: color,
-          iconSize: 30,
-        ),
-        Text(
-          label,
-          style: TextStyle(color: color),
-        ),
-      ],
+   Widget _buildBottomMenuItem({
+    required IconData icon,
+    required VoidCallback onPressed,
+    required Color color,
+    required String label,
+  }) {
+    return Flexible(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            onPressed: onPressed,
+            icon: Icon(icon),
+            color: color,
+            iconSize: 30.0,
+          ),
+          Text(label, style: TextStyle(color: color)),
+        ],
+      ),
     );
-  }}
+  }
+}

@@ -14,7 +14,7 @@ import 'package:talento_mxm_flutter/views/CrearReferidos_page.dart';
 import 'package:image/image.dart' as img;
 
 void main() => runApp(MyCesantiaspage());
-  bool _isExpanded = false;
+  
 
 
 
@@ -31,6 +31,7 @@ class MyCesantiaspage extends StatefulWidget {
 
 class _MyCesantiaspageState extends State<MyCesantiaspage> {
   final AuthenticationController _authController = AuthenticationController();
+  bool _isExpanded = false;
   final _formKey = GlobalKey<FormState>();
   String? _selectedtipocesantiareportada;
   List<File> _images = [];

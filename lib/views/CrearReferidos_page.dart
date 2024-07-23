@@ -61,76 +61,84 @@ class _CrearReferidoScreenState extends State<CrearReferidoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 5, 13, 121),
-        title: Text(''),
-        actions: [
-          IconButton(
-                               
-           onPressed: logout,
-           icon: Icon(Icons.logout),
-           color: Colors.white,
-          ),
-
-        ],
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Card(
-          elevation: 5,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Text(
-                  'Crear Referido',
-                  style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 20.0),
-                selectedFileName != null
-                    ? Text(
-                        selectedFileName!,
-                        style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                      )
-                    : SizedBox.shrink(), // Mostrar el nombre del archivo seleccionado si hay uno
-                SizedBox(height: 20.0),
-                ElevatedButton(
-                  onPressed: () => _seleccionarArchivo(context),
-                  child: Text('Seleccionar Archivo PDF'),
-                ),
-                SizedBox(height: 20.0),
-                ElevatedButton(
-                  onPressed: () {
-                    if (selectedFile != null) {
-                      _controller.createReferido(
-                         // Aquí puedes enviar cualquier dato adicional si es necesario
-                        documento: selectedFile!,
-                        context: context,
-                      );
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: Text('Error'),
-                          content: Text('Seleccione un archivo PDF primero.'),
-                          actions: <Widget>[
-                            TextButton(
-                              child: Text('OK'),
-                              onPressed: () => Navigator.of(context).pop(),
-                            ),
-                          ],
+     return Scaffold(
+    appBar: AppBar(
+      backgroundColor: const Color.fromARGB(255, 5, 13, 121),
+      title: Text(''),
+      actions: [
+        IconButton(
+          onPressed: logout,
+          icon: Icon(Icons.logout),
+          color: Colors.white,
+        ),
+      ],
+    ),
+    body: Padding(
+      padding: EdgeInsets.all(16.0),
+      child: Card(
+        elevation: 5,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Text(
+                'Crear Referido',
+                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 20.0),
+              selectedFileName != null
+                  ? Column(
+                      children: [
+                        Image.asset(
+                          'assets/pdf_icon.png', // Aquí colocas la ruta relativa desde 'lib'
+                          width: 200,
+                          height: 200,
                         ),
-                      );
-                    }
-                  },
-                  child: Text('Crear Referido'),
-                ),
+                        SizedBox(height: 10.0),
+                        Text(
+                          selectedFileName!,
+                          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(), // Mostrar el nombre del archivo seleccionado si hay uno
+              SizedBox(height: 20.0),
+              ElevatedButton(
+                onPressed: () => _seleccionarArchivo(context),
+                child: Text('Seleccionar Archivo PDF'),
+              ),
+              SizedBox(height: 20.0),
+              ElevatedButton(
+                onPressed: () {
+                  if (selectedFile != null) {
+                    _controller.createReferido(
+                      documento: selectedFile!,
+                      context: context,
+                    );
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        title: Text('Error'),
+                        content: Text('Seleccione un archivo PDF primero.'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('OK'),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
+                child: Text('Crear Referido'),
+              ),
               ],
             ),
           ),

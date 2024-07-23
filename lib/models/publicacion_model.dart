@@ -1,15 +1,13 @@
 class Publicacion {
   final int id;
   final int userId;
-  final String titulo;
-  final String contenido;
-  final String imagen;
-  final String userNombre;
+  final String contenido; // 'content' en el backend
+  final String imagen; // 'image_path' en el backend
+  final String userNombre; // 'user' -> 'name' en el backend
 
   Publicacion({
     required this.id,
     required this.userId,
-    required this.titulo,
     required this.contenido,
     required this.imagen,
     required this.userNombre,
@@ -19,9 +17,8 @@ class Publicacion {
     return Publicacion(
       id: json['id'],
       userId: json['user_id'],
-      titulo: json['titulo'],
-      contenido: json['contenido'],
-      imagen: json['imagen'],
+      contenido: json['content'], // Mismo nombre que 'titulo' por ahora
+      imagen: json['images'].isNotEmpty ? json['images'][0]['image_path'] : '', // Tomando la primera imagen si hay alguna
       userNombre: json['user']['name'],
     );
   }

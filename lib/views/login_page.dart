@@ -45,8 +45,7 @@ class _LoginPageState extends State<LoginPage> {
                       height: 130,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: NetworkImage(
-                              'https://storage.googleapis.com/mxm-2022/personalizacion/123399420963f51c1d9a4412.043673570.631880001677007901.png'),
+                          image: AssetImage('assets/MXMLOGO.png'), // Ruta a la imagen local
                           fit: BoxFit.fill,
                         ),
                        

@@ -52,33 +52,41 @@ class _MenuPageState extends State<MenuPage> {
     }
   }
 
-  Future<void> cargarFeeds() async {
-    if (isLoading) {
-      return;
-    }
+ Future<void> cargarFeeds() async {
+  if (isLoading) {
+    return;
+  }
 
-    setState(() {
-      isLoading = true;
-    });
+  setState(() {
+    isLoading = true;
+  });
 
-    try {
-      List<Publicacion> nuevosFeeds = await FeedController.obtenerFeeds(_offset, _limit);
-      
+  try {
+    List<Publicacion> nuevosFeeds = await FeedController.obtenerFeeds(_offset, _limit);
+    
+    if (nuevosFeeds.isEmpty) {
+      // No hay más feeds disponibles
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No hay más publicaciones para cargar')),
+      );
+    } else {
       setState(() {
         feeds.addAll(nuevosFeeds);
         _offset += _limit;
         isLoading = false;
       });
-    } catch (e) {
-      print('Error al cargar los feeds: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al cargar los feeds: $e')),
-      );
-      setState(() {
-        isLoading = false;
-      });
     }
+  } catch (e) {
+    print('Error al cargar los feeds: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error al cargar los feeds: $e')),
+    );
+    setState(() {
+      isLoading = false;
+    });
   }
+}
+
 
    // Función para cerrar sesión
   void logout() {
@@ -115,52 +123,84 @@ class _MenuPageState extends State<MenuPage> {
               itemBuilder: (context, index) {
                 if (index < feeds.length) {
                   var feed = feeds[index];
-                  return Card(
-                    margin: EdgeInsets.all(8.0),
-                    child: ListTile(
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          SizedBox(height: 4.0),
-                          Text(
-                            'Usuario: ${feed.userNombre}',
-                            style: TextStyle(fontSize: 14.0),
-                          ),
-                          SizedBox(height: 4.0),
-                          if (feed.imagen.isNotEmpty)
-                            Image.network(
-                              'http://10.0.2.2:8000${feed.imagen}',
-                              height: 200.0,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                if (loadingProgress == null) {
-                                  return child;
-                                } else {
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value: loadingProgress.expectedTotalBytes != null
-                                          ? loadingProgress.cumulativeBytesLoaded /
-                                              loadingProgress.expectedTotalBytes!
-                                          : null,
-                                    ),
-                                  );
-                                }
-                              },
-                              errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                                print('Error cargando imagen: $error');
-                                return Icon(Icons.error);
-                              },
-                            ),
-                          SizedBox(height: 8.0),
-                          Text(
-                            'ID: ${feed.id}', // Mostrar el ID como un entero
-                            style: TextStyle(fontSize: 12.0, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
+               return GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DetallePublicacion(feed: feed),
+      ),
+    );
+  },
+  child: Card(
+    margin: EdgeInsets.all(8.0),
+    elevation: 4, // Agrega sombra al card
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12.0), // Bordes redondeados
+    ),
+    child: Padding(
+      padding: EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            'Usuario: ${feed.userNombre}',
+            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8.0),
+          Text(
+            '${feed.contenido}',
+            style: TextStyle(fontSize: 14.0),
+          ),
+          SizedBox(height: 8.0),
+          if (feed.imagen.isNotEmpty)
+            Hero(
+              tag: 'imageHero-${feed.id}', // Tag único para cada imagen
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: Image.network(
+                  'http://10.0.2.2:8000${feed.imagen}',
+                  height: 200.0,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) {
+                      return child;
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      );
+                    }
+                  },
+                  errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                    print('Error cargando imagen: $error');
+                    return Icon(Icons.error);
+                  },
+                ),
+              ),
+            ),
+          SizedBox(height: 8.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                'ID: ${feed.id}',
+                style: TextStyle(fontSize: 12.0, color: Colors.grey),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ),
+  ),
+);
+
+
                 } else if (isLoading) {
                   return Center(child: CircularProgressIndicator());
                 } else {
@@ -372,6 +412,49 @@ class _MenuPageState extends State<MenuPage> {
           ),
           Text(label, style: TextStyle(color: color)),
         ],
+      ),
+    );
+  }
+
+
+  
+}
+class DetallePublicacion extends StatelessWidget {
+  final Publicacion feed;
+
+  DetallePublicacion({required this.feed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Detalle de Publicación'),
+      ),
+      body: Center(
+        child: Hero(
+          tag: 'imageHero-${feed.id}', // Mismo tag que en la lista
+          child: Image.network(
+            'http://10.0.2.2:8000${feed.imagen}',
+            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+              if (loadingProgress == null) {
+                return child;
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                );
+              }
+            },
+            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+              print('Error cargando imagen: $error');
+              return Icon(Icons.error);
+            },
+          ),
+        ),
       ),
     );
   }

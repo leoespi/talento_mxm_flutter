@@ -23,6 +23,14 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 5, 13, 121),
+        title: Text(''),
+        actions: [
+         
+
+        ],
+      ),
       body: Stack(
         children: [
           // Fondo color sólido

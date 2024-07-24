@@ -3,9 +3,10 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:talento_mxm_flutter/controllers/incapacidades_controller.dart';
+
+
 import 'package:talento_mxm_flutter/controllers/authentication.dart';
 import 'package:talento_mxm_flutter/views/login_page.dart';
-
 import 'package:talento_mxm_flutter/views/menu.dart';
 import 'package:talento_mxm_flutter/views/perfil.dart';
 import 'package:talento_mxm_flutter/views/cesantias_page.dart';

@@ -21,9 +21,8 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-    bool _isExpanded = false;
-          final AuthenticationController _authController = AuthenticationController();
-
+  bool _isExpanded = false;
+  final AuthenticationController _authController = AuthenticationController();
 
   List<Publicacion> feeds = [];
   bool isLoading = false;
@@ -52,43 +51,42 @@ class _MenuPageState extends State<MenuPage> {
     }
   }
 
- Future<void> cargarFeeds() async {
-  if (isLoading) {
-    return;
-  }
+  Future<void> cargarFeeds() async {
+    if (isLoading) {
+      return;
+    }
 
-  setState(() {
-    isLoading = true;
-  });
+    setState(() {
+      isLoading = true;
+    });
 
-  try {
-    List<Publicacion> nuevosFeeds = await FeedController.obtenerFeeds(_offset, _limit);
-    
-    if (nuevosFeeds.isEmpty) {
-      // No hay más feeds disponibles
+    try {
+      List<Publicacion> nuevosFeeds = await FeedController.obtenerFeeds(_offset, _limit);
+
+      if (nuevosFeeds.isEmpty) {
+        // No hay más feeds disponibles
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No hay más publicaciones para cargar')),
+        );
+      } else {
+        setState(() {
+          feeds.addAll(nuevosFeeds);
+          _offset += _limit;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error al cargar los feeds: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No hay más publicaciones para cargar')),
+        SnackBar(content: Text('Error al cargar los feeds: $e')),
       );
-    } else {
       setState(() {
-        feeds.addAll(nuevosFeeds);
-        _offset += _limit;
         isLoading = false;
       });
     }
-  } catch (e) {
-    print('Error al cargar los feeds: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error al cargar los feeds: $e')),
-    );
-    setState(() {
-      isLoading = false;
-    });
   }
-}
 
-
-   // Función para cerrar sesión
+  // Función para cerrar sesión
   void logout() {
     _authController.logout(); // Lógica para cerrar sesión
     // Navegar a la pantalla de inicio de sesión, por ejemplo:
@@ -101,118 +99,133 @@ class _MenuPageState extends State<MenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 5, 13, 121),
         title: Text(''),
         actions: [
           IconButton(
-                               
-           onPressed: logout,
-           icon: Icon(Icons.logout),
-           color: Colors.white,
+            onPressed: logout,
+            icon: Icon(Icons.logout),
+            color: Colors.white,
           ),
-
         ],
       ),
       body: Column(
         children: [
           Expanded(
             child: ListView.builder(
-              controller: _scrollController,
-              itemCount: feeds.length + 1,
-              itemBuilder: (context, index) {
-                if (index < feeds.length) {
-                  var feed = feeds[index];
-               return GestureDetector(
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DetallePublicacion(feed: feed),
-      ),
-    );
-  },
-  child: Card(
-    margin: EdgeInsets.all(8.0),
-    elevation: 4, // Agrega sombra al card
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12.0), // Bordes redondeados
-    ),
-    child: Padding(
-      padding: EdgeInsets.all(12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            'Usuario: ${feed.userNombre}',
-            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+  controller: _scrollController,
+  itemCount: feeds.length + 1,
+  itemBuilder: (context, index) {
+    if (index < feeds.length) {
+      var feed = feeds[index];
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DetallePublicacion(feed: feed),
+            ),
+          );
+        },
+        child: Card(
+          margin: EdgeInsets.all(8.0),
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
           ),
-          SizedBox(height: 8.0),
-          Text(
-            '${feed.contenido}',
-            style: TextStyle(fontSize: 14.0),
-          ),
-          SizedBox(height: 8.0),
-          if (feed.imagen.isNotEmpty)
-            Hero(
-              tag: 'imageHero-${feed.id}', // Tag único para cada imagen
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Image.network(
-                  'http://10.0.2.2:8000${feed.imagen}',
-                  height: 200.0,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                    if (loadingProgress == null) {
-                      return child;
-                    } else {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
-                        ),
-                      );
-                    }
-                  },
-                  errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                    print('Error cargando imagen: $error');
-                    return Icon(Icons.error);
-                  },
+          child: Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Usuario: ${feed.userNombre}',
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                 ),
-              ),
+                SizedBox(height: 8.0),
+                Text(
+                  '${feed.contenido}',
+                  style: TextStyle(fontSize: 14.0),
+                ),
+                SizedBox(height: 8.0),
+                if (feed.imagenes.isNotEmpty)
+                  Stack(
+                    children: [
+                      Hero(
+                        tag: 'imageHero-${feed.id}-${feed.imagenes[0]}',
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.network(
+                            'http://10.0.2.2:8000${feed.imagenes[0]}',
+                            height: 200.0,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              } else {
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes != null
+                                        ? loadingProgress.cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                              }
+                            },
+                            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                              print('Error cargando imagen: $error');
+                              return Icon(Icons.error);
+                            },
+                          ),
+                        ),
+                      ),
+                      if (feed.imagenes.length > 1)
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              '+${feed.imagenes.length - 1}',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                SizedBox(height: 8.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'ID: ${feed.id}',
+                      style: TextStyle(fontSize: 12.0, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          SizedBox(height: 8.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                'ID: ${feed.id}',
-                style: TextStyle(fontSize: 12.0, color: Colors.grey),
-              ),
-            ],
+          ),
+        ),
+      );
+    } else if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    } else {
+      return Container(); // No mostrar nada extra cuando no hay más feeds
+    }
+  },
+),
+
           ),
         ],
       ),
-    ),
-  ),
-);
-
-
-                } else if (isLoading) {
-                  return Center(child: CircularProgressIndicator());
-                } else {
-                  return Container(); // No mostrar nada extra cuando no hay más feeds
-                }
-              },
-            ),
-            
-          ),
-        ],
-      ),
-      
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -315,51 +328,52 @@ class _MenuPageState extends State<MenuPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                     _buildBottomMenuItem(
+                    _buildBottomMenuItem(
                       icon: Icons.document_scanner,
                       onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        PageRouteBuilder(
-                          transitionDuration: Duration(milliseconds: 250),
-                          transitionsBuilder: (context, animation, _, child) {
-                            return SlideTransition(
-                              position: Tween<Offset>(
-                                begin: Offset(1.0, 0.0),
-                                end: Offset.zero,
-                              ).animate(animation),
-                              child: child,
-                            );
-                          },
-                          pageBuilder: (context, _, __) => MyCesantiaspage(), //Cesantiaspage
-                        ),
-                      );
-                    },
-                    color: Colors.red,
-                    label: 'Cesantias',
-                  ),_buildBottomMenuItem(
-                    icon: Icons.document_scanner,
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        PageRouteBuilder(
-                          transitionDuration: Duration(milliseconds: 250),
-                          transitionsBuilder: (context, animation, _, child) {
-                            return SlideTransition(
-                              position: Tween<Offset>(
-                                begin: Offset(1.0, 0.0),
-                                end: Offset.zero,
-                              ).animate(animation),
-                              child: child,
-                            );
-                          },
-                          pageBuilder: (context, _, __) => CrearReferidoScreen(), //Cesantiaspage
-                        ),
-                      );
-                    },
-                    color: const Color.fromARGB(255, 73, 54, 244),
-                    label: 'P. Referidos',
-                  ),
+                        Navigator.pushReplacement(
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration: Duration(milliseconds: 250),
+                            transitionsBuilder: (context, animation, _, child) {
+                              return SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: Offset(1.0, 0.0),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                child: child,
+                              );
+                            },
+                            pageBuilder: (context, _, __) => MyCesantiaspage(), //Cesantiaspage
+                          ),
+                        );
+                      },
+                      color: Colors.red,
+                      label: 'Cesantias',
+                    ),
+                    _buildBottomMenuItem(
+                      icon: Icons.document_scanner,
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration: Duration(milliseconds: 250),
+                            transitionsBuilder: (context, animation, _, child) {
+                              return SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: Offset(1.0, 0.0),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                child: child,
+                              );
+                            },
+                            pageBuilder: (context, _, __) => CrearReferidoScreen(), //Cesantiaspage
+                          ),
+                        );
+                      },
+                      color: const Color.fromARGB(255, 73, 54, 244),
+                      label: 'P. Referidos',
+                    ),
                     _buildBottomMenuItem(
                       icon: Icons.settings,
                       onPressed: () {
@@ -391,10 +405,7 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
-
-
-  
-   Widget _buildBottomMenuItem({
+  Widget _buildBottomMenuItem({
     required IconData icon,
     required VoidCallback onPressed,
     required Color color,
@@ -415,9 +426,6 @@ class _MenuPageState extends State<MenuPage> {
       ),
     );
   }
-
-
-  
 }
 class DetallePublicacion extends StatelessWidget {
   final Publicacion feed;
@@ -430,32 +438,41 @@ class DetallePublicacion extends StatelessWidget {
       appBar: AppBar(
         title: Text('Detalle de Publicación'),
       ),
-      body: Center(
-        child: Hero(
-          tag: 'imageHero-${feed.id}', // Mismo tag que en la lista
-          child: Image.network(
-            'http://10.0.2.2:8000${feed.imagen}',
-            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-              if (loadingProgress == null) {
-                return child;
-              } else {
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView.builder(
+              itemCount: feed.imagenes.length,
+              itemBuilder: (context, index) {
                 return Center(
-                  child: CircularProgressIndicator(
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                        : null,
+                  child: Image.network(
+                    'http://10.0.2.2:8000${feed.imagenes[index]}',
+                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                      if (loadingProgress == null) {
+                        return child;
+                      } else {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      }
+                    },
+                    errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                      print('Error cargando imagen: $error');
+                      return Icon(Icons.error);
+                    },
                   ),
                 );
-              }
-            },
-            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-              print('Error cargando imagen: $error');
-              return Icon(Icons.error);
-            },
+              },
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 }
+

@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                           image: AssetImage('assets/MXMLOGO.png'), // Ruta a la imagen local
                           fit: BoxFit.fill,
                         ),
-                       
+                        
                       ),
                     ),
                     SizedBox(height: size * 0.1),

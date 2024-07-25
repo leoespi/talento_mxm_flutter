@@ -5,13 +5,17 @@ import 'package:http/http.dart' as http;
 class FeedController {
   static const String baseUrl = 'http://10.0.2.2:8000/api';
   
-  static Future<List<Publicacion>> obtenerFeeds(int offset, int limit) async {
+ static Future<List<Publicacion>> obtenerFeeds(int offset, int limit) async {
   try {
     final response = await http.get(Uri.parse('$baseUrl/feeds?order=desc&offset=$offset&limit=$limit'));
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body)['feeds'];
-      List<Publicacion> feeds = data.map((json) => Publicacion.fromJson(json)).toList();
+      List<Publicacion> feeds = [];
+
+      for (var item in data) {
+        feeds.add(Publicacion.fromJson(item));
+      }
 
       // Ordenar los feeds por id de manera descendente (como un entero)
       feeds.sort((a, b) => b.id.compareTo(a.id));
@@ -24,5 +28,9 @@ class FeedController {
     throw Exception('Error de conexión: $e');
   }
 }
+
+
+
+
 
 }

@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Talento MxM',
       home: token == null ? const LoginPage() :  MenuPage(),
-    );
+    );  
   }
 }
 

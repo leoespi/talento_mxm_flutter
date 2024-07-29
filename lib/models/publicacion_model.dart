@@ -4,6 +4,7 @@ class Publicacion {
   final String contenido;
   final List<String> imagenes;
   final String userNombre;
+  final String? videoLink; // Agregar esta propiedad
 
   Publicacion({
     required this.id,
@@ -11,6 +12,7 @@ class Publicacion {
     required this.contenido,
     required this.imagenes,
     required this.userNombre,
+    this.videoLink, // Agregar esta propiedad
   });
 
   factory Publicacion.fromJson(Map<String, dynamic> json) {
@@ -25,6 +27,7 @@ class Publicacion {
       contenido: json['content'], // 'content' en el backend
       imagenes: images,
       userNombre: json['user']['name'], // 'user' -> 'name' en el backend
+      videoLink: json['video_link'], // 'video_link' en el backend
     );
   }
 }

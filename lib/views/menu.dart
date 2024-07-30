@@ -14,9 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:talento_mxm_flutter/controllers/publicacion_controller.dart';
 import 'package:talento_mxm_flutter/models/publicacion_model.dart';
 
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-
-
 class MenuPage extends StatefulWidget {
   @override
 
@@ -117,141 +114,296 @@ class _MenuPageState extends State<MenuPage> {
         children: [
           Expanded(
             child: ListView.builder(
-              controller: _scrollController,
-              itemCount: feeds.length + 1,
-              itemBuilder: (context, index) {
-                if (index < feeds.length) {
-                  var feed = feeds[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetallePublicacion(feed: feed),
-                        ),
-                      );
-                    },
-                    child: Card(
-                      margin: EdgeInsets.all(8.0),
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              'Usuario: ${feed.userNombre}',
-                              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(height: 8.0),
-                            Text(
-                              '${feed.contenido}',
-                              style: TextStyle(fontSize: 14.0),
-                            ),
-                            SizedBox(height: 8.0),
-                            if (feed.videoLink != null && feed.videoLink!.isNotEmpty)
-                              Container(
-                                width: double.infinity,
-                                height: 200,
-                                child: YoutubePlayer(
-                                  controller: YoutubePlayerController(
-                                    initialVideoId: _extractVideoId(feed.videoLink!),
-                                    flags: YoutubePlayerFlags(
-                                      autoPlay: false,
-                                      mute: false,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            if (feed.imagenes.isNotEmpty)
-                              Stack(
-                                children: [
-                                  Hero(
-                                    tag: 'imageHero-${feed.id}-${feed.imagenes[0]}',
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      child: Image.network(
-                                        'http://10.0.2.2:8000${feed.imagenes[0]}',
-                                        height: 200.0,
-                                        width: double.infinity,
-                                        fit: BoxFit.cover,
-                                        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                          if (loadingProgress == null) {
-                                            return child;
-                                          } else {
-                                            return Center(
-                                              child: CircularProgressIndicator(
-                                                value: loadingProgress.expectedTotalBytes != null
-                                                    ? loadingProgress.cumulativeBytesLoaded /
-                                                        loadingProgress.expectedTotalBytes!
-                                                    : null,
-                                              ),
-                                            );
-                                          }
-                                        },
-                                        errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                                          print('Error cargando imagen: $error');
-                                          return Icon(Icons.error);
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                  if (feed.imagenes.length > 1)
-                                    Positioned(
-                                      top: 8,
-                                      right: 8,
-                                      child: Container(
-                                        padding: EdgeInsets.all(4),
-                                        decoration: BoxDecoration(
-                                          color: Colors.black54,
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                        child: Text(
-                                          '+${feed.imagenes.length - 1}',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            SizedBox(height: 8.0),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  'ID: ${feed.id}',
-                                  style: TextStyle(fontSize: 12.0, color: Colors.grey),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                } else if (isLoading) {
-                  return Center(child: CircularProgressIndicator());
-                } else {
-                  return Container(); // No mostrar nada extra cuando no hay más feeds
-                }
-              },
+  controller: _scrollController,
+  itemCount: feeds.length + 1,
+  itemBuilder: (context, index) {
+    if (index < feeds.length) {
+      var feed = feeds[index];
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DetallePublicacion(feed: feed),
             ),
+          );
+        },
+        child: Card(
+          margin: EdgeInsets.all(8.0),
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Usuario: ${feed.userNombre}',
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8.0),
+                Text(
+                  '${feed.contenido}',
+                  style: TextStyle(fontSize: 14.0),
+                ),
+                SizedBox(height: 8.0),
+                if (feed.imagenes.isNotEmpty)
+                  Stack(
+                    children: [
+                      Hero(
+                        tag: 'imageHero-${feed.id}-${feed.imagenes[0]}',
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.network(
+                            'http://10.0.2.2:8000${feed.imagenes[0]}',
+                            height: 200.0,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              } else {
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes != null
+                                        ? loadingProgress.cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                              }
+                            },
+                            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                              print('Error cargando imagen: $error');
+                              return Icon(Icons.error);
+                            },
+                          ),
+                        ),
+                      ),
+                      if (feed.imagenes.length > 1)
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              '+${feed.imagenes.length - 1}',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                SizedBox(height: 8.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'ID: ${feed.id}',
+                      style: TextStyle(fontSize: 12.0, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } else if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    } else {
+      return Container(); // No mostrar nada extra cuando no hay más feeds
+    }
+  },
+),
+
           ),
         ],
       ),
-      // ... (código existente)
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 1.0, vertical: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildBottomMenuItem(
+                    icon: Icons.article,
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 250),
+                          transitionsBuilder: (context, animation, _, child) {
+                            return SlideTransition(
+                              position: Tween<Offset>(
+                                begin: Offset(1.0, 0.0),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: child,
+                            );
+                          },
+                          pageBuilder: (context, _, __) => MyForm(),
+                        ),
+                      );
+                    },
+                    color: Colors.blue,
+                    label: 'Incapacidad',
+                  ),
+                  _buildBottomMenuItem(
+                    icon: Icons.home,
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 250),
+                          transitionsBuilder: (context, animation, _, child) {
+                            return SlideTransition(
+                              position: Tween<Offset>(
+                                begin: Offset(1.0, 0.0),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: child,
+                            );
+                          },
+                          pageBuilder: (context, _, __) => MenuPage(),
+                        ),
+                      );
+                    },
+                    color: Colors.green,
+                    label: 'Inicio',
+                  ),
+                  _buildBottomMenuItem(
+                    icon: Icons.person,
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 250),
+                          transitionsBuilder: (context, animation, _, child) {
+                            return SlideTransition(
+                              position: Tween<Offset>(
+                                begin: Offset(1.0, 0.0),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: child,
+                            );
+                          },
+                          pageBuilder: (context, _, __) => ProfileScreen(userId: ''),
+                        ),
+                      );
+                    },
+                    color: Colors.orange,
+                    label: 'Perfil',
+                  ),
+                ],
+              ),
+            ),
+            if (_isExpanded)
+              Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildBottomMenuItem(
+                      icon: Icons.document_scanner,
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration: Duration(milliseconds: 250),
+                            transitionsBuilder: (context, animation, _, child) {
+                              return SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: Offset(1.0, 0.0),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                child: child,
+                              );
+                            },
+                            pageBuilder: (context, _, __) => MyCesantiaspage(), //Cesantiaspage
+                          ),
+                        );
+                      },
+                      color: Colors.red,
+                      label: 'Cesantias',
+                    ),
+                    _buildBottomMenuItem(
+                      icon: Icons.document_scanner,
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration: Duration(milliseconds: 250),
+                            transitionsBuilder: (context, animation, _, child) {
+                              return SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: Offset(1.0, 0.0),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                child: child,
+                              );
+                            },
+                            pageBuilder: (context, _, __) => CrearReferidoScreen(), //Cesantiaspage
+                          ),
+                        );
+                      },
+                      color: const Color.fromARGB(255, 73, 54, 244),
+                      label: 'P. Referidos',
+                    ),
+                    _buildBottomMenuItem(
+                      icon: Icons.settings,
+                      onPressed: () {
+                        // Acción para la nueva opción 3
+                      },
+                      color: const Color.fromARGB(255, 58, 58, 58),
+                      label: 'Configuracion',
+                    ),
+                  ],
+                ),
+              ),
+            InkWell(
+              onTap: () {
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                });
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  _isExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
-
-  String _extractVideoId(String url) {
-    RegExp regExp = RegExp(r'^(?:https?:\/\/)?(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})|(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})');
-    Match? match = regExp.firstMatch(url);
-    return match?.group(1) ?? match?.group(2) ?? '';
-  }
-}
 
   Widget _buildBottomMenuItem({
     required IconData icon,
@@ -274,6 +426,7 @@ class _MenuPageState extends State<MenuPage> {
       ),
     );
   }
+}
 class DetallePublicacion extends StatelessWidget {
   final Publicacion feed;
 
@@ -317,30 +470,8 @@ class DetallePublicacion extends StatelessWidget {
               },
             ),
           ),
-          if (feed.videoLink != null && feed.videoLink!.isNotEmpty)
-            Container(
-              width: double.infinity,
-              height: 200,
-              child: YoutubePlayer(
-                controller: YoutubePlayerController(
-                  initialVideoId: _extractVideoId(feed.videoLink!),
-                  flags: YoutubePlayerFlags(
-                    autoPlay: false,
-                    mute: false,
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );
   }
-
-  String _extractVideoId(String url) {
-    RegExp regExp = RegExp(r'^(?:https?:\/\/)?(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})|(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})');
-    Match? match = regExp.firstMatch(url);
-    return match?.group(1) ?? match?.group(2) ?? '';
-  }
 }
-
-

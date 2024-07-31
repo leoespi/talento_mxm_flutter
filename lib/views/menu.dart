@@ -9,10 +9,11 @@ import 'package:talento_mxm_flutter/views/perfil.dart';
 import 'package:talento_mxm_flutter/views/cesantias_page.dart';
 import 'package:talento_mxm_flutter/views/CrearReferidos_page.dart';
 import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
-
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:talento_mxm_flutter/controllers/publicacion_controller.dart';
 import 'package:talento_mxm_flutter/models/publicacion_model.dart';
+
 
 class MenuPage extends StatefulWidget {
   @override
@@ -427,49 +428,93 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 }
-class DetallePublicacion extends StatelessWidget {
+
+class DetallePublicacion extends StatefulWidget {
   final Publicacion feed;
 
   DetallePublicacion({required this.feed});
 
   @override
+  _DetallePublicacionState createState() => _DetallePublicacionState();
+}
+
+class _DetallePublicacionState extends State<DetallePublicacion> {
+  late YoutubePlayerController _youtubeController;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.feed.videoLink != null && widget.feed.videoLink!.isNotEmpty) {
+      String videoId = YoutubePlayer.convertUrlToId(widget.feed.videoLink!)!;
+      _youtubeController = YoutubePlayerController(
+        initialVideoId: videoId,
+        flags: YoutubePlayerFlags(
+          autoPlay: false,
+          mute: false,
+        ),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.feed.videoLink != null && widget.feed.videoLink!.isNotEmpty) {
+      _youtubeController.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final feed = widget.feed;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Detalle de Publicación'),
       ),
       body: Column(
         children: [
-          Expanded(
-            child: PageView.builder(
-              itemCount: feed.imagenes.length,
-              itemBuilder: (context, index) {
-                return Center(
-                  child: Image.network(
-                    'http://10.0.2.2:8000${feed.imagenes[index]}',
-                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) {
-                        return child;
-                      } else {
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes!
-                                : null,
-                          ),
-                        );
-                      }
-                    },
-                    errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                      print('Error cargando imagen: $error');
-                      return Icon(Icons.error);
-                    },
-                  ),
-                );
-              },
+          if (feed.videoLink != null && feed.videoLink!.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 300,
+                child: YoutubePlayer(
+                  controller: _youtubeController,
+                  showVideoProgressIndicator: true,
+                ),
+              ),
             ),
-          ),
+          if (feed.imagenes.isNotEmpty)
+            Expanded(
+              child: PageView.builder(
+                itemCount: feed.imagenes.length,
+                itemBuilder: (context, index) {
+                  return Center(
+                    child: Image.network(
+                      'http://10.0.2.2:8000${feed.imagenes[index]}',
+                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        } else {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                                  : null,
+                            ),
+                          );
+                        }
+                      },
+                      errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                        print('Error cargando imagen: $error');
+                        return Icon(Icons.error);
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
         ],
       ),
     );

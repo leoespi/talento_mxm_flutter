@@ -10,14 +10,9 @@ import 'package:talento_mxm_flutter/views/cesantias_page.dart';
 import 'package:talento_mxm_flutter/views/CrearReferidos_page.dart';
 import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import 'package:flutter/material.dart';
-import 'package:talento_mxm_flutter/controllers/publicacion_controller.dart';
-import 'package:talento_mxm_flutter/models/publicacion_model.dart';
-
 
 class MenuPage extends StatefulWidget {
   @override
-
   _MenuPageState createState() => _MenuPageState();
 }
 
@@ -115,115 +110,127 @@ class _MenuPageState extends State<MenuPage> {
         children: [
           Expanded(
             child: ListView.builder(
-  controller: _scrollController,
-  itemCount: feeds.length + 1,
-  itemBuilder: (context, index) {
-    if (index < feeds.length) {
-      var feed = feeds[index];
-      return GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DetallePublicacion(feed: feed),
-            ),
-          );
-        },
-        child: Card(
-          margin: EdgeInsets.all(8.0),
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'Usuario: ${feed.userNombre}',
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 8.0),
-                Text(
-                  '${feed.contenido}',
-                  style: TextStyle(fontSize: 14.0),
-                ),
-                SizedBox(height: 8.0),
-                if (feed.imagenes.isNotEmpty)
-                  Stack(
-                    children: [
-                      Hero(
-                        tag: 'imageHero-${feed.id}-${feed.imagenes[0]}',
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.network(
-                            'http://10.0.2.2:8000${feed.imagenes[0]}',
-                            height: 200.0,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) {
-                                return child;
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes != null
-                                        ? loadingProgress.cumulativeBytesLoaded /
-                                            loadingProgress.expectedTotalBytes!
-                                        : null,
+              controller: _scrollController,
+              itemCount: feeds.length + 1,
+              itemBuilder: (context, index) {
+                if (index < feeds.length) {
+                  var feed = feeds[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetallePublicacion(feed: feed),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      margin: EdgeInsets.all(8.0),
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Usuario: ${feed.userNombre}',
+                              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(height: 8.0),
+                            Text(
+                              '${feed.contenido}',
+                              style: TextStyle(fontSize: 14.0),
+                            ),
+                            SizedBox(height: 8.0),
+                            if (feed.videoLink != null && feed.videoLink!.isNotEmpty)
+                              Container(
+                                height: 200.0,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  image: DecorationImage(
+                                    image: NetworkImage(
+                                      'https://img.youtube.com/vi/${YoutubePlayer.convertUrlToId(feed.videoLink!)}/hqdefault.jpg',
+                                    ),
+                                    fit: BoxFit.cover,
                                   ),
-                                );
-                              }
-                            },
-                            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                              print('Error cargando imagen: $error');
-                              return Icon(Icons.error);
-                            },
-                          ),
+                                ),
+                              ),
+                            if (feed.imagenes.isNotEmpty)
+                              Stack(
+                                children: [
+                                  Hero(
+                                    tag: 'imageHero-${feed.id}-${feed.imagenes[0]}',
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      child: Image.network(
+                                        'http://10.0.2.2:8000${feed.imagenes[0]}',
+                                        height: 200.0,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                          if (loadingProgress == null) {
+                                            return child;
+                                          } else {
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                value: loadingProgress.expectedTotalBytes != null
+                                                    ? loadingProgress.cumulativeBytesLoaded /
+                                                        loadingProgress.expectedTotalBytes!
+                                                    : null,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                          print('Error cargando imagen: $error');
+                                          return Icon(Icons.error);
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  if (feed.imagenes.length > 1)
+                                    Positioned(
+                                      top: 8,
+                                      right: 8,
+                                      child: Container(
+                                        padding: EdgeInsets.all(4),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black54,
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          '+${feed.imagenes.length - 1}',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            SizedBox(height: 8.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(
+                                  'ID: ${feed.id}',
+                                  style: TextStyle(fontSize: 12.0, color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                      if (feed.imagenes.length > 1)
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: Container(
-                            padding: EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Colors.black54,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              '+${feed.imagenes.length - 1}',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                SizedBox(height: 8.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      'ID: ${feed.id}',
-                      style: TextStyle(fontSize: 12.0, color: Colors.grey),
                     ),
-                  ],
-                ),
-              ],
+                  );
+                } else if (isLoading) {
+                  return Center(child: CircularProgressIndicator());
+                } else {
+                  return Container(); // No mostrar nada extra cuando no hay más feeds
+                }
+              },
             ),
-          ),
-        ),
-      );
-    } else if (isLoading) {
-      return Center(child: CircularProgressIndicator());
-    } else {
-      return Container(); // No mostrar nada extra cuando no hay más feeds
-    }
-  },
-),
-
           ),
         ],
       ),
@@ -345,7 +352,7 @@ class _MenuPageState extends State<MenuPage> {
                                 child: child,
                               );
                             },
-                            pageBuilder: (context, _, __) => MyCesantiaspage(), //Cesantiaspage
+                            pageBuilder: (context, _, __) => MyCesantiaspage(), // Cesantiaspage
                           ),
                         );
                       },
@@ -368,7 +375,7 @@ class _MenuPageState extends State<MenuPage> {
                                 child: child,
                               );
                             },
-                            pageBuilder: (context, _, __) => CrearReferidoScreen(), //Cesantiaspage
+                            pageBuilder: (context, _, __) => CrearReferidoScreen(), // CrearReferidoScreen
                           ),
                         );
                       },
@@ -428,7 +435,6 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 }
-
 class DetallePublicacion extends StatefulWidget {
   final Publicacion feed;
 
@@ -468,54 +474,88 @@ class _DetallePublicacionState extends State<DetallePublicacion> {
   Widget build(BuildContext context) {
     final feed = widget.feed;
 
+    // Obtener el ancho de la pantalla
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detalle de Publicación'),
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
       ),
-      body: Column(
-        children: [
-          if (feed.videoLink != null && feed.videoLink!.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                height: 300,
-                child: YoutubePlayer(
-                  controller: _youtubeController,
-                  showVideoProgressIndicator: true,
-                ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0), // Padding horizontal para centrar la tarjeta
+          child: Align(
+            alignment: Alignment.topCenter, // Alineación de la tarjeta en la parte superior central
+            child: Card(
+              elevation: 8, // Aumentar la elevación para que la tarjeta se destaque más
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24.0), // Aumentar el radio de los bordes
               ),
-            ),
-          if (feed.imagenes.isNotEmpty)
-            Expanded(
-              child: PageView.builder(
-                itemCount: feed.imagenes.length,
-                itemBuilder: (context, index) {
-                  return Center(
-                    child: Image.network(
-                      'http://10.0.2.2:8000${feed.imagenes[index]}',
-                      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                        if (loadingProgress == null) {
-                          return child;
-                        } else {
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
-                                  : null,
-                            ),
-                          );
-                        }
-                      },
-                      errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                        print('Error cargando imagen: $error');
-                        return Icon(Icons.error);
-                      },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Content Text
+                  Padding(
+                    padding: const EdgeInsets.all(16.0), // Padding para el texto
+                    child: Text(
+                      '${feed.contenido}',
+                      style: TextStyle(fontSize: 18.0), // Ajustar tamaño del texto para mejor legibilidad
+                      textAlign: TextAlign.start,
                     ),
-                  );
-                },
+                  ),
+                  // Video Player
+                  if (feed.videoLink != null && feed.videoLink!.isNotEmpty)
+                    ClipRRect(
+                      borderRadius: BorderRadius.vertical(
+                        bottom: Radius.circular(24.0), // Asegurar bordes redondeados en la parte inferior
+                      ),
+                      child: Container(
+                        height: 300,
+                        color: Colors.black,
+                        child: YoutubePlayer(
+                          controller: _youtubeController,
+                          showVideoProgressIndicator: true,
+                        ),
+                      ),
+                    ),
+                  // Images
+                  if (feed.imagenes.isNotEmpty)
+                    Column(
+                      children: feed.imagenes.map((imageUrl) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16.0), // Padding para las imágenes
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0), // Asegurar bordes redondeados en las imágenes
+                            child: Image.network(
+                              'http://10.0.2.2:8000$imageUrl',
+                              width: screenWidth - 22, // Ajustar el ancho de las imágenes para que no sobresalgan del card
+                              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                } else {
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value: loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                                          : null,
+                                    ),
+                                  );
+                                }
+                              },
+                              errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                print('Error cargando imagen: $error');
+                                return Icon(Icons.error);
+                              },
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                ],
               ),
             ),
-        ],
+          ),
+        ),
       ),
     );
   }

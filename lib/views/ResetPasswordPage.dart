@@ -46,8 +46,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         _newPasswordController.text.trim(),
       );
       if (success) {
-        Get.snackbar('Éxito', 'Contraseña restablecida');
+        Get.snackbar('Éxito', 'Contraseña restablecida exitosamente');
         Get.back(); // Regresa a la página anterior
+      } else {
+        Get.snackbar('Error', 'No se pudo restablecer la contraseña. Verifica tus datos.');
       }
     } catch (e) {
       Get.snackbar('Error', e.toString());

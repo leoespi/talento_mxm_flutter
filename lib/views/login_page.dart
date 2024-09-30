@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import 'package:talento_mxm_flutter/controllers/authentication.dart';
 import 'package:talento_mxm_flutter/views/register_page.dart';
+import 'package:talento_mxm_flutter/views/ResetPasswordPage.dart'; // Asegúrate de importar la nueva página
 import './widgets/input_widget.dart';
 
 class LoginPage extends StatefulWidget {
@@ -26,10 +27,7 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 5, 13, 121),
         title: Text(''),
-        actions: [
-         
-
-        ],
+        actions: [],
       ),
       body: Stack(
         children: [
@@ -56,7 +54,6 @@ class _LoginPageState extends State<LoginPage> {
                           image: AssetImage('assets/MXMLOGO.png'), // Ruta a la imagen local
                           fit: BoxFit.fill,
                         ),
-                        
                       ),
                     ),
                     SizedBox(height: size * 0.1),
@@ -104,6 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                       }),
                     ),
                     SizedBox(height: 20),
+                    // Botón para redirigir a la página de registro
                     TextButton(
                       onPressed: () {
                         Get.to(RegisterPage());
@@ -115,7 +113,20 @@ class _LoginPageState extends State<LoginPage> {
                           fontSize: size * 0.040,
                         ),
                       ),
-                    )
+                    ),
+                    // Botón para redirigir a la página de restablecimiento de contraseña
+                    TextButton(
+                      onPressed: () {
+                        Get.to(ResetPasswordPage());
+                      },
+                      child: Text(
+                        '¿Olvidaste tu contraseña?',
+                        style: GoogleFonts.poppins(
+                          color: Color.fromARGB(255, 5, 13, 121),
+                          fontSize: size * 0.040,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

@@ -35,4 +35,47 @@ class UserService {
   }
 
   static actualizarUsuario(token, Map<String, String> map) {}
+
+
+   // Método para solicitar el PIN de restablecimiento
+  static Future<bool> requestResetPin(String email) async {
+    final url = 'http://10.0.2.2:8000/api/password/forgot';
+    var headers = {'Content-Type': 'application/json'};
+    var body = json.encode({'email': email});
+
+    try {
+      final response = await http.post(Uri.parse(url), headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        return true; // PIN enviado correctamente
+      } else {
+        throw Exception('Error al solicitar el PIN: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+
+  // Método para restablecer la contraseña usando el PIN
+  static Future<bool> resetPasswordWithPin(String email, String pin, String newPassword) async {
+    final url = 'http://10.0.2.2:8000/api/password/reset';
+    var headers = {'Content-Type': 'application/json'};
+    var body = json.encode({
+      'email': email,
+      'pin': pin,
+      'new_password': newPassword,
+    });
+
+    try {
+      final response = await http.post(Uri.parse(url), headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        return true; // Contraseña restablecida correctamente
+      } else {
+        throw Exception('Error al restablecer la contraseña: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
 }

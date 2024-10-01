@@ -3,7 +3,6 @@ import 'package:get/get.dart'; // Importa la biblioteca Get
 import 'package:get_storage/get_storage.dart';
 import 'package:talento_mxm_flutter/views/menu.dart';
 import 'views/login_page.dart';
-import 'package:http/http.dart' as http;
 
 void main()  {
     GetStorage.init();

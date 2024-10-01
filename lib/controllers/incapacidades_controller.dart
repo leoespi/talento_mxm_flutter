@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/io_client.dart';
-import 'package:talento_mxm_flutter/controllers/publicacion_controller.dart';
 
 
 class IncapacidadesController extends GetxController {

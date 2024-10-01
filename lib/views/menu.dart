@@ -213,10 +213,7 @@ class _MenuPageState extends State<MenuPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Text(
-                                  'ID: ${feed.id}',
-                                  style: TextStyle(fontSize: 12.0, color: Colors.grey),
-                                ),
+                                
                               ],
                             ),
                           ],

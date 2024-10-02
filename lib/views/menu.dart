@@ -23,7 +23,7 @@ class _MenuPageState extends State<MenuPage> {
   List<Publicacion> feeds = [];
   bool isLoading = false;
   int _offset = 0;
-  int _limit = 10; // Número de feeds por carga
+  int _limit = 5; // Número de feeds por carga
 
   ScrollController _scrollController = ScrollController();
 

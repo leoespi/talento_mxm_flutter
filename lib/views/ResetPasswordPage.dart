@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:talento_mxm_flutter/services/user_service.dart';
+import 'package:talento_mxm_flutter/views/login_page.dart'; // Importa la página de login
 
 class ResetPasswordPage extends StatefulWidget {
   @override
@@ -12,7 +13,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final TextEditingController _pinController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   bool _isLoading = false;
-  bool _isPinSent = false; // Estado para saber si se envió el PIN
+  bool _isPinSent = false;
 
   Future<void> _requestPin() async {
     setState(() {
@@ -23,7 +24,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       if (success) {
         Get.snackbar('Éxito', 'PIN enviado a tu correo');
         setState(() {
-          _isPinSent = true; // Cambiar estado al enviar el PIN
+          _isPinSent = true;
         });
       }
     } catch (e) {
@@ -47,7 +48,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       );
       if (success) {
         Get.snackbar('Éxito', 'Contraseña restablecida exitosamente');
-        Get.back(); // Regresa a la página anterior
+        Get.offAll(LoginPage()); // Redirigir a la página de inicio de sesión
       } else {
         Get.snackbar('Error', 'No se pudo restablecer la contraseña. Verifica tus datos.');
       }

@@ -86,6 +86,7 @@ class _CrearReferidoScreenState extends State<CrearReferidoScreen> {
         ),
       ],
     ),
+     drawer: SideMenu(),
     body: Padding(
       padding: EdgeInsets.all(16.0),
       child: Card(
@@ -157,14 +158,7 @@ class _CrearReferidoScreenState extends State<CrearReferidoScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomMenu(
-        isExpanded: _isExpanded,
-        onExpandToggle: () {
-          setState(() {
-            _isExpanded = !_isExpanded;
-          });
-        },
-      ),
+     
     );
   }
 

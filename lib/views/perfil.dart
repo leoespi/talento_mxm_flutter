@@ -3,12 +3,9 @@ import 'package:talento_mxm_flutter/services/user_service.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:talento_mxm_flutter/views/login_page.dart';
 import 'package:talento_mxm_flutter/controllers/authentication.dart';
-import 'package:talento_mxm_flutter/views/cesantias_page.dart';
-import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
-import 'package:talento_mxm_flutter/views/menu.dart';
-import 'package:talento_mxm_flutter/views/CrearReferidos_page.dart';
+
+import 'package:talento_mxm_flutter/views/bottom_menu.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:talento_mxm_flutter/views/bottom_menu.dart'; // Asegúrate de importar el nuevo widget
 
 
 
@@ -76,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 5, 13, 121),
+        
         title: Text(''),
         actions: [
           IconButton(
@@ -88,6 +85,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         ],
       ),
+       drawer: SideMenu(),
       body: FutureBuilder<UserData>(
         future: userData,
         builder: (context, snapshot) {
@@ -152,14 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }
         },
       ),
-      bottomNavigationBar: BottomMenu(
-        isExpanded: _isExpanded,
-        onExpandToggle: () {
-          setState(() {
-            _isExpanded = !_isExpanded;
-          });
-        },
-      ),
+     
       
     );
   }

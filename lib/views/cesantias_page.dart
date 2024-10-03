@@ -57,6 +57,7 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
 
         ],
       ),
+       drawer: SideMenu(),
       body: SingleChildScrollView(
          padding: EdgeInsets.all(16.0),
         child: Card(
@@ -162,14 +163,7 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomMenu(
-        isExpanded: _isExpanded,
-        onExpandToggle: () {
-          setState(() {
-            _isExpanded = !_isExpanded;
-          });
-        },
-      ),
+      
           );
     
   }

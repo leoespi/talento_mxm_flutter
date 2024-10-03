@@ -251,6 +251,7 @@ class _MyFormState extends State<MyForm> {
 
         ],
       ),
+       drawer: SideMenu(),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Transform.translate(
@@ -439,14 +440,7 @@ class _MyFormState extends State<MyForm> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomMenu(
-        isExpanded: _isExpanded,
-        onExpandToggle: () {
-          setState(() {
-            _isExpanded = !_isExpanded;
-          });
-        },
-      ),
+     
           );
   }
 

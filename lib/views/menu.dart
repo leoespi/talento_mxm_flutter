@@ -120,6 +120,7 @@ class _MenuPageState extends State<MenuPage> {
           ),
         ],
       ),
+       drawer: SideMenu(),
       body: Column(
         children: [
           Expanded(
@@ -245,14 +246,7 @@ class _MenuPageState extends State<MenuPage> {
           ),
         ],
       ),
-       bottomNavigationBar: BottomMenu(
-        isExpanded: _isExpanded,
-        onExpandToggle: () {
-          setState(() {
-            _isExpanded = !_isExpanded;
-          });
-        },
-      ),
+      
     );
   }
 

@@ -63,6 +63,7 @@ class _CrearReferidoScreenState extends State<CrearReferidoScreen> {
      return Scaffold(
     appBar: AppBar(
       backgroundColor: const Color.fromARGB(255, 5, 13, 121),
+       iconTheme: IconThemeData(color: Colors.white), 
       title: Text(''),
       actions: [  ],
     ),

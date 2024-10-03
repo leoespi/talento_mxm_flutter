@@ -3,14 +3,11 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:talento_mxm_flutter/controllers/incapacidades_controller.dart';
+import 'package:talento_mxm_flutter/views/menu.dart';
 
 
 import 'package:talento_mxm_flutter/controllers/authentication.dart';
-import 'package:talento_mxm_flutter/views/login_page.dart';
-import 'package:talento_mxm_flutter/views/menu.dart';
-import 'package:talento_mxm_flutter/views/perfil.dart';
-import 'package:talento_mxm_flutter/views/cesantias_page.dart';
-import 'package:talento_mxm_flutter/views/CrearReferidos_page.dart';
+
 
 import 'package:image/image.dart' as img;
 import 'package:url_launcher/url_launcher.dart';
@@ -18,11 +15,10 @@ import 'package:talento_mxm_flutter/views/bottom_menu.dart'; // Asegúrate de im
 
 
 void main() => runApp(MyApp());
-  bool _isExpanded = false;
+ 
 
 
 class MyApp extends StatelessWidget {
-      final AuthenticationController _authController = AuthenticationController();
 
 
   
@@ -225,15 +221,7 @@ class _MyFormState extends State<MyForm> {
 
 
 
-   // Función para cerrar sesión
-  void logout() {
-    _authController.logout(); // Lógica para cerrar sesión
-    // Navegar a la pantalla de inicio de sesión, por ejemplo:
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()), // Reemplazar LoginPage con tu página de inicio de sesión
-    );
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -241,15 +229,7 @@ class _MyFormState extends State<MyForm> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 5, 13, 121),
         title: Text(''),
-        actions: [
-          IconButton(
-                               
-           onPressed: logout,
-           icon: Icon(Icons.logout),
-           color: Colors.white,
-          ),
-
-        ],
+        actions: [ ],
       ),
        drawer: SideMenu(),
       body: SingleChildScrollView(

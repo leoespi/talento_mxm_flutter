@@ -2,13 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:talento_mxm_flutter/controllers/publicacion_controller.dart';
 import 'package:talento_mxm_flutter/models/publicacion_model.dart';
 
-import 'package:talento_mxm_flutter/controllers/authentication.dart';
-import 'package:talento_mxm_flutter/views/login_page.dart';
-import 'package:talento_mxm_flutter/views/menu.dart';
-import 'package:talento_mxm_flutter/views/perfil.dart';
-import 'package:talento_mxm_flutter/views/cesantias_page.dart';
-import 'package:talento_mxm_flutter/views/CrearReferidos_page.dart';
-import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:talento_mxm_flutter/views/bottom_menu.dart'; // Asegúrate de importar el nuevo widget
@@ -21,8 +14,8 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  bool _isExpanded = false;
-  final AuthenticationController _authController = AuthenticationController();
+  
+  
 
   List<Publicacion> feeds = [];
   bool isLoading = false;
@@ -96,15 +89,6 @@ class _MenuPageState extends State<MenuPage> {
     }
   }
 
-  // Función para cerrar sesión
-  void logout() {
-    _authController.logout(); // Lógica para cerrar sesión
-    // Navegar a la pantalla de inicio de sesión, por ejemplo:
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()), // Reemplazar LoginPage con tu página de inicio de sesión
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,11 +97,7 @@ class _MenuPageState extends State<MenuPage> {
         backgroundColor: const Color.fromARGB(255, 5, 13, 121),
         title: Text(''),
         actions: [
-          IconButton(
-            onPressed: logout,
-            icon: Icon(Icons.logout),
-            color: Colors.white,
-          ),
+          
         ],
       ),
        drawer: SideMenu(),

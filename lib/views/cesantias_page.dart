@@ -4,12 +4,9 @@ import 'dart:io';
 import 'package:get/get.dart';
 
 import 'package:talento_mxm_flutter/controllers/cesantias_controller.dart';
-import 'package:talento_mxm_flutter/controllers/authentication.dart';
-import 'package:talento_mxm_flutter/views/login_page.dart';
-import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
+
 import 'package:talento_mxm_flutter/views/menu.dart';
-import 'package:talento_mxm_flutter/views/perfil.dart';
-import 'package:talento_mxm_flutter/views/CrearReferidos_page.dart';
+
 
 import 'package:image/image.dart' as img;
 import 'package:url_launcher/url_launcher.dart';
@@ -33,8 +30,8 @@ class MyCesantiaspage extends StatefulWidget {
 }
 
 class _MyCesantiaspageState extends State<MyCesantiaspage> {
-  final AuthenticationController _authController = AuthenticationController();
-  bool _isExpanded = false;
+  
+  
   final _formKey = GlobalKey<FormState>();
   String? _selectedtipocesantiareportada;
   List<File> _images = [];
@@ -47,15 +44,7 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
        appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 5, 13, 121),
         title: Text(''),
-        actions: [
-          IconButton(
-
-           onPressed: logout,
-           icon: Icon(Icons.logout),
-           color: Colors.white,
-          ),
-
-        ],
+        actions: [],
       ),
        drawer: SideMenu(),
       body: SingleChildScrollView(
@@ -369,15 +358,6 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
     }
   }
 
-  // Función para cerrar sesión
-  void logout() {
-    _authController.logout(); // Lógica para cerrar sesión
-    // Navegar a la pantalla de inicio de sesión, por ejemplo:
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()), // Reemplazar LoginPage con tu página de inicio de sesión
-    );
-  }
 
 
   Future<void> _launchURL(String url) async {

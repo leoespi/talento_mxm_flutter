@@ -3,13 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:talento_mxm_flutter/controllers/crearReferido_controller.dart';
-import 'package:talento_mxm_flutter/controllers/authentication.dart';
-import 'package:talento_mxm_flutter/views/login_page.dart';
-import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
-import 'package:talento_mxm_flutter/views/CrearReferidos_page.dart';
-import 'package:talento_mxm_flutter/views/cesantias_page.dart';
-import 'package:talento_mxm_flutter/views/perfil.dart';
-import 'package:talento_mxm_flutter/views/menu.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 import 'package:talento_mxm_flutter/views/bottom_menu.dart'; // Asegúrate de importar el nuevo widget
 
@@ -21,10 +15,9 @@ class CrearReferidoScreen extends StatefulWidget {
 }
 
 class _CrearReferidoScreenState extends State<CrearReferidoScreen> {
-  final AuthenticationController _authController = AuthenticationController();
   final ReferidosController _controller = Get.put(ReferidosController());
   File? selectedFile;
-  bool _isExpanded = false;
+  
   String? selectedFileName; // Variable para almacenar el nombre del archivo seleccionado
 
   void _seleccionarArchivo(BuildContext context) async {
@@ -54,14 +47,7 @@ class _CrearReferidoScreenState extends State<CrearReferidoScreen> {
     }
   }
 
-  void logout() {
-    _authController.logout(); // Lógica para cerrar sesión
-    // Navegar a la pantalla de inicio de sesión, por ejemplo:
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()), // Reemplazar LoginPage con tu página de inicio de sesión
-    );
-  }
+  
 
   Future<void> _launchURL(String url) async {
   if (await canLaunch(url)) {
@@ -78,13 +64,7 @@ class _CrearReferidoScreenState extends State<CrearReferidoScreen> {
     appBar: AppBar(
       backgroundColor: const Color.fromARGB(255, 5, 13, 121),
       title: Text(''),
-      actions: [
-        IconButton(
-          onPressed: logout,
-          icon: Icon(Icons.logout),
-          color: Colors.white,
-        ),
-      ],
+      actions: [  ],
     ),
      drawer: SideMenu(),
     body: Padding(

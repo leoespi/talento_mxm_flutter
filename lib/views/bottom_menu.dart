@@ -6,14 +6,27 @@ import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
 import 'package:talento_mxm_flutter/views/login_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:talento_mxm_flutter/views/perfil.dart';
+import 'package:talento_mxm_flutter/controllers/authentication.dart';
 
 class SideMenu extends StatelessWidget {
+  final AuthenticationController _authController = AuthenticationController();
+
   Future<void> _launchURL(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
     } else {
       throw 'No se pudo abrir la URL: $url';
     }
+  }
+
+  // Función para cerrar sesión
+  void logout(BuildContext context) {
+    _authController.logout(); // Lógica para cerrar sesión
+    // Navegar a la pantalla de inicio de sesión
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
   }
 
   @override
@@ -89,6 +102,13 @@ class SideMenu extends StatelessWidget {
                 context,
                 MaterialPageRoute(builder: (context) => ProfileScreen(userId: '')),
               );
+            },
+          ),
+          _createDrawerItem(
+            icon: Icons.logout,
+            text: 'Cerrar Sesión',
+            onTap: () {
+              logout(context); // Llama a la función de cierre de sesión
             },
           ),
         ],

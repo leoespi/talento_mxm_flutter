@@ -11,6 +11,8 @@ import 'package:talento_mxm_flutter/views/cesantias_page.dart';
 import 'package:talento_mxm_flutter/views/perfil.dart';
 import 'package:talento_mxm_flutter/views/menu.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:talento_mxm_flutter/views/bottom_menu.dart'; // Asegúrate de importar el nuevo widget
+
 
 
 class CrearReferidoScreen extends StatefulWidget {
@@ -155,181 +157,13 @@ class _CrearReferidoScreenState extends State<CrearReferidoScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 1.0, vertical: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildBottomMenuItem(
-                    icon: Icons.article,
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        PageRouteBuilder(
-                          transitionDuration: Duration(milliseconds: 250),
-                          transitionsBuilder: (context, animation, _, child) {
-                            return SlideTransition(
-                              position: Tween<Offset>(
-                                begin: Offset(1.0, 0.0),
-                                end: Offset.zero,
-                              ).animate(animation),
-                              child: child,
-                            );
-                          },
-                          pageBuilder: (context, _, __) => MyForm(),
-                        ),
-                      );
-                    },
-                    color: Colors.blue,
-                    label: 'Incapacidad',
-                  ),
-                  _buildBottomMenuItem(
-                    icon: Icons.home,
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        PageRouteBuilder(
-                          transitionDuration: Duration(milliseconds: 250),
-                          transitionsBuilder: (context, animation, _, child) {
-                            return SlideTransition(
-                              position: Tween<Offset>(
-                                begin: Offset(1.0, 0.0),
-                                end: Offset.zero,
-                              ).animate(animation),
-                              child: child,
-                            );
-                          },
-                          pageBuilder: (context, _, __) => MenuPage(),
-                        ),
-                      );
-                    },
-                    color: Colors.green,
-                    label: 'Inicio',
-                  ),
-                  _buildBottomMenuItem(
-                    icon: Icons.person,
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        PageRouteBuilder(
-                          transitionDuration: Duration(milliseconds: 250),
-                          transitionsBuilder: (context, animation, _, child) {
-                            return SlideTransition(
-                              position: Tween<Offset>(
-                                begin: Offset(1.0, 0.0),
-                                end: Offset.zero,
-                              ).animate(animation),
-                              child: child,
-                            );
-                          },
-                          pageBuilder: (context, _, __) => ProfileScreen(userId: ''),
-                        ),
-                      );
-                    },
-                    color: Colors.orange,
-                    label: 'Perfil',
-                  ),
-                ],
-              ),
-            ),
-            if (_isExpanded)
-              Padding(
-                padding: const EdgeInsets.only(top: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildBottomMenuItem(
-                      icon: Icons.document_scanner,
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          PageRouteBuilder(
-                            transitionDuration: Duration(milliseconds: 250),
-                            transitionsBuilder: (context, animation, _, child) {
-                              return SlideTransition(
-                                position: Tween<Offset>(
-                                  begin: Offset(1.0, 0.0),
-                                  end: Offset.zero,
-                                ).animate(animation),
-                                child: child,
-                              );
-                            },
-                            pageBuilder: (context, _, __) => MyCesantiaspage(),
-                          ),
-                        );
-                      },
-                      color: Colors.red,
-                      label: 'Cesantias',
-                    ),
-                    _buildBottomMenuItem(
-                      icon: Icons.document_scanner,
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          PageRouteBuilder(
-                            transitionDuration: Duration(milliseconds: 250),
-                            transitionsBuilder: (context, animation, _, child) {
-                              return SlideTransition(
-                                position: Tween<Offset>(
-                                  begin: Offset(1.0, 0.0),
-                                  end: Offset.zero,
-                                ).animate(animation),
-                                child: child,
-                              );
-                            },
-                            pageBuilder: (context, _, __) => CrearReferidoScreen(),
-                          ),
-                        );
-                      },
-                      color: const Color.fromARGB(255, 73, 54, 244),
-                      label: 'Referidos',
-                    ),
-                    _buildBottomMenuItem(
-                        icon: Icons.web, // Puedes cambiar el icono
-                        onPressed: () {
-                          _launchURL('http://supermercadosmxmag.siesacloud.com:8933/AuthAG/LoginFormAG?IdCia=1&NroConexion=1'); // Cambia la URL a la que desees redirigir
-                        },
-                        color: Colors.blue,
-                        label: 'Autogestion',
-                      ),
-                  ],
-                ),
-              ),
-            InkWell(
-              onTap: () {
-                setState(() {
-                  _isExpanded = !_isExpanded;
-                });
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(
-                  _isExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
-                  color: Colors.grey,
-                ),
-              ),
-            ),
-          ],
-        ),
+      bottomNavigationBar: BottomMenu(
+        isExpanded: _isExpanded,
+        onExpandToggle: () {
+          setState(() {
+            _isExpanded = !_isExpanded;
+          });
+        },
       ),
     );
   }

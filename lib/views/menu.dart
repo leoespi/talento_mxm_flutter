@@ -389,7 +389,7 @@ class _MenuPageState extends State<MenuPage> {
                         );
                       },
                       color: const Color.fromARGB(255, 73, 54, 244),
-                      label: 'P. Referidos',
+                      label: 'Referidos',
                     ),
                     _buildBottomMenuItem(
                         icon: Icons.web, // Puedes cambiar el icono
@@ -397,7 +397,7 @@ class _MenuPageState extends State<MenuPage> {
                           _launchURL('http://supermercadosmxmag.siesacloud.com:8933/AuthAG/LoginFormAG?IdCia=1&NroConexion=1'); // Cambia la URL a la que desees redirigir
                         },
                         color: Colors.blue,
-                        label: 'Abrir URL',
+                        label: 'Autogestión',
                       ),
 
                   ],

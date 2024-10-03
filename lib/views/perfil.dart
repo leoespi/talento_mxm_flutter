@@ -7,7 +7,7 @@ import 'package:talento_mxm_flutter/views/cesantias_page.dart';
 import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
 import 'package:talento_mxm_flutter/views/menu.dart';
 import 'package:talento_mxm_flutter/views/CrearReferidos_page.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 
 
 class UserData {
@@ -60,6 +60,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       MaterialPageRoute(builder: (context) => LoginPage()), // Reemplazar LoginPage con tu página de inicio de sesión
     );
   }
+
+  Future<void> _launchURL(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'No se pudo abrir la URL: $url';
+  }
+}
 
 
   @override
@@ -289,16 +297,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                     },
                     color: const Color.fromARGB(255, 73, 54, 244),
-                    label: 'P. Referidos',
+                    label: 'Referidos',
                   ),
-                    _buildBottomMenuItem(
-                      icon: Icons.settings,
-                      onPressed: () {
-                        // Acción para la nueva opción 3
-                      },
-                      color: const Color.fromARGB(255, 58, 58, 58),
-                      label: 'Configuracion',
-                    ),
+                     _buildBottomMenuItem(
+                        icon: Icons.web, // Puedes cambiar el icono
+                        onPressed: () {
+                          _launchURL('http://supermercadosmxmag.siesacloud.com:8933/AuthAG/LoginFormAG?IdCia=1&NroConexion=1'); // Cambia la URL a la que desees redirigir
+                        },
+                        color: Colors.blue,
+                        label: 'Autogestion',
+                      ),
                   ],
                 ),
               ),

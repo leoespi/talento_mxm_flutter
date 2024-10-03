@@ -29,6 +29,28 @@ class SideMenu extends StatelessWidget {
     );
   }
 
+  void _navigateTo(BuildContext context, Widget page) {
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => page,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0); // Comienza desde la derecha
+          const end = Offset.zero; // Termina en su posición original
+          const curve = Curves.easeInOut;
+
+          final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          final offsetAnimation = animation.drive(tween);
+
+          return SlideTransition(
+            position: offsetAnimation,
+            child: child,
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -51,40 +73,28 @@ class SideMenu extends StatelessWidget {
             icon: Icons.home,
             text: 'Inicio',
             onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => MenuPage()),
-              );
+              _navigateTo(context, MenuPage());
             },
           ),
           _createDrawerItem(
             icon: Icons.article,
             text: 'Incapacidad',
             onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => MyForm()),
-              );
+              _navigateTo(context, MyForm());
             },
           ),
           _createDrawerItem(
             icon: Icons.document_scanner,
             text: 'Cesantías',
             onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => MyCesantiaspage()),
-              );
+              _navigateTo(context, MyCesantiaspage());
             },
           ),
           _createDrawerItem(
             icon: Icons.document_scanner,
             text: 'Referidos',
             onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => CrearReferidoScreen()),
-              );
+              _navigateTo(context, CrearReferidoScreen());
             },
           ),
           _createDrawerItem(
@@ -98,10 +108,7 @@ class SideMenu extends StatelessWidget {
             icon: Icons.person,
             text: 'Perfil',
             onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => ProfileScreen(userId: '')),
-              );
+              _navigateTo(context, ProfileScreen(userId: ''));
             },
           ),
           _createDrawerItem(

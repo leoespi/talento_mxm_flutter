@@ -10,6 +10,8 @@ import 'package:talento_mxm_flutter/views/cesantias_page.dart';
 import 'package:talento_mxm_flutter/views/CrearReferidos_page.dart';
 import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class MenuPage extends StatefulWidget {
   @override
@@ -46,6 +48,16 @@ class _MenuPageState extends State<MenuPage> {
       cargarFeeds();
     }
   }
+
+
+  Future<void> _launchURL(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'No se pudo abrir la URL: $url';
+  }
+}
+
 
   Future<void> cargarFeeds() async {
     if (isLoading) {
@@ -380,13 +392,14 @@ class _MenuPageState extends State<MenuPage> {
                       label: 'P. Referidos',
                     ),
                     _buildBottomMenuItem(
-                      icon: Icons.settings,
-                      onPressed: () {
-                        // Acción para la nueva opción 3
-                      },
-                      color: const Color.fromARGB(255, 58, 58, 58),
-                      label: 'Configuracion',
-                    ),
+                        icon: Icons.web, // Puedes cambiar el icono
+                        onPressed: () {
+                          _launchURL('http://supermercadosmxmag.siesacloud.com:8933/AuthAG/LoginFormAG?IdCia=1&NroConexion=1'); // Cambia la URL a la que desees redirigir
+                        },
+                        color: Colors.blue,
+                        label: 'Abrir URL',
+                      ),
+
                   ],
                 ),
               ),

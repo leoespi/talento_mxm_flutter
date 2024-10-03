@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:label="talento_mxm_flutter"
+        android:label="Portal Mas por Menos"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:talento_mxm_flutter/services/user_service.dart';
 import 'package:get_storage/get_storage.dart';
-
 import 'package:talento_mxm_flutter/views/bottom_menu.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-
 
 class UserData {
   final String name;
@@ -19,59 +15,37 @@ class UserData {
   });
 }
 
-
-
-
 class ProfileScreen extends StatefulWidget {
   final String userId;
-  
 
-  const ProfileScreen({Key? key, required this.userId});
+  const ProfileScreen({Key? key, required this.userId}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
-  
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
- 
   late Future<UserData> userData;
-  var storage = GetStorage();
-    
-
-  
+  final storage = GetStorage();
 
   @override
   void initState() {
     super.initState();
-    String token = storage.read('token');
+    String token = storage.read('token') ?? ''; // Asegúrate de manejar el token adecuadamente
     userData = UserService.obtenerUsuarios(token);
   }
-
-   
-
-  Future<void> _launchURL(String url) async {
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    throw 'No se pudo abrir la URL: $url';
-  }
-}
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-         iconTheme: IconThemeData(color: Colors.white), 
-         backgroundColor: const Color.fromARGB(255, 5, 13, 121),
+        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: const Color.fromARGB(255, 5, 13, 121),
         title: Text(''),
-        actions: [
-          
-
-        ],
+        
+        
       ),
-       drawer: SideMenu(),
+      drawer: SideMenu(),
       body: FutureBuilder<UserData>(
         future: userData,
         builder: (context, snapshot) {
@@ -79,6 +53,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData) {
+            return Center(child: Text('No se encontraron datos.'));
           } else {
             final usuario = snapshot.data!;
             return SingleChildScrollView(
@@ -101,7 +77,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: const Color.fromARGB(255, 5, 13, 121),
                     ),
                   ),
-                 
                   SizedBox(height: 20.0),
                   Divider(color: Colors.grey[400]),
                   SizedBox(height: 20.0),
@@ -132,12 +107,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             );
-            
           }
         },
       ),
-     
-      
     );
   }
 }

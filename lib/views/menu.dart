@@ -14,14 +14,13 @@ class _MenuPageState extends State<MenuPage> {
   List<Publicacion> feeds = [];
   bool isLoading = false;
   int _offset = 0;
-  int _limit = 5; // Número de feeds por carga
-
-  ScrollController _scrollController = ScrollController();
+  final int _limit = 5; // Número de feeds por carga
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    cargarFeeds();
+    _cargarFeeds();
     _scrollController.addListener(_scrollListener);
   }
 
@@ -34,11 +33,11 @@ class _MenuPageState extends State<MenuPage> {
 
   void _scrollListener() {
     if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-      cargarFeeds();
+      _cargarFeeds();
     }
   }
 
-  Future<void> cargarFeeds() async {
+  Future<void> _cargarFeeds() async {
     if (isLoading) return;
 
     setState(() {
@@ -47,27 +46,25 @@ class _MenuPageState extends State<MenuPage> {
 
     try {
       List<Publicacion> nuevosFeeds = await FeedController.obtenerFeeds(_offset, _limit);
-
       if (nuevosFeeds.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No hay más publicaciones para cargar')),
-        );
+        _mostrarSnackBar('No hay más publicaciones para cargar');
       } else {
         setState(() {
           feeds.addAll(nuevosFeeds);
           _offset += _limit;
-          isLoading = false;
         });
       }
     } catch (e) {
-      print('Error al cargar los feeds: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al cargar los feeds: $e')),
-      );
+      _mostrarSnackBar('Error al cargar los feeds: $e');
+    } finally {
       setState(() {
         isLoading = false;
       });
     }
+  }
+
+  void _mostrarSnackBar(String mensaje) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensaje)));
   }
 
   Future<void> _refreshFeeds() async {
@@ -75,15 +72,15 @@ class _MenuPageState extends State<MenuPage> {
       feeds.clear();
       _offset = 0;
     });
-    await cargarFeeds();
+    await _cargarFeeds();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 5, 13, 121),
         iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: const Color.fromARGB(255, 5, 13, 121),
         title: Text(''),
       ),
       drawer: SideMenu(),
@@ -93,93 +90,92 @@ class _MenuPageState extends State<MenuPage> {
           controller: _scrollController,
           itemCount: feeds.length + 1,
           itemBuilder: (context, index) {
-            if (index < feeds.length) {
-              var feed = feeds[index];
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DetallePublicacion(feed: feed),
-                    ),
-                  );
-                },
-                child: Card(
-                  margin: EdgeInsets.all(8.0),
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          'Usuario: ${feed.userNombre}',
-                          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 8.0),
-                        Text(
-                          '${feed.contenido}',
-                          style: TextStyle(fontSize: 14.0),
-                        ),
-                        SizedBox(height: 8.0),
-                        if (feed.videoLink != null && feed.videoLink!.isNotEmpty)
-                          Container(
-                            height: 200.0,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8.0),
-                              image: DecorationImage(
-                                image: NetworkImage(
-                                  'https://img.youtube.com/vi/${YoutubePlayer.convertUrlToId(feed.videoLink!)}/hqdefault.jpg',
-                                ),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        if (feed.imagenes.isNotEmpty)
-                          Container(
-                            height: 200.0,
-                            child: GridView.builder(
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: feed.imagenes.length == 1 ? 1 : 2,
-                                childAspectRatio: 1.0,
-                                crossAxisSpacing: 4.0,
-                                mainAxisSpacing: 4.0,
-                              ),
-                              itemCount: feed.imagenes.length,
-                              scrollDirection: Axis.vertical,
-                              physics: NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemBuilder: (context, imgIndex) {
-                                return ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: CachedNetworkImage(
-                                    imageUrl: 'http://10.0.2.2:8000${feed.imagenes[imgIndex]}',
-                                    fit: BoxFit.cover,
-                                    placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                                    errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        SizedBox(height: 8.0),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            } else if (isLoading) {
-              return Center(child: CircularProgressIndicator());
-            } else {
-              return Container(); // No mostrar nada extra cuando no hay más feeds
-            }
+            return index < feeds.length ? _buildFeedCard(feeds[index]) : _buildLoadingIndicator();
           },
         ),
       ),
     );
+  }
+
+  Widget _buildFeedCard(Publicacion feed) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => DetallePublicacion(feed: feed)),
+        );
+      },
+      child: Card(
+        margin: EdgeInsets.all(8.0),
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+        child: Padding(
+          padding: EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(' ${feed.userNombre}', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+              SizedBox(height: 8.0),
+              Text('${feed.contenido}', style: TextStyle(fontSize: 14.0)),
+              SizedBox(height: 8.0),
+              if (feed.videoLink != null && feed.videoLink!.isNotEmpty)
+                _buildVideoThumbnail(feed.videoLink!),
+              if (feed.imagenes.isNotEmpty) _buildImageGrid(feed.imagenes),
+              SizedBox(height: 8.0),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVideoThumbnail(String videoLink) {
+    return Container(
+      height: 200.0,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        image: DecorationImage(
+          image: NetworkImage('https://img.youtube.com/vi/${YoutubePlayer.convertUrlToId(videoLink)}/hqdefault.jpg'),
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageGrid(List<String> imagenes) {
+    return Container(
+      height: 200.0,
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: imagenes.length == 1 ? 1 : 2,
+          childAspectRatio: 1.0,
+          crossAxisSpacing: 4.0,
+          mainAxisSpacing: 4.0,
+        ),
+        itemCount: imagenes.length,
+        scrollDirection: Axis.vertical,
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemBuilder: (context, imgIndex) {
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: CachedNetworkImage(
+              imageUrl: 'http://10.0.2.2:8000${imagenes[imgIndex]}',
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+              errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+    return SizedBox.shrink(); // No mostrar nada extra cuando no hay más feeds
   }
 }
 
@@ -202,10 +198,7 @@ class _DetallePublicacionState extends State<DetallePublicacion> {
       String videoId = YoutubePlayer.convertUrlToId(widget.feed.videoLink!)!;
       _youtubeController = YoutubePlayerController(
         initialVideoId: videoId,
-        flags: YoutubePlayerFlags(
-          autoPlay: false,
-          mute: false,
-        ),
+        flags: YoutubePlayerFlags(autoPlay: false, mute: false),
       );
     }
   }
@@ -218,77 +211,122 @@ class _DetallePublicacionState extends State<DetallePublicacion> {
     super.dispose();
   }
 
+  void _mostrarImagen(BuildContext context, int index) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VistaImagen(
+          imagenes: widget.feed.imagenes,
+          inicial: index,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final feed = widget.feed;
-    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: Color.fromARGB(255, 5, 13, 121),
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(''),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: Card(
-              elevation: 8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24.0),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      '${feed.contenido}',
-                      style: TextStyle(fontSize: 18.0),
-                      textAlign: TextAlign.start,
-                    ),
-                  ),
-                  if (feed.videoLink != null && feed.videoLink!.isNotEmpty)
-                    ClipRRect(
-                      borderRadius: BorderRadius.vertical(
-                        bottom: Radius.circular(24.0),
-                      ),
-                      child: Container(
-                        height: 300,
-                        color: Colors.black,
-                        child: YoutubePlayer(
-                          controller: _youtubeController,
-                          showVideoProgressIndicator: true,
-                        ),
-                      ),
-                    ),
-                  if (feed.imagenes.isNotEmpty)
-                    Column(
-                      children: feed.imagenes.map((imageUrl) {
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {}); // Intenta volver a cargar la imagen
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: CachedNetworkImage(
-                                imageUrl: 'http://10.0.2.2:8000$imageUrl',
-                                width: screenWidth - 22,
-                                placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                                errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                ],
-              ),
-            ),
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${feed.userNombre}', style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold)),
+              SizedBox(height: 12.0),
+              Text(feed.contenido, style: TextStyle(fontSize: 16.0), textAlign: TextAlign.justify),
+              SizedBox(height: 16.0),
+              if (feed.videoLink != null && feed.videoLink!.isNotEmpty) _buildYoutubePlayer(),
+              SizedBox(height: 16.0),
+              if (feed.imagenes.isNotEmpty) _buildImageSection(feed.imagenes),
+            ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildYoutubePlayer() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16.0),
+      child: Container(
+        height: 300,
+        color: Colors.black,
+        child: YoutubePlayer(
+          controller: _youtubeController,
+          showVideoProgressIndicator: true,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageSection(List<String> imagenes) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+        SizedBox(height: 8.0),
+        GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 1.0,
+            crossAxisSpacing: 8.0,
+            mainAxisSpacing: 8.0,
+          ),
+          itemCount: imagenes.length,
+          scrollDirection: Axis.vertical,
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemBuilder: (context, imgIndex) {
+            return GestureDetector(
+              onTap: () => _mostrarImagen(context, imgIndex),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
+                child: CachedNetworkImage(
+                  imageUrl: 'http://10.0.2.2:8000${imagenes[imgIndex]}',
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                  errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class VistaImagen extends StatelessWidget {
+  final List<String> imagenes;
+  final int inicial;
+
+  VistaImagen({required this.imagenes, required this.inicial});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: PageView.builder(
+        itemCount: imagenes.length,
+        controller: PageController(initialPage: inicial),
+        itemBuilder: (context, index) {
+          return Center(
+            child: CachedNetworkImage(
+              imageUrl: 'http://10.0.2.2:8000${imagenes[index]}',
+              fit: BoxFit.contain,
+              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+              errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+            ),
+          );
+        },
       ),
     );
   }

@@ -142,6 +142,18 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
+  void _mostrarImagen(BuildContext context, int index, List<String> imagenes) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VistaImagen(
+          imagenes: imagenes,
+          inicial: index,
+        ),
+      ),
+    );
+  }
+
   Widget _buildImageGrid(List<String> imagenes) {
     return Container(
       height: 200.0,
@@ -157,13 +169,24 @@ class _MenuPageState extends State<MenuPage> {
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemBuilder: (context, imgIndex) {
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: CachedNetworkImage(
-              imageUrl: 'http://10.0.2.2:8000${imagenes[imgIndex]}',
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-              errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+          return GestureDetector(
+            onTap: () => _mostrarImagen(context, imgIndex, imagenes),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: CachedNetworkImage(
+                imageUrl: 'http://10.0.2.2:8000${imagenes[imgIndex]}',
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                errorWidget: (context, url, error) => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error),
+                      Text('Toca para intentar de nuevo'),
+                    ],
+                  ),
+                ),
+              ),
             ),
           );
         },
@@ -211,12 +234,12 @@ class _DetallePublicacionState extends State<DetallePublicacion> {
     super.dispose();
   }
 
-  void _mostrarImagen(BuildContext context, int index) {
+  void _mostrarImagen(BuildContext context, int index, List<String> imagenes) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => VistaImagen(
-          imagenes: widget.feed.imagenes,
+          imagenes: imagenes,
           inicial: index,
         ),
       ),
@@ -271,7 +294,7 @@ class _DetallePublicacionState extends State<DetallePublicacion> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+        Text('Imágenes', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
         SizedBox(height: 8.0),
         GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -286,14 +309,22 @@ class _DetallePublicacionState extends State<DetallePublicacion> {
           shrinkWrap: true,
           itemBuilder: (context, imgIndex) {
             return GestureDetector(
-              onTap: () => _mostrarImagen(context, imgIndex),
+              onTap: () => _mostrarImagen(context, imgIndex, imagenes),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12.0),
                 child: CachedNetworkImage(
                   imageUrl: 'http://10.0.2.2:8000${imagenes[imgIndex]}',
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                  errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                  errorWidget: (context, url, error) => Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.error),
+                        Text('Toca para intentar de nuevo'),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             );
@@ -304,26 +335,60 @@ class _DetallePublicacionState extends State<DetallePublicacion> {
   }
 }
 
-class VistaImagen extends StatelessWidget {
+class VistaImagen extends StatefulWidget {
   final List<String> imagenes;
   final int inicial;
 
   VistaImagen({required this.imagenes, required this.inicial});
 
   @override
+  _VistaImagenState createState() => _VistaImagenState();
+}
+
+class _VistaImagenState extends State<VistaImagen> {
+  late int currentImageIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    currentImageIndex = widget.inicial;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: PageView.builder(
-        itemCount: imagenes.length,
-        controller: PageController(initialPage: inicial),
+        itemCount: widget.imagenes.length,
+        controller: PageController(initialPage: widget.inicial),
+        onPageChanged: (index) {
+          setState(() {
+            currentImageIndex = index;
+          });
+        },
         itemBuilder: (context, index) {
-          return Center(
-            child: CachedNetworkImage(
-              imageUrl: 'http://10.0.2.2:8000${imagenes[index]}',
-              fit: BoxFit.contain,
-              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-              errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+          return GestureDetector(
+            onTap: () {
+              // Intentar recargar la imagen al tocar
+              setState(() {
+                // Esto vuelve a construir el widget
+              });
+            },
+            child: Center(
+              child: CachedNetworkImage(
+                imageUrl: 'http://10.0.2.2:8000${widget.imagenes[index]}',
+                fit: BoxFit.contain,
+                placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                errorWidget: (context, url, error) => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error),
+                      Text('Toca para intentar de nuevo'),
+                    ],
+                  ),
+                ),
+              ),
             ),
           );
         },

@@ -219,79 +219,69 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
     );
   }
 
-  //FUNCIONES 
-  // Función para obtener imágenes seleccionadas
-  void _getImages() async {
-    // Permitir al usuario seleccionar múltiples imágenes
-    final pickedFiles = await ImagePicker().pickMultiImage();
+// Funciones 
+// Función para obtener imágenes seleccionadas
+void _getImages() async {
+  // Permitir al usuario seleccionar múltiples imágenes
+  final pickedFiles = await ImagePicker().pickMultiImage();
 
-    // Verificar si se seleccionaron archivos
-    if (pickedFiles != null) {
-      List<File> validImages = []; // Lista para almacenar imágenes válidas
+  // Verificar si se seleccionaron archivos
+  if (pickedFiles != null) {
+    List<File> validImages = []; // Lista para almacenar imágenes válidas
 
-      // Iterar sobre cada archivo seleccionado
-      for (var pickedFile in pickedFiles) {
-        File imageFile = File(pickedFile.path); // Crear un objeto File a partir del archivo seleccionado
+    // Iterar sobre cada archivo seleccionado
+    for (var pickedFile in pickedFiles) {
+      File imageFile = File(pickedFile.path); // Crear un objeto File a partir del archivo seleccionado
 
-        // Validar el formato del archivo (solo JPG y PNG)
-        if (imageFile.path.endsWith('.jpg') || imageFile.path.endsWith('.png')) {
-          // Validar el tamaño del archivo (máximo 20 MB)
-          if (await imageFile.length() <= 20 * 1024 * 1024) {
-            // Comprimir y redimensionar la imagen
-            img.Image? image = img.decodeImage(imageFile.readAsBytesSync());
+      // Validar el formato del archivo (solo JPG y PNG)
+      if (imageFile.path.endsWith('.jpg') || imageFile.path.endsWith('.png')) {
+        // Validar el tamaño del archivo (máximo 20 MB)
+        if (await imageFile.length() <= 20 * 1024 * 1024) {
+          // Comprimir la imagen manteniendo las dimensiones originales
+          img.Image? image = img.decodeImage(imageFile.readAsBytesSync());
 
-            // Redimensionar la imagen para que el lado más largo sea de 800 píxeles
-            int width;
-            int height;
-
-            // Calcular las dimensiones de la imagen redimensionada
-            if (image!.width > image.height) {
-              width = 800;
-              height = (image.height / image.width * 800).round();
-            } else {
-              height = 800;
-              width = (image.width / image.height * 800).round();
-            }
-
-            img.Image resizedImage = img.copyResize(image, width: width, height: height); // Redimensiona la imagen
-
-            // Comprimir la imagen con formato JPEG
-            List<int> compressedBytes = img.encodeJpg(resizedImage, quality: 80);
-
-            // Guardar la imagen comprimida en un archivo
-            File compressedFile = File(imageFile.path.replaceFirst('.jpg', '_compressed.jpg'));
-            compressedFile.writeAsBytesSync(compressedBytes);
-
-            validImages.add(compressedFile); // Agregar imagen comprimida y válida a la lista
-          } else {
-            // Mostrar mensaje de error si el tamaño es mayor a 20 MB
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('El tamaño de la imagen ${pickedFile.name} debe ser menor a 20 MB.'),
-                duration: Duration(seconds: 2),
-              ),
-            );
+          // Si la imagen no es válida, omitirla
+          if (image == null) {
+            continue;
           }
+
+          // Comprimir la imagen con formato JPEG, ajustando la calidad
+          List<int> compressedBytes = img.encodeJpg(image, quality: 85); // Ajusta la calidad según lo necesites
+
+          // Guardar la imagen comprimida en un archivo
+          File compressedFile = File(imageFile.path.replaceFirst('.jpg', '_compressed.jpg'));
+          compressedFile.writeAsBytesSync(compressedBytes);
+
+          validImages.add(compressedFile); // Agregar imagen comprimida y válida a la lista
         } else {
-          // Mostrar mensaje de error si el formato no es válido
+          // Mostrar mensaje de error si el tamaño es mayor a 20 MB
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Formato no válido para la imagen ${pickedFile.name}. Solo se aceptan JPG y PNG.'),
+              content: Text('El tamaño de la imagen ${pickedFile.name} debe ser menor a 20 MB.'),
               duration: Duration(seconds: 2),
             ),
           );
         }
-      }
-
-      // Si hay imágenes válidas, procesarlas
-      if (validImages.isNotEmpty) {
-        setState(() {
-          _images.clear();
-          _images.addAll(validImages); // Actualiza la lista de imágenes
-        });
+      } else {
+        // Mostrar mensaje de error si el formato no es válido
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Formato no válido para la imagen ${pickedFile.name}. Solo se aceptan JPG y PNG.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
       }
     }
+
+    // Si hay imágenes válidas, procesarlas
+    if (validImages.isNotEmpty) {
+      setState(() {
+        _images.clear();
+        _images.addAll(validImages); // Actualiza la lista de imágenes
+      });
+    }
   }
+}
 
   // Función para mostrar el diálogo de confirmación
   Future<void> _showConfirmationDialog() async {

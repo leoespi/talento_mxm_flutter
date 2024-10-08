@@ -101,26 +101,22 @@ class _MyFormState extends State<MyForm> {
 
   // Método para comprimir y redimensionar la imagen
   File compressAndResizeImage(File file) {
-    img.Image? image = img.decodeImage(file.readAsBytesSync());
+  // Cargar la imagen desde el archivo
+  img.Image? image = img.decodeImage(file.readAsBytesSync());
 
-    int width;
-    int height;
+  // Si la imagen no es válida, devolver el archivo original
+  if (image == null) {
+    return file;
+  }
 
-    if (image!.width > image.height) {
-      width = 800;
-      height = (image.height / image.width * 800).round();
-    } else {
-      height = 800;
-      width = (image.width / image.height * 800).round();
-    }
+  // Comprimir la imagen ajustando la calidad
+  List<int> compressedBytes = img.encodeJpg(image, quality: 85); // Ajusta la calidad según lo necesites
 
-    img.Image resizedImage = img.copyResize(image, width: width, height: height);
-    List<int> compressedBytes = img.encodeJpg(resizedImage, quality: 80);
-    
-    File compressedFile = File(file.path.replaceFirst('.jpg', '_compressed.jpg'));
-    compressedFile.writeAsBytesSync(compressedBytes);
+  // Crear un nuevo archivo para la imagen comprimida
+  File compressedFile = File(file.path.replaceFirst('.jpg', '_compressed.jpg'));
+  compressedFile.writeAsBytesSync(compressedBytes);
 
-    return compressedFile;
+  return compressedFile;
   }
 
   // Método para seleccionar imágenes

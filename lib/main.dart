@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
      final token = box.read('token');
     return   GetMaterialApp( 
       debugShowCheckedModeBanner: false,
-      title: 'Talento MxM',
+      title: 'Talento MxM', 
       home: token == null ? const LoginPage() :  MenuPage(),
     );  
   }

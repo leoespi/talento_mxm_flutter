@@ -40,7 +40,7 @@ class AuthenticationController extends GetxController {
         Get.off(() => LoginPage()); // Redirige al usuario a la página de inicio de sesión
         Get.snackbar(
           'Registro exitoso',
-          'Por favor inicia sesión con tus nuevas credenciales',
+          'Tu cuenta ha sido creada. Espera la activación por parte del administrador.',
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.green,
           colorText: Colors.white,

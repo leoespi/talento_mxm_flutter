@@ -323,6 +323,13 @@ void _getImages() async {
     // Validar que el formulario sea correcto
     if (!_formKey.currentState!.validate()) return;
 
+    if (_images.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Por favor selecciona al menos una imagen')),
+    );
+    return;
+  }
+
     // Indicar que la carga ha comenzado
     setState(() {
       _isLoading = true;

@@ -134,39 +134,48 @@ class _MyFormState extends State<MyForm> {
 
   // Método para enviar el formulario
   Future<void> _submitForm() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return; // Validación del formulario
 
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      List<String> imagePaths = _images.map((img) => img.path).toList();
-      await _controller.createIncapacidad(
-        tipoincapacidadreportada: _selectedtipoincapacidadreportada!,
-        diasIncapacidad: int.parse(_diasIncapacidadController.text),
-        fechaInicioIncapacidad: _fechaInicio,
-        entidadAfiliada: _selectedEntidadAfiliada!,
-        images: _images,
-        imagePaths: imagePaths,
-        context: context,
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Incapacidad creada con éxito')),
-      );
-
-      Get.offAll(() => MenuPage());
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ocurrió un error. Por favor, inténtalo de nuevo.')),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+  // Validar que se hayan seleccionado imágenes
+  if (_images.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Por favor selecciona al menos una imagen')),
+    );
+    return;
   }
+
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    List<String> imagePaths = _images.map((img) => img.path).toList();
+    await _controller.createIncapacidad(
+      tipoincapacidadreportada: _selectedtipoincapacidadreportada!,
+      diasIncapacidad: int.parse(_diasIncapacidadController.text),
+      fechaInicioIncapacidad: _fechaInicio,
+      entidadAfiliada: _selectedEntidadAfiliada!,
+      images: _images,
+      imagePaths: imagePaths,
+      context: context,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Incapacidad creada con éxito')),
+    );
+
+    Get.offAll(() => MenuPage());
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Ocurrió un error. Por favor, inténtalo de nuevo.')),
+    );
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
+
 
   // Método para mostrar el diálogo de confirmación
   Future<void> _showConfirmationDialog() async {

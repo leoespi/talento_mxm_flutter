@@ -37,21 +37,21 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 5, 13, 121),
-        title: Text('Mis Registros', style: TextStyle(
-      color: Colors.white, // Cambia el color aquí
-    ),),
-            bottom: TabBar(
-        controller: _tabController,
-        labelColor: Colors.white, // Color del texto seleccionado
-        unselectedLabelColor: Colors.grey, // Color del texto no seleccionado
-        tabs: [
-          Tab(text: 'Cesantías'),
-          Tab(text: 'Incapacidades'),
-        ],
+        title: Text(
+          'Mis Registros',
+          style: TextStyle(color: Colors.white),
+        ),
+        bottom: TabBar(
+          controller: _tabController,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.grey,
+          tabs: [
+            Tab(text: 'Cesantías'),
+            Tab(text: 'Incapacidades'),
+          ],
+        ),
       ),
-
-      ),
-      drawer: SideMenu(), // Asegúrate de que el SideMenu esté implementado
+      drawer: SideMenu(),
       body: TabBarView(
         controller: _tabController,
         children: [
@@ -70,8 +70,10 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
               return ListView.builder(
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
+                  final cesantia = snapshot.data![index];
                   return ListTile(
-                    title: Text('Cesantía ID: ${snapshot.data![index].id}'),
+                    title: Text('Cesantía ID: ${cesantia.id}'),
+                    subtitle: Text('Tipo: ${cesantia.tipoincapacidadreportada}, Imagen: ${cesantia.imagePath}'),
                   );
                 },
               );
@@ -92,8 +94,10 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
               return ListView.builder(
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
+                  final incapacidad = snapshot.data![index];
                   return ListTile(
-                    title: Text('Incapacidad ID: ${snapshot.data![index].id}'),
+                    title: Text('Incapacidad ID: ${incapacidad.id}'),
+                    subtitle: Text('Tipo: ${incapacidad.tipocesantiareportada}, Imagen: ${incapacidad.imagePath}'),
                   );
                 },
               );

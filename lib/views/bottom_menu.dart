@@ -6,6 +6,7 @@ import 'package:talento_mxm_flutter/views/incapacidades_page.dart';
 import 'package:talento_mxm_flutter/views/login_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:talento_mxm_flutter/views/perfil.dart';
+import 'package:talento_mxm_flutter/views/registro_page.dart';
 import 'package:talento_mxm_flutter/controllers/authentication.dart';
 
 class SideMenu extends StatelessWidget {
@@ -91,17 +92,24 @@ class SideMenu extends StatelessWidget {
             },
           ),
           _createDrawerItem(
-            icon: Icons.document_scanner,
+            icon: Icons.assignment,
             text: 'Referidos',
             onTap: () {
               _navigateTo(context, CrearReferidoScreen());
             },
           ),
           _createDrawerItem(
-            icon: Icons.web,
+            icon: Icons.format_align_left,
             text: 'Autogestión',
             onTap: () {
               _launchURL('http://supermercadosmxmag.siesacloud.com:8933/AuthAG/LoginFormAG?IdCia=1&NroConexion=1');
+            },
+          ),
+           _createDrawerItem(
+            icon: Icons.bookmark,
+            text: 'Mis registros',
+            onTap: () {
+              _navigateTo(context, MyWidget());
             },
           ),
           _createDrawerItem(

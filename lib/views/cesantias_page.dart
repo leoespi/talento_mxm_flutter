@@ -41,7 +41,9 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
     return AppBar(
       backgroundColor: const Color.fromARGB(255, 5, 13, 121),
       iconTheme: IconThemeData(color: Colors.white),
-      title: Text(''),
+      title: Text('Cesantias', style: TextStyle(
+      color: Colors.white, // Cambia el color aquí
+    ),),
     );
   }
 

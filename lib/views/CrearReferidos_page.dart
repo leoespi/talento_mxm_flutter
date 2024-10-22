@@ -52,7 +52,9 @@ class _CrearReferidoScreenState extends State<CrearReferidoScreen> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 5, 13, 121),
         iconTheme: IconThemeData(color: Colors.white),
-        title: Text(''),
+         title: Text('Referidos', style: TextStyle(
+      color: Colors.white, // Cambia el color aquí
+    ),),
       ),
       drawer: SideMenu(),
       body: Padding(

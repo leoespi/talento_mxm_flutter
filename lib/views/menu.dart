@@ -81,7 +81,9 @@ class _MenuPageState extends State<MenuPage> {
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 5, 13, 121),
-        title: Text(''),
+        title: Text('Inicio', style: TextStyle(
+      color: Colors.white, // Cambia el color aquí
+    ),),
       ),
       drawer: SideMenu(),
       body: RefreshIndicator(

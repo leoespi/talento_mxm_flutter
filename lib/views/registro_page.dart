@@ -4,6 +4,7 @@ import 'package:talento_mxm_flutter/models/registros_model.dart';
 import 'package:talento_mxm_flutter/views/bottom_menu.dart';
 import 'package:talento_mxm_flutter/controllers/authentication.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class MyWidget extends StatefulWidget {
   @override
@@ -71,9 +72,24 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
                   final cesantia = snapshot.data![index];
-                  return ListTile(
-                    title: Text('Cesantía ID: ${cesantia.id}'),
-                    subtitle: Text('Tipo: ${cesantia.tipoincapacidadreportada}, Imagen: ${cesantia.imagePath}'),
+                  return Card(
+                    margin: EdgeInsets.all(8.0),
+                    child: Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Cesantía ID: ${cesantia.id}'),
+                          Text('Tipo: ${cesantia.tipoCesantiaReportada}'),
+                          Text('Estado: ${cesantia.estado}'),
+                          if (cesantia.justificacion != null)
+                            Text('Justificación: ${cesantia.justificacion}'),
+                          Text('Fecha: ${cesantia.createdAt.toLocal()}'),
+                          if (cesantia.imagenes.isNotEmpty)
+                            _buildImageGrid(cesantia.imagenes),
+                        ],
+                      ),
+                    ),
                   );
                 },
               );
@@ -95,15 +111,66 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
                   final incapacidad = snapshot.data![index];
-                  return ListTile(
-                    title: Text('Incapacidad ID: ${incapacidad.id}'),
-                    subtitle: Text('Tipo: ${incapacidad.tipocesantiareportada}, Imagen: ${incapacidad.imagePath}'),
+                  return Card(
+                    margin: EdgeInsets.all(8.0),
+                    child: Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Incapacidad ID: ${incapacidad.id}'),
+                          Text('Tipo: ${incapacidad.tipoIncapacidadReportada}'),
+                          Text('Días de Incapacidad: ${incapacidad.diasIncapacidad}'),
+                          Text('Fecha de Inicio: ${incapacidad.fechaInicioIncapacidad.toLocal()}'),
+                          Text('Entidad Afiliada: ${incapacidad.entidadAfiliada}'),
+                          if (incapacidad.imagenes.isNotEmpty)
+                            _buildImageGrid(incapacidad.imagenes),
+                        ],
+                      ),
+                    ),
                   );
                 },
               );
             },
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildImageGrid(List<String> images) {
+    return Container(
+      height: 200.0,
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: images.length == 1 ? 1 : 2,
+          childAspectRatio: 1.0,
+          crossAxisSpacing: 4.0,
+          mainAxisSpacing: 4.0,
+        ),
+        itemCount: images.length,
+        scrollDirection: Axis.vertical,
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemBuilder: (context, imgIndex) {
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: CachedNetworkImage(
+              imageUrl: 'http://10.0.2.2:8000/storage/${images[imgIndex]}',
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+              errorWidget: (context, url, error) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error),
+                    Text('Error al cargar la imagen'),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

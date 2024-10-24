@@ -320,7 +320,7 @@ class _DetallePublicacionState extends State<DetallePublicacion> {
                   placeholder: (context, url) => Center(child: CircularProgressIndicator()),
                   errorWidget: (context, url, error) => Center(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,  
                       children: [
                         Icon(Icons.error),
                         Text('Toca para intentar de nuevo'),

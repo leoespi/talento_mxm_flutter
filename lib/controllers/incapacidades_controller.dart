@@ -12,13 +12,16 @@ class IncapacidadesController extends GetxController {
   final url = 'http://10.0.2.2:8000/api/';
 
   Future<void> createIncapacidad({
-    required String tipoincapacidadreportada,
-    required int diasIncapacidad,
-    required DateTime fechaInicioIncapacidad,
-    required String entidadAfiliada,
-    required List<File> images,
-    required List<String> imagePaths,
-    required BuildContext context,
+   required String tipoincapacidadreportada,
+  required int diasIncapacidad,
+  required DateTime fechaInicioIncapacidad,
+  required String entidadAfiliada,
+  required List<File> images,
+  required List<File> documents, // Agregar documentos
+  required List<String> imagePaths,
+  required List<String> documentPaths, // Rutas de documentos
+  required BuildContext context,
+    
   }) async {
     try {
       int? userId = box.read('user_id');
@@ -52,6 +55,13 @@ class IncapacidadesController extends GetxController {
         var image = images[i];
         var imagePath = imagePaths[i];
         request.files.add(await http.MultipartFile.fromPath('images[$i]', imagePath));
+      }
+
+       // Añadir los documentos al request
+      for (int i = 0; i < documents.length; i++) {
+        var document = documents[i];
+        var documentPath = documentPaths[i];
+        request.files.add(await http.MultipartFile.fromPath('documentos[]', documentPath));
       }
 
       var response = await ioClient.send(request);

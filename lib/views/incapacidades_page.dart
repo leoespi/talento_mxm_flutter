@@ -5,8 +5,9 @@ import 'package:get/get.dart';
 import 'package:talento_mxm_flutter/controllers/incapacidades_controller.dart';
 import 'package:talento_mxm_flutter/views/menu.dart';
 import 'package:talento_mxm_flutter/controllers/authentication.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:image/image.dart' as img;
-import 'package:talento_mxm_flutter/views/bottom_menu.dart';
+import 'package:talento_mxm_flutter/views/bottom_menu.dart'; // Asegúrate de importar el nuevo widget
 
 
 void main() => runApp(MyApp());
@@ -30,25 +31,23 @@ class _MyFormState extends State<MyForm> {
   final AuthenticationController _authController = AuthenticationController();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _diasIncapacidadController = TextEditingController();
-  
+
   String? _selectedEntidadAfiliada;
   String? _selectedtipoincapacidadreportada;
   DateTime _fechaInicio = DateTime.now();
   List<File> _images = [];
+  List<File> _documents = [];
   bool _isLoading = false;
 
   final IncapacidadesController _controller = Get.put(IncapacidadesController());
 
-
-   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 5, 13, 121),
-         title: Text('Incapacidades', style: TextStyle(
-      color: Colors.white, // Cambia el color aquí
-    ),),
+        title: Text('Incapacidades', style: TextStyle(color: Colors.white)),
       ),
       drawer: SideMenu(),
       body: SingleChildScrollView(
@@ -76,6 +75,10 @@ class _MyFormState extends State<MyForm> {
                   SizedBox(height: 20),
                   _buildSelectedImages(),
                   SizedBox(height: 20),
+                  _buildSelectDocumentsButton(),
+                  SizedBox(height: 20),
+                  _buildSelectedDocuments(),
+                  SizedBox(height: 20),
                   _buildSubmitButton(),
                 ],
               ),
@@ -86,8 +89,6 @@ class _MyFormState extends State<MyForm> {
     );
   }
 
-
-  // Método para seleccionar la fecha
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -102,120 +103,115 @@ class _MyFormState extends State<MyForm> {
     }
   }
 
-  // Método para comprimir y redimensionar la imagen
-  File compressAndResizeImage(File file) {
-  // Cargar la imagen desde el archivo
-  img.Image? image = img.decodeImage(file.readAsBytesSync());
-
-  // Si la imagen no es válida, devolver el archivo original
-  if (image == null) {
-    return file;
+  File compressImage(File file) {
+    img.Image? image = img.decodeImage(file.readAsBytesSync());
+    if (image == null) return file;
+    List<int> compressedBytes = img.encodeJpg(image, quality: 85);
+    File compressedFile = File(file.path.replaceFirst('.jpg', '_compressed.jpg'));
+    compressedFile.writeAsBytesSync(compressedBytes);
+    return compressedFile;
   }
 
-  // Comprimir la imagen ajustando la calidad
-  List<int> compressedBytes = img.encodeJpg(image, quality: 85); // Ajusta la calidad según lo necesites
-
-  // Crear un nuevo archivo para la imagen comprimida
-  File compressedFile = File(file.path.replaceFirst('.jpg', '_compressed.jpg'));
-  compressedFile.writeAsBytesSync(compressedBytes);
-
-  return compressedFile;
-  }
-
-  // Método para seleccionar imágenes
   void _getImages() async {
     final pickedFiles = await ImagePicker().pickMultiImage();
     if (pickedFiles != null) {
       setState(() {
         _images.clear();
         _images.addAll(pickedFiles.map((pickedFile) => File(pickedFile.path)));
-        // Comprimir y redimensionar imágenes después de seleccionarlas
-        _images = _images.map(compressAndResizeImage).toList();
+        _images = _images.map(compressImage).toList();
       });
     }
   }
 
-  // Método para enviar el formulario
-  Future<void> _submitForm() async {
-  if (!_formKey.currentState!.validate()) return; // Validación del formulario
-
-  // Validar que se hayan seleccionado imágenes
-  if (_images.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Por favor selecciona al menos una imagen')),
-    );
-    return;
+  void _getDocuments() async {
+    final pickedFiles = await FilePicker.platform.pickFiles(allowMultiple: true);
+    if (pickedFiles != null) {
+      setState(() {
+        _documents.clear();
+        _documents.addAll(pickedFiles.paths.map((path) => File(path!)));
+      });
+    }
   }
 
-  setState(() {
-    _isLoading = true;
-  });
-
-  try {
-    List<String> imagePaths = _images.map((img) => img.path).toList();
-    await _controller.createIncapacidad(
-      tipoincapacidadreportada: _selectedtipoincapacidadreportada!,
-      diasIncapacidad: int.parse(_diasIncapacidadController.text),
-      fechaInicioIncapacidad: _fechaInicio,
-      entidadAfiliada: _selectedEntidadAfiliada!,
-      images: _images,
-      imagePaths: imagePaths,
+  Future<void> _confirmAndSubmit() async {
+    bool? confirm = await showDialog<bool>(
       context: context,
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Incapacidad creada con éxito')),
-    );
-
-    Get.offAll(() => MenuPage());
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Ocurrió un error. Por favor, inténtalo de nuevo.')),
-    );
-  } finally {
-    setState(() {
-      _isLoading = false;
-    });
-  }
-}
-
-
-  // Método para mostrar el diálogo de confirmación
-  Future<void> _showConfirmationDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
-          title: Text('Confirmación'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('¿Estás seguro de que deseas enviar este formulario?'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
+          title: Text('Confirmar Envío'),
+          content: Text('¿Estás seguro de que deseas enviar la incapacidad?'),
+          actions: [
             TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
               child: Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
             ),
             TextButton(
-              child: Text('Enviar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                _submitForm();
-              },
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text('Confirmar'),
             ),
           ],
         );
       },
     );
+
+    if (confirm == true) {
+      _submitForm();
+    }
   }
 
- 
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (_images.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Por favor selecciona al menos una imagen')),
+      );
+      return;
+    }
+
+    if (_documents.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Por favor selecciona al menos un documento')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      List<String> imagePaths = _images.map((img) => img.path).toList();
+      List<String> documentPaths = _documents.map((doc) => doc.path).toList();
+
+      await _controller.createIncapacidad(
+        tipoincapacidadreportada: _selectedtipoincapacidadreportada!,
+        diasIncapacidad: int.parse(_diasIncapacidadController.text),
+        fechaInicioIncapacidad: _fechaInicio,
+        entidadAfiliada: _selectedEntidadAfiliada!,
+        images: _images,
+        documents: _documents,
+        imagePaths: imagePaths,
+        documentPaths: documentPaths,
+        context: context,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Incapacidad creada con éxito')),
+      );
+
+      Get.offAll(() => MenuPage());
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ocurrió un error. Por favor, inténtalo de nuevo.')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   Widget _buildDropdownTipoincapacidad() {
     return DropdownButtonFormField<String>(
       value: _selectedtipoincapacidadreportada,
@@ -278,25 +274,27 @@ class _MyFormState extends State<MyForm> {
         documents.addAll(['- Incapacidad emitida por la EPS', '- Historia clínica']);
         break;
       case 'Incapacidad por Accidente de Transito':
-        documents.addAll(['- Incapacidad emitida por la EPS', '- Historia clínica', '- Formulario Furips', '- Fotocopia del SOAT', '- Fotocopia de la Cedula']);
+        documents.addAll(['- Incapacidad emitida por la EPS', '- Historia clínica', '- Formulario Furips', '- Fotocopia del SOAT', '- Fotocopia de la Cédula']);
         break;
       case 'Licencia Por Maternidad':
         documents.addAll(['- Incapacidad emitida por la EPS', '- Epicrisis', '- Registro civil', '- Certificado de nacido vivo']);
         break;
       case 'Licencia Por Paternidad':
-        documents.addAll(['- Transcripción de la licencia', '- Incapacidad emitida por la EPS', '- Epicrisis', '- Certificado de nacido vivo', '- Registro civil del hijo(a)', '- Fotocopia de la cédula del hijo(a)']);
+        documents.addAll(['- Transcripción de la licencia', '- Incapacidad emitida por la EPS', '- Epicrisis', '- Certificado de nacido vivo', '- Registro civil del hijo(a)', '- Fotocopia de la Cédula']);
         break;
       case 'Licencia Por Luto':
-        documents.addAll(['- Incapacidad emitida por la EPS', '- Registro civil de defunción', '- Registro civil del hijo(a)', '- Fotocopia de la cédula del hijo(a)']);
+        documents.addAll(['- Incapacidad emitida por la EPS', '- Registro civil del fallecido', '- Certificado de defunción']);
         break;
       default:
-        documents.add('- Seleccione un tipo de incapacidad para ver los documentos requeridos');
         break;
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: documents.map((doc) => Text(doc)).toList(),
+      children: [
+        Text('Documentos requeridos:'),
+        ...documents.map((doc) => Text(doc)).toList(),
+      ],
     );
   }
 
@@ -346,17 +344,44 @@ class _MyFormState extends State<MyForm> {
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.blueAccent),
                 ),
-                child: Image.file(image, fit: BoxFit.cover),
+                child: Center(child: Text(image.path.split('/').last)), // Mostrar nombre del archivo
               );
             }).toList(),
           )
         : Text('No hay imágenes seleccionadas');
   }
 
+  Widget _buildSelectDocumentsButton() {
+    return ElevatedButton(
+      onPressed: _getDocuments,
+      child: Text('Seleccionar Documentos'),
+    );
+  }
+
+  Widget _buildSelectedDocuments() {
+    return _documents.isNotEmpty
+        ? Wrap(
+            spacing: 8.0,
+            children: _documents.map((document) {
+              return Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.blueAccent),
+                ),
+                child: Center(child: Text(document.path.split('/').last)), // Mostrar nombre del archivo
+              );
+            }).toList(),
+          )
+        : Text('No hay documentos seleccionados');
+  }
+
   Widget _buildSubmitButton() {
     return ElevatedButton(
-      onPressed: _showConfirmationDialog,
-      child: _isLoading ? CircularProgressIndicator() : Text('Enviar'),
+      onPressed: _isLoading ? null : _confirmAndSubmit, // Cambiado para usar la confirmación
+      child: _isLoading
+          ? CircularProgressIndicator(color: Colors.white)
+          : Text('Enviar'),
     );
   }
 }

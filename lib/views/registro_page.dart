@@ -90,6 +90,17 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
                             if (cesantia.justificacion != null)
                               Text('Justificación: ${cesantia.justificacion}'),
                             Text('Fecha: ${cesantia.createdAt.toLocal()}'),
+                             SizedBox(height: 8),
+                            if (cesantia.documentos.isNotEmpty)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Documentos:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  SizedBox(height: 4),
+                                  ...cesantia.documentos.map((doc) => Text(doc)).toList(),
+                                  SizedBox(height: 8),
+                                ],
+                              ),
                             if (cesantia.imagenes.isNotEmpty)
                               _buildImageGrid(cesantia.imagenes),
                           ],
@@ -278,4 +289,3 @@ class _VistaImagenState extends State<VistaImagen> {
     );
   }
 }
-  

@@ -6,6 +6,7 @@ import 'package:talento_mxm_flutter/controllers/cesantias_controller.dart';
 import 'package:talento_mxm_flutter/views/menu.dart';
 import 'package:talento_mxm_flutter/views/bottom_menu.dart';
 import 'package:image/image.dart' as img;
+import 'package:file_picker/file_picker.dart';
 
 void main() => runApp(MyCesantiaspage());
 
@@ -20,6 +21,7 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedtipocesantiareportada; // Tipo de cesantía seleccionada
   List<File> _images = []; // Lista de imágenes seleccionadas
+  List<File> _documents = [];
   bool _isLoading = false; // Estado de carga para el botón de enviar
   final CesantiasController _controller = Get.put(CesantiasController()); // Controlador de cesantías
 
@@ -70,6 +72,10 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
               _buildImagePickerButton(), // Botón para seleccionar imágenes
               SizedBox(height: 20),
               _buildSelectedImages(), // Muestra imágenes seleccionadas
+               _buildSelectDocumentsButton(),
+                  SizedBox(height: 20),
+                  _buildSelectedDocuments(),
+                  SizedBox(height: 20),
               SizedBox(height: 20),
               _buildSubmitButton(), // Botón para enviar el formulario
             ],
@@ -184,6 +190,18 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
       child: Text('Seleccionar Imágenes'),
     );
   }
+
+
+  void _getDocuments() async {
+    final pickedFiles = await FilePicker.platform.pickFiles(allowMultiple: true);
+    if (pickedFiles != null) {
+      setState(() {
+        _documents.clear();
+        _documents.addAll(pickedFiles.paths.map((path) => File(path!)));
+      });
+    }
+  }
+
 
   // Método para mostrar las imágenes seleccionadas
   Widget _buildSelectedImages() {
@@ -320,14 +338,40 @@ void _getImages() async {
     );
   }
 
+
+   Widget _buildSelectDocumentsButton() {
+    return ElevatedButton(
+      onPressed: _getDocuments,
+      child: Text('Seleccionar Documentos'),
+    );
+  }
+  Widget _buildSelectedDocuments() {
+    return _documents.isNotEmpty
+        ? Wrap(
+            spacing: 8.0,
+            children: _documents.map((document) {
+              return Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.blueAccent),
+                ),
+                child: Center(child: Text(document.path.split('/').last)), // Mostrar nombre del archivo
+              );
+            }).toList(),
+          )
+        : Text('No hay documentos seleccionados');
+  }
+
+
   // Función para enviar el formulario
   Future<void> _submitForm() async {
     // Validar que el formulario sea correcto
     if (!_formKey.currentState!.validate()) return;
 
-    if (_images.isEmpty) {
+    if (_images.isEmpty  && _documents.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Por favor selecciona al menos una imagen')),
+      SnackBar(content: Text('Por favor selecciona al menos una imagen o un documento')),
     );
     return;
   }
@@ -339,6 +383,7 @@ void _getImages() async {
 
     try {
       List<String> imagePaths = []; // Lista para almacenar las rutas de las imágenes
+      List<String> documentPaths = _documents.map((doc) => doc.path).toList();
 
       // Procesar cada imagen seleccionada
       for (File imageFile in _images) {
@@ -348,8 +393,10 @@ void _getImages() async {
       // Llamar al controlador para crear las cesantías
       await _controller.createCesantias(
         tipocesantiareportada: _selectedtipocesantiareportada!,
-        images: _images, // Pasar las imágenes directamente
+        images: _images,
+        documents: _documents,
         imagePaths: imagePaths,
+        documentPaths: documentPaths,
         context: context,
       );
 

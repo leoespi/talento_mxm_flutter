@@ -6,6 +6,8 @@ class Cesantia {
   final String? justificacion;
   final DateTime createdAt;
   final List<String> imagenes;
+  final List<String> documentos; // Agregar esta línea
+
 
   Cesantia({
     required this.id,
@@ -15,6 +17,8 @@ class Cesantia {
     this.justificacion,
     required this.createdAt,
     required this.imagenes,
+    required this.documentos, // Agregar esta línea
+
   });
 
   factory Cesantia.fromJson(Map<String, dynamic> json) {
@@ -22,6 +26,14 @@ class Cesantia {
     List<String> images = [];
     if (json['images']  != null && json['images'].length > 0) {
       images = List<String>.from(json['images'].map((image) => image['image_path']).toList());
+    }
+
+     List<String> docs = [];
+    if (json['documentos'] != null && json['documentos'].isNotEmpty) {
+      docs = List<String>.from(json['documentos'].map((doc) {
+        String fullPath = doc['documentos'] as String;
+        return fullPath.split('/').last; // Solo extraer el nombre del documento
+      }).toList());
     }
 
     return Cesantia(
@@ -32,6 +44,7 @@ class Cesantia {
       justificacion: json['justificacion'],
       createdAt: DateTime.parse(json['created_at']),
       imagenes: images,
+      documentos: docs,
     );
   }
 }

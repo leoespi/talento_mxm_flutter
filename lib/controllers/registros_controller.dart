@@ -10,6 +10,7 @@ class ApiService {
     final token = _getToken();
     final response = await _getRequest('$baseUrl/indexcesantias', token);
 
+    print('Response body: ${response.body}');
     final List<dynamic> data = json.decode(response.body)['cesantias'];
     return data.map((item) => Cesantia.fromJson(item)).toList();
   }

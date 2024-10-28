@@ -14,7 +14,10 @@ class CesantiasController extends GetxController {
  Future<void> createCesantias({
   required String tipocesantiareportada,
   required List<File> images,
+  required List<File> documents, // Agregar documentos
+
   required List<String> imagePaths, 
+  required List<String> documentPaths, // Rutas de documentos
   required BuildContext context,
 }) async {
   try {
@@ -50,6 +53,13 @@ class CesantiasController extends GetxController {
         filename: '${DateTime.now().millisecondsSinceEpoch}_image$i.jpg',
       ));
     }
+
+      // Añadir los documentos al request
+      for (int i = 0; i < documents.length; i++) {
+        var document = documents[i];
+        var documentPath = documentPaths[i];
+        request.files.add(await http.MultipartFile.fromPath('documentos[]', documentPath));
+      }
 
     var response = await ioClient.send(request);
 

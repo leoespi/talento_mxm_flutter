@@ -15,12 +15,14 @@ class ApiService {
   }
 
   Future<List<Incapacidad>> fetchIncapacidades() async {
-    final token = _getToken();
-    final response = await _getRequest('$baseUrl/indexincapacidades', token);
+  final token = _getToken();
+  final response = await _getRequest('$baseUrl/indexincapacidades', token);
 
-    final List<dynamic> data = json.decode(response.body)['incapacidades'];
-    return data.map((item) => Incapacidad.fromJson(item)).toList();
-  }
+  print('Response body: ${response.body}'); // Agregar esto para ver la respuesta
+
+  final List<dynamic> data = json.decode(response.body)['incapacidades'];
+  return data.map((item) => Incapacidad.fromJson(item)).toList();
+}
 
   String? _getToken() {
     final box = GetStorage();

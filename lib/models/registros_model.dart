@@ -35,16 +35,16 @@ class Cesantia {
     );
   }
 }
-
 class Incapacidad {
-  final int id; // ID de la incapacidad
-  final int userId; // ID del usuario
-  final String tipoIncapacidadReportada; // Tipo de incapacidad reportada
-  final int diasIncapacidad; // Días de incapacidad
-  final DateTime fechaInicioIncapacidad; // Fecha de inicio de la incapacidad
-  final String? aplicaCobro; // Aplica cobro
-  final String entidadAfiliada; // Entidad afiliada
-  final List<String> imagenes; // Lista de imágenes asociadas
+  final int id;
+  final int userId;
+  final String tipoIncapacidadReportada;
+  final int diasIncapacidad;
+  final DateTime fechaInicioIncapacidad;
+  final String? aplicaCobro;
+  final String entidadAfiliada;
+  final List<String> imagenes;
+  final List<String> documentos; // Agregar esta línea
 
   Incapacidad({
     required this.id,
@@ -55,13 +55,21 @@ class Incapacidad {
     this.aplicaCobro,
     required this.entidadAfiliada,
     required this.imagenes,
+    required this.documentos, // Agregar esta línea
   });
 
   factory Incapacidad.fromJson(Map<String, dynamic> json) {
-    // Extraer las imágenes de la lista
     List<String> images = [];
     if (json['images'] != null && json['images'].isNotEmpty) {
       images = List<String>.from(json['images'].map((image) => image['image_path'] as String).toList());
+    }
+
+    List<String> docs = [];
+    if (json['documentos'] != null && json['documentos'].isNotEmpty) {
+      docs = List<String>.from(json['documentos'].map((doc) {
+        String fullPath = doc['documentos'] as String;
+        return fullPath.split('/').last; // Solo extraer el nombre del documento
+      }).toList());
     }
 
     return Incapacidad(
@@ -73,6 +81,7 @@ class Incapacidad {
       aplicaCobro: json['aplica_cobro'],
       entidadAfiliada: json['entidad_afiliada'] ?? 'Sin entidad',
       imagenes: images,
+      documentos: docs, // Agregar esta línea
     );
   }
 }

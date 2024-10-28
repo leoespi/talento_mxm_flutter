@@ -74,7 +74,7 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
                   final cesantia = snapshot.data![index];
                   return GestureDetector(
                     onTap: () {
-                      
+                      // Acción al pulsar
                     },
                     child: Card(
                       margin: EdgeInsets.all(8.0),
@@ -100,49 +100,59 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
               );
             },
           ),
-          FutureBuilder<List<Incapacidad>>(
-            future: incapacidades,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              }
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
-              if (snapshot.hasData && snapshot.data!.isEmpty) {
-                return Center(child: Text('No hay incapacidades disponibles.'));
-              }
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final incapacidad = snapshot.data![index];
-                  return GestureDetector(
-                    onTap: () {
-                     
-                    },
-                    child: Card(
-                      margin: EdgeInsets.all(8.0),
-                      child: Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text('Incapacidad ID: ${incapacidad.id}'),
-                            Text('Tipo: ${incapacidad.tipoIncapacidadReportada}'),
-                            Text('Días de Incapacidad: ${incapacidad.diasIncapacidad}'),
-                            Text('Fecha de Inicio: ${incapacidad.fechaInicioIncapacidad.toLocal()}'),
-                            Text('Entidad Afiliada: ${incapacidad.entidadAfiliada}'),
-                            if (incapacidad.imagenes.isNotEmpty)
-                              _buildImageGrid(incapacidad.imagenes),
-                          ],
-                        ),
-                      ),
+         FutureBuilder<List<Incapacidad>>(
+  future: incapacidades,
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return Center(child: CircularProgressIndicator());
+    }
+    if (snapshot.hasError) {
+      return Center(child: Text('Error: ${snapshot.error}'));
+    }
+    if (snapshot.hasData && snapshot.data!.isEmpty) {
+      return Center(child: Text('No hay incapacidades disponibles.'));
+    }
+    return ListView.builder(
+      itemCount: snapshot.data!.length,
+      itemBuilder: (context, index) {
+        final incapacidad = snapshot.data![index];
+        return GestureDetector(
+          onTap: () {
+            // Acción al pulsar
+          },
+          child: Card(
+            margin: EdgeInsets.all(8.0),
+            child: Padding(
+              padding: EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text('Incapacidad Nro: ${incapacidad.id}'),
+                  Text('Tipo: ${incapacidad.tipoIncapacidadReportada}'),
+                  Text('Días de Incapacidad: ${incapacidad.diasIncapacidad}'),
+                  Text('Fecha de Inicio: ${incapacidad.fechaInicioIncapacidad.toLocal()}'),
+                  Text('Entidad Afiliada: ${incapacidad.entidadAfiliada}'),
+                  if (incapacidad.documentos.isNotEmpty) // Mostrar solo nombres de documentos
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Documentos:'),
+                        ...incapacidad.documentos.map((doc) => Text(doc)).toList(),
+                      ],
                     ),
-                  );
-                },
-              );
-            },
+                  if (incapacidad.imagenes.isNotEmpty)
+                    _buildImageGrid(incapacidad.imagenes),
+                ],
+              ),
+            ),
           ),
+        );
+      },
+    );
+  },
+),
+
+
         ],
       ),
     );
@@ -163,7 +173,7 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
   Widget _buildImageGrid(List<String> images) {
     return Container(
       child: GridView.count(
-        crossAxisCount: 2, // Puedes ajustar esto si es necesario
+        crossAxisCount: 2,
         childAspectRatio: 1.0,
         crossAxisSpacing: 4.0,
         mainAxisSpacing: 4.0,

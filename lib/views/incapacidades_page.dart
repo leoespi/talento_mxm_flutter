@@ -160,57 +160,52 @@ class _MyFormState extends State<MyForm> {
   }
 
   Future<void> _submitForm() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
-    if (_images.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Por favor selecciona al menos una imagen')),
-      );
-      return;
-    }
-
-    if (_documents.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Por favor selecciona al menos un documento')),
-      );
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      List<String> imagePaths = _images.map((img) => img.path).toList();
-      List<String> documentPaths = _documents.map((doc) => doc.path).toList();
-
-      await _controller.createIncapacidad(
-        tipoincapacidadreportada: _selectedtipoincapacidadreportada!,
-        diasIncapacidad: int.parse(_diasIncapacidadController.text),
-        fechaInicioIncapacidad: _fechaInicio,
-        entidadAfiliada: _selectedEntidadAfiliada!,
-        images: _images,
-        documents: _documents,
-        imagePaths: imagePaths,
-        documentPaths: documentPaths,
-        context: context,
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Incapacidad creada con éxito')),
-      );
-
-      Get.offAll(() => MenuPage());
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ocurrió un error. Por favor, inténtalo de nuevo.')),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+  // Verificar que al menos uno de los dos (imágenes o documentos) esté presente
+  if (_images.isEmpty && _documents.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Por favor selecciona al menos una imagen o un documento')),
+    );
+    return;
   }
+
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    List<String> imagePaths = _images.map((img) => img.path).toList();
+    List<String> documentPaths = _documents.map((doc) => doc.path).toList();
+
+    await _controller.createIncapacidad(
+      tipoincapacidadreportada: _selectedtipoincapacidadreportada!,
+      diasIncapacidad: int.parse(_diasIncapacidadController.text),
+      fechaInicioIncapacidad: _fechaInicio,
+      entidadAfiliada: _selectedEntidadAfiliada!,
+      images: _images,
+      documents: _documents,
+      imagePaths: imagePaths,
+      documentPaths: documentPaths,
+      context: context,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Incapacidad creada con éxito')),
+    );
+
+    Get.offAll(() => MenuPage());
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Ocurrió un error. Por favor, inténtalo de nuevo.')),
+    );
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
+
 
   Widget _buildDropdownTipoincapacidad() {
     return DropdownButtonFormField<String>(
@@ -358,6 +353,8 @@ class _MyFormState extends State<MyForm> {
     );
   }
 
+  
+
   Widget _buildSelectedDocuments() {
     return _documents.isNotEmpty
         ? Wrap(
@@ -385,3 +382,4 @@ class _MyFormState extends State<MyForm> {
     );
   }
 }
+

@@ -56,6 +56,7 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
       body: TabBarView(
         controller: _tabController,
         children: [
+          // FutureBuilder for Cesantías...
           FutureBuilder<List<Cesantia>>(
             future: cesantias,
             builder: (context, snapshot) {
@@ -100,59 +101,72 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
               );
             },
           ),
-         FutureBuilder<List<Incapacidad>>(
-  future: incapacidades,
-  builder: (context, snapshot) {
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return Center(child: CircularProgressIndicator());
-    }
-    if (snapshot.hasError) {
-      return Center(child: Text('Error: ${snapshot.error}'));
-    }
-    if (snapshot.hasData && snapshot.data!.isEmpty) {
-      return Center(child: Text('No hay incapacidades disponibles.'));
-    }
-    return ListView.builder(
-      itemCount: snapshot.data!.length,
-      itemBuilder: (context, index) {
-        final incapacidad = snapshot.data![index];
-        return GestureDetector(
-          onTap: () {
-            // Acción al pulsar
-          },
-          child: Card(
-            margin: EdgeInsets.all(8.0),
-            child: Padding(
-              padding: EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text('Incapacidad Nro: ${incapacidad.id}'),
-                  Text('Tipo: ${incapacidad.tipoIncapacidadReportada}'),
-                  Text('Días de Incapacidad: ${incapacidad.diasIncapacidad}'),
-                  Text('Fecha de Inicio: ${incapacidad.fechaInicioIncapacidad.toLocal()}'),
-                  Text('Entidad Afiliada: ${incapacidad.entidadAfiliada}'),
-                  if (incapacidad.documentos.isNotEmpty) // Mostrar solo nombres de documentos
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Documentos:'),
-                        ...incapacidad.documentos.map((doc) => Text(doc)).toList(),
-                      ],
+          // FutureBuilder for Incapacidades...
+          FutureBuilder<List<Incapacidad>>(
+            future: incapacidades,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              }
+              if (snapshot.hasData && snapshot.data!.isEmpty) {
+                return Center(child: Text('No hay incapacidades disponibles.'));
+              }
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  final incapacidad = snapshot.data![index];
+                  return GestureDetector(
+                    onTap: () {
+                      // Acción al pulsar
+                    },
+                    child: Card(
+                      margin: EdgeInsets.all(8.0),
+                      child: Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('Incapacidad Nro: ${incapacidad.id}', style: TextStyle(fontWeight: FontWeight.bold)),
+                            SizedBox(height: 8),
+                            Text('Tipo: ${incapacidad.tipoIncapacidadReportada}'),
+                            SizedBox(height: 4),
+                            Text('Días de Incapacidad: ${incapacidad.diasIncapacidad}'),
+                            SizedBox(height: 4),
+                            Text('Fecha de Inicio: ${incapacidad.fechaInicioIncapacidad.toLocal()}'),
+                            SizedBox(height: 4),
+                            Text('Entidad Afiliada: ${incapacidad.entidadAfiliada}'),
+                            SizedBox(height: 8),
+                            if (incapacidad.documentos.isNotEmpty)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Documentos:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  SizedBox(height: 4),
+                                  ...incapacidad.documentos.map((doc) => Text(doc)).toList(),
+                                  SizedBox(height: 8),
+                                ],
+                              ),
+                            if (incapacidad.imagenes.isNotEmpty) 
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Imágenes:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  SizedBox(height: 4),
+                                  _buildImageGrid(incapacidad.imagenes),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
-                  if (incapacidad.imagenes.isNotEmpty)
-                    _buildImageGrid(incapacidad.imagenes),
-                ],
-              ),
-            ),
+                  );
+                },
+              );
+            },
           ),
-        );
-      },
-    );
-  },
-),
-
-
         ],
       ),
     );
@@ -264,3 +278,4 @@ class _VistaImagenState extends State<VistaImagen> {
     );
   }
 }
+  

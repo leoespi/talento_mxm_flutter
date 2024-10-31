@@ -7,8 +7,7 @@ import 'package:talento_mxm_flutter/views/menu.dart';
 import 'package:talento_mxm_flutter/controllers/authentication.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image/image.dart' as img;
-import 'package:talento_mxm_flutter/views/bottom_menu.dart'; // Asegúrate de importar el nuevo widget
-
+import 'package:talento_mxm_flutter/views/bottom_menu.dart';
 
 void main() => runApp(MyApp());
 
@@ -33,7 +32,7 @@ class _MyFormState extends State<MyForm> {
   final TextEditingController _diasIncapacidadController = TextEditingController();
 
   String? _selectedEntidadAfiliada;
-  String? _selectedtipoincapacidadreportada;
+  String? _selectedTipoincapacidadReportada;
   DateTime _fechaInicio = DateTime.now();
   List<File> _images = [];
   List<File> _documents = [];
@@ -63,7 +62,7 @@ class _MyFormState extends State<MyForm> {
                 children: <Widget>[
                   _buildDropdownTipoincapacidad(),
                   SizedBox(height: 20),
-                  _buildDocumentItem(_selectedtipoincapacidadreportada),
+                  _buildDocumentItem(_selectedTipoincapacidadReportada),
                   SizedBox(height: 20),
                   _buildDiasIncapacidadField(),
                   SizedBox(height: 20),
@@ -89,6 +88,7 @@ class _MyFormState extends State<MyForm> {
     );
   }
 
+  // Método para seleccionar la fecha
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -103,6 +103,7 @@ class _MyFormState extends State<MyForm> {
     }
   }
 
+  // Método para comprimir la imagen
   File compressImage(File file) {
     img.Image? image = img.decodeImage(file.readAsBytesSync());
     if (image == null) return file;
@@ -112,6 +113,7 @@ class _MyFormState extends State<MyForm> {
     return compressedFile;
   }
 
+  // Método para obtener imágenes
   void _getImages() async {
     final pickedFiles = await ImagePicker().pickMultiImage();
     if (pickedFiles != null) {
@@ -123,6 +125,7 @@ class _MyFormState extends State<MyForm> {
     }
   }
 
+  // Método para obtener documentos
   void _getDocuments() async {
     final pickedFiles = await FilePicker.platform.pickFiles(allowMultiple: true);
     if (pickedFiles != null) {
@@ -133,6 +136,7 @@ class _MyFormState extends State<MyForm> {
     }
   }
 
+  // Método para confirmar y enviar el formulario
   Future<void> _confirmAndSubmit() async {
     bool? confirm = await showDialog<bool>(
       context: context,
@@ -159,57 +163,58 @@ class _MyFormState extends State<MyForm> {
     }
   }
 
+  // Método para enviar el formulario
   Future<void> _submitForm() async {
-  if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
-  // Verificar que al menos uno de los dos (imágenes o documentos) esté presente
-  if (_images.isEmpty && _documents.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Por favor selecciona al menos una imagen o un documento')),
-    );
-    return;
-  }
+    // Verificar que al menos uno de los dos (imágenes o documentos) esté presente
+    if (_images.isEmpty && _documents.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Por favor selecciona al menos una imagen o un documento')),
+      );
+      return;
+    }
 
-  setState(() {
-    _isLoading = true;
-  });
-
-  try {
-    List<String> imagePaths = _images.map((img) => img.path).toList();
-    List<String> documentPaths = _documents.map((doc) => doc.path).toList();
-
-    await _controller.createIncapacidad(
-      tipoincapacidadreportada: _selectedtipoincapacidadreportada!,
-      diasIncapacidad: int.parse(_diasIncapacidadController.text),
-      fechaInicioIncapacidad: _fechaInicio,
-      entidadAfiliada: _selectedEntidadAfiliada!,
-      images: _images,
-      documents: _documents,
-      imagePaths: imagePaths,
-      documentPaths: documentPaths,
-      context: context,
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Incapacidad creada con éxito')),
-    );
-
-    Get.offAll(() => MenuPage());
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Ocurrió un error. Por favor, inténtalo de nuevo.')),
-    );
-  } finally {
     setState(() {
-      _isLoading = false;
+      _isLoading = true;
     });
+
+    try {
+      List<String> imagePaths = _images.map((img) => img.path).toList();
+      List<String> documentPaths = _documents.map((doc) => doc.path).toList();
+
+      await _controller.createIncapacidad(
+        tipoincapacidadreportada: _selectedTipoincapacidadReportada!,
+        diasIncapacidad: int.parse(_diasIncapacidadController.text),
+        fechaInicioIncapacidad: _fechaInicio,
+        entidadAfiliada: _selectedEntidadAfiliada!,
+        images: _images,
+        documents: _documents,
+        imagePaths: imagePaths,
+        documentPaths: documentPaths,
+        context: context,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Incapacidad creada con éxito')),
+      );
+
+      Get.offAll(() => MenuPage());
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ocurrió un error. Por favor, inténtalo de nuevo.')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
-}
 
-
+  // Método para construir el dropdown de tipo de incapacidad
   Widget _buildDropdownTipoincapacidad() {
     return DropdownButtonFormField<String>(
-      value: _selectedtipoincapacidadreportada,
+      value: _selectedTipoincapacidadReportada,
       items: const [
         DropdownMenuItem(value: 'Incapacidad por Enfermedad General', child: Text('Incapacidad por Enfermedad General')),
         DropdownMenuItem(value: 'Incapacidad por Accidente de Transito', child: Text('Incapacidad por Accidente de Transito')),
@@ -219,7 +224,7 @@ class _MyFormState extends State<MyForm> {
       ],
       onChanged: (value) {
         setState(() {
-          _selectedtipoincapacidadreportada = value;
+          _selectedTipoincapacidadReportada = value;
         });
       },
       decoration: InputDecoration(
@@ -235,6 +240,7 @@ class _MyFormState extends State<MyForm> {
     );
   }
 
+  // Método para construir el campo de días de incapacidad
   Widget _buildDiasIncapacidadField() {
     return TextFormField(
       controller: _diasIncapacidadController,
@@ -252,6 +258,7 @@ class _MyFormState extends State<MyForm> {
     );
   }
 
+  // Método para construir el campo de fecha de inicio
   Widget _buildFechaInicioField() {
     return ListTile(
       title: Text('Fecha de Inicio de la Incapacidad:'),
@@ -261,6 +268,7 @@ class _MyFormState extends State<MyForm> {
     );
   }
 
+  // Método para construir la sección de documentos requeridos
   Widget _buildDocumentItem(String? selectedOption) {
     List<String> documents = [];
 
@@ -293,6 +301,7 @@ class _MyFormState extends State<MyForm> {
     );
   }
 
+  // Método para construir el dropdown de entidad afiliada
   Widget _buildDropdownEntidadAfiliada() {
     return DropdownButtonFormField<String>(
       value: _selectedEntidadAfiliada,
@@ -321,6 +330,7 @@ class _MyFormState extends State<MyForm> {
     );
   }
 
+  // Método para construir el botón de seleccionar imágenes
   Widget _buildSelectImagesButton() {
     return ElevatedButton(
       onPressed: _getImages,
@@ -328,24 +338,43 @@ class _MyFormState extends State<MyForm> {
     );
   }
 
+  // Método para construir la sección de imágenes seleccionadas
   Widget _buildSelectedImages() {
     return _images.isNotEmpty
         ? Wrap(
             spacing: 8.0,
             children: _images.map((image) {
-              return Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blueAccent),
+              return GestureDetector(
+                onTap: () {
+                  // Lógica para intentar cargar la imagen nuevamente
+                  _retryImageUpload(image);
+                },
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blueAccent),
+                  ),
+                  child: Center(child: Text(image.path.split('/').last)), // Mostrar nombre del archivo
                 ),
-                child: Center(child: Text(image.path.split('/').last)), // Mostrar nombre del archivo
               );
             }).toList(),
           )
         : Text('No hay imágenes seleccionadas');
   }
 
+  // Método para reintentar cargar la imagen
+  void _retryImageUpload(File image) async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _images.remove(image); // Eliminar la imagen anterior si se vuelve a seleccionar
+        _images.add(File(pickedFile.path)); // Agregar la nueva imagen
+      });
+    }
+  }
+
+  // Método para construir el botón de seleccionar documentos
   Widget _buildSelectDocumentsButton() {
     return ElevatedButton(
       onPressed: _getDocuments,
@@ -353,8 +382,7 @@ class _MyFormState extends State<MyForm> {
     );
   }
 
-  
-
+  // Método para construir la sección de documentos seleccionados
   Widget _buildSelectedDocuments() {
     return _documents.isNotEmpty
         ? Wrap(
@@ -373,6 +401,7 @@ class _MyFormState extends State<MyForm> {
         : Text('No hay documentos seleccionados');
   }
 
+  // Método para construir el botón de enviar
   Widget _buildSubmitButton() {
     return ElevatedButton(
       onPressed: _isLoading ? null : _confirmAndSubmit, // Cambiado para usar la confirmación
@@ -382,4 +411,3 @@ class _MyFormState extends State<MyForm> {
     );
   }
 }
-

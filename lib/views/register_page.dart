@@ -6,21 +6,25 @@ import 'package:talento_mxm_flutter/views/login_page.dart';
 import './widgets/input_widget.dart';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({Key? key});
+  const RegisterPage({Key? key}) : super(key: key); // Añadido 'super' al constructor
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  // Controladores para la entrada de usuario
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _cedulaController = TextEditingController();
-  final AuthenticationController _authenticationController =
-      Get.put(AuthenticationController());
 
+  // Controlador de autenticación
+  final AuthenticationController _authenticationController = Get.put(AuthenticationController());
+
+  // Método para manejar el registro
   void _register() async {
+    // Validar campos de entrada
     if (_nameController.text.trim().isEmpty ||
         _cedulaController.text.trim().isEmpty ||
         _emailController.text.trim().isEmpty ||
@@ -32,9 +36,10 @@ class _RegisterPageState extends State<RegisterPage> {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
-      return;
+      return; // Termina el método si los campos están vacíos
     }
 
+    // Llama al método de registro
     await _authenticationController.register(
       name: _nameController.text.trim(),
       cedula: int.parse(_cedulaController.text.trim()),
@@ -45,17 +50,19 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    var size = MediaQuery.of(context).size; // Tamaño de la pantalla
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20.0), // Espaciado general
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(height: size.height * 0.1), // Espacio adicional
+
+              // Título de la página
               Text(
                 'Registrarse',
                 style: GoogleFonts.roboto(
@@ -65,6 +72,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
               SizedBox(height: 40), // Espacio entre el título y los inputs
+
+              // Campos de entrada
               InputWidget(
                 hintText: 'Nombre Completo',
                 obscureText: false,
@@ -88,34 +97,30 @@ class _RegisterPageState extends State<RegisterPage> {
                 obscureText: true,
                 controller: _passwordController,
               ),
-              SizedBox(height: 100),
+              SizedBox(height: 100), // Espacio antes del botón
+
+              // Botón de registro
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25.0),
                   ),
                   backgroundColor: const Color.fromARGB(255, 5, 13, 121),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 60,
-                    vertical: 15,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 15),
                 ),
                 onPressed: _register,
                 child: Obx(() {
                   return _authenticationController.isLoading.value
-                      ? CircularProgressIndicator(
-                          color: Colors.white,
-                        )
+                      ? CircularProgressIndicator(color: Colors.white) // Indicador de carga
                       : Text(
                           'Registrarse',
-                          style: GoogleFonts.roboto(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
+                          style: GoogleFonts.roboto(color: Colors.white, fontSize: 16),
                         );
                 }),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 20), // Espaciado entre el botón y el texto
+
+              // Enlace a la página de inicio de sesión
               TextButton(
                 onPressed: () {
                   Get.to(LoginPage());
@@ -128,12 +133,11 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
               ),
+
+              // Información de derechos de autor
               Text(
                 '© 2024 Mas Por Menos. Todos los derechos reservados.',
-                style: GoogleFonts.roboto(
-                  color: Colors.grey,
-                  fontSize: 12,
-                ),
+                style: GoogleFonts.roboto(color: Colors.grey, fontSize: 12),
               ),
             ],
           ),

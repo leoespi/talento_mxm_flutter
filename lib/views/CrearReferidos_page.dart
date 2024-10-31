@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart'; // Importa file_picker
 import 'package:talento_mxm_flutter/controllers/crearReferido_controller.dart';
 import 'package:talento_mxm_flutter/views/bottom_menu.dart'; // Asegúrate de importar el nuevo widget
 
@@ -12,24 +12,28 @@ class CrearReferidoScreen extends StatefulWidget {
 
 class _CrearReferidoScreenState extends State<CrearReferidoScreen> {
   final ReferidosController _controller = Get.put(ReferidosController());
-  File? selectedFile;
-  String? selectedFileName; // Variable para almacenar el nombre del archivo seleccionado
+  File? selectedFile; // Archivo seleccionado
+  String? selectedFileName; // Nombre del archivo seleccionado
 
+  // Método para seleccionar un archivo PDF
   void _seleccionarArchivo(BuildContext context) async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      File selected = File(pickedFile.path);
-      if (pickedFile.path.toLowerCase().endsWith('.pdf')) {
-        setState(() {
-          selectedFile = selected;
-          selectedFileName = selectedFile!.path.split('/').last; // Obtener el nombre del archivo
-        });
-      } else {
-        _showErrorDialog(context, 'Seleccione un archivo PDF válido.');
-      }
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'], // Permitir solo archivos PDF
+    );
+
+    if (result != null && result.files.isNotEmpty) {
+      File selected = File(result.files.single.path!);
+      setState(() {
+        selectedFile = selected;
+        selectedFileName = result.files.single.name; // Obtener el nombre del archivo
+      });
+    } else {
+      _showErrorDialog(context, 'Seleccione un archivo PDF válido.'); // Mensaje de error
     }
   }
 
+  // Método para mostrar un diálogo de error
   void _showErrorDialog(BuildContext context, String message) {
     showDialog(
       context: context,
@@ -39,7 +43,7 @@ class _CrearReferidoScreenState extends State<CrearReferidoScreen> {
         actions: <Widget>[
           TextButton(
             child: Text('OK'),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).pop(), // Cierra el diálogo
           ),
         ],
       ),
@@ -52,11 +56,12 @@ class _CrearReferidoScreenState extends State<CrearReferidoScreen> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 5, 13, 121),
         iconTheme: IconThemeData(color: Colors.white),
-         title: Text('Referidos', style: TextStyle(
-      color: Colors.white, // Cambia el color aquí
-    ),),
+        title: Text(
+          'Referidos',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
-      drawer: SideMenu(),
+      drawer: SideMenu(), // Menú lateral
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Card(
@@ -75,6 +80,8 @@ class _CrearReferidoScreenState extends State<CrearReferidoScreen> {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 20.0),
+                
+                // Mostrar el nombre del archivo seleccionado o espacio vacío
                 selectedFileName != null
                     ? Column(
                         children: [
@@ -92,12 +99,18 @@ class _CrearReferidoScreenState extends State<CrearReferidoScreen> {
                         ],
                       )
                     : SizedBox.shrink(),
+                    
                 SizedBox(height: 20.0),
+                
+                // Botón para seleccionar un archivo PDF
                 ElevatedButton(
                   onPressed: () => _seleccionarArchivo(context),
                   child: Text('Seleccionar Archivo PDF'),
                 ),
+                
                 SizedBox(height: 20.0),
+                
+                // Botón para crear el referido
                 ElevatedButton(
                   onPressed: () {
                     if (selectedFile != null) {
@@ -106,7 +119,7 @@ class _CrearReferidoScreenState extends State<CrearReferidoScreen> {
                         context: context,
                       );
                     } else {
-                      _showErrorDialog(context, 'Seleccione un archivo PDF primero.');
+                      _showErrorDialog(context, 'Seleccione un archivo PDF primero.'); // Mensaje de error
                     }
                   },
                   child: Text('Crear Referido'),

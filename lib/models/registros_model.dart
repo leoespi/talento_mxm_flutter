@@ -54,7 +54,7 @@ class Incapacidad {
   final String tipoIncapacidadReportada;
   final int diasIncapacidad;
   final DateTime fechaInicioIncapacidad;
-  final String? aplicaCobro;
+  final bool? aplicaCobro;
   final String entidadAfiliada;
   final List<String> imagenes;
   final List<String> documentos; // Agregar esta línea

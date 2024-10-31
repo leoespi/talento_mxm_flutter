@@ -16,25 +16,22 @@ class MyCesantiaspage extends StatefulWidget {
 }
 
 class _MyCesantiaspageState extends State<MyCesantiaspage> {
-
-  // Clave para el formulario
   final _formKey = GlobalKey<FormState>();
   String? _selectedtipocesantiareportada; // Tipo de cesantía seleccionada
   List<File> _images = []; // Lista de imágenes seleccionadas
-  List<File> _documents = [];
+  List<File> _documents = []; // Lista de documentos seleccionados
   bool _isLoading = false; // Estado de carga para el botón de enviar
   final CesantiasController _controller = Get.put(CesantiasController()); // Controlador de cesantías
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(), // Método para construir la AppBar
+      appBar: _buildAppBar(), // Construcción de la AppBar
       drawer: SideMenu(), // Menú lateral
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
-        child: _buildForm(), // Método para construir el formulario
+        child: _buildForm(), // Construcción del formulario
       ),
-      
     );
   }
 
@@ -43,9 +40,10 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
     return AppBar(
       backgroundColor: const Color.fromARGB(255, 5, 13, 121),
       iconTheme: IconThemeData(color: Colors.white),
-      title: Text('Cesantias', style: TextStyle(
-      color: Colors.white, // Cambia el color aquí
-    ),),
+      title: Text(
+        'Cesantias',
+        style: TextStyle(color: Colors.white),
+      ),
     );
   }
 
@@ -67,15 +65,14 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
               SizedBox(height: 20),
               _buildDropdown(), // Dropdown para seleccionar el tipo de cesantía
               SizedBox(height: 20),
-              _buildDocumentRequirements(), // Muestra documentos requeridos
+              _buildDocumentRequirements(), // Documentos requeridos
               SizedBox(height: 20),
               _buildImagePickerButton(), // Botón para seleccionar imágenes
               SizedBox(height: 20),
               _buildSelectedImages(), // Muestra imágenes seleccionadas
-               _buildSelectDocumentsButton(),
-                  SizedBox(height: 20),
-                  _buildSelectedDocuments(),
-                  SizedBox(height: 20),
+              _buildSelectDocumentsButton(), // Botón para seleccionar documentos
+              SizedBox(height: 20),
+              _buildSelectedDocuments(), // Muestra documentos seleccionados
               SizedBox(height: 20),
               _buildSubmitButton(), // Botón para enviar el formulario
             ],
@@ -113,14 +110,14 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Por favor selecciona el tipo de Solicitud'; // Valida que se haya seleccionado un tipo
+          return 'Por favor selecciona el tipo de Solicitud'; // Validación
         }
         return null;
       },
     );
   }
 
-  // Método para mostrar documentos requeridos según el tipo de cesantía seleccionada
+  // Método para mostrar documentos requeridos
   Widget _buildDocumentRequirements() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,7 +127,7 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 5),
-        _buildDocumentItem(_selectedtipocesantiareportada), // Llama a la función para construir la lista de documentos
+        _buildDocumentItem(_selectedtipocesantiareportada), // Lista de documentos
       ],
     );
   }
@@ -177,7 +174,7 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: documents.map((doc) => Text(doc)).toList(), // Muestra cada documento en una línea
+      children: documents.map((doc) => Text(doc)).toList(), // Muestra cada documento
     );
   }
 
@@ -191,17 +188,48 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
     );
   }
 
+  // Función para obtener imágenes seleccionadas
+  void _getImages() async {
+    final pickedFiles = await ImagePicker().pickMultiImage(); // Permitir selección de múltiples imágenes
 
-  void _getDocuments() async {
-    final pickedFiles = await FilePicker.platform.pickFiles(allowMultiple: true);
     if (pickedFiles != null) {
-      setState(() {
-        _documents.clear();
-        _documents.addAll(pickedFiles.paths.map((path) => File(path!)));
-      });
+      List<File> validImages = []; // Lista para almacenar imágenes válidas
+
+      for (var pickedFile in pickedFiles) {
+        File imageFile = File(pickedFile.path); // Crear objeto File
+
+        // Validar el formato del archivo
+        if (imageFile.path.endsWith('.jpg') || imageFile.path.endsWith('.png')) {
+          // Validar tamaño (máximo 20 MB)
+          if (await imageFile.length() <= 20 * 1024 * 1024) {
+            img.Image? image = img.decodeImage(imageFile.readAsBytesSync()); // Decodificar imagen
+
+            if (image != null) {
+              List<int> compressedBytes = img.encodeJpg(image, quality: 85); // Comprimir imagen
+              File compressedFile = File(imageFile.path.replaceFirst('.jpg', '_compressed.jpg'));
+              compressedFile.writeAsBytesSync(compressedBytes); // Guardar imagen comprimida
+              validImages.add(compressedFile); // Agregar a la lista
+            }
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('El tamaño de la imagen ${pickedFile.name} debe ser menor a 20 MB.')),
+            );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Formato no válido para la imagen ${pickedFile.name}. Solo se aceptan JPG y PNG.')),
+          );
+        }
+      }
+
+      if (validImages.isNotEmpty) {
+        setState(() {
+          _images.clear();
+          _images.addAll(validImages); // Actualizar la lista de imágenes
+        });
+      }
     }
   }
-
 
   // Método para mostrar las imágenes seleccionadas
   Widget _buildSelectedImages() {
@@ -209,10 +237,7 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
 
     return Column(
       children: [
-        Text(
-          'Imágenes seleccionadas:',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
+        Text('Imágenes seleccionadas:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         SizedBox(height: 10),
         Container(
           height: 200,
@@ -235,73 +260,9 @@ class _MyCesantiaspageState extends State<MyCesantiaspage> {
   Widget _buildSubmitButton() {
     return ElevatedButton(
       onPressed: _isLoading ? null : () => _showConfirmationDialog(), // Muestra el diálogo de confirmación
-      child: _isLoading ? CircularProgressIndicator() : Text('Enviar'), // Muestra un indicador de carga si está en proceso
+      child: _isLoading ? CircularProgressIndicator() : Text('Enviar'), // Indicador de carga si es necesario
     );
   }
-
-// Funciones 
-// Función para obtener imágenes seleccionadas
-void _getImages() async {
-  // Permitir al usuario seleccionar múltiples imágenes
-  final pickedFiles = await ImagePicker().pickMultiImage();
-
-  // Verificar si se seleccionaron archivos
-  if (pickedFiles != null) {
-    List<File> validImages = []; // Lista para almacenar imágenes válidas
-
-    // Iterar sobre cada archivo seleccionado
-    for (var pickedFile in pickedFiles) {
-      File imageFile = File(pickedFile.path); // Crear un objeto File a partir del archivo seleccionado
-
-      // Validar el formato del archivo (solo JPG y PNG)
-      if (imageFile.path.endsWith('.jpg') || imageFile.path.endsWith('.png')) {
-        // Validar el tamaño del archivo (máximo 20 MB)
-        if (await imageFile.length() <= 20 * 1024 * 1024) {
-          // Comprimir la imagen manteniendo las dimensiones originales
-          img.Image? image = img.decodeImage(imageFile.readAsBytesSync());
-
-          // Si la imagen no es válida, omitirla
-          if (image == null) {
-            continue;
-          }
-
-          // Comprimir la imagen con formato JPEG, ajustando la calidad
-          List<int> compressedBytes = img.encodeJpg(image, quality: 85); // Ajusta la calidad según lo necesites
-
-          // Guardar la imagen comprimida en un archivo
-          File compressedFile = File(imageFile.path.replaceFirst('.jpg', '_compressed.jpg'));
-          compressedFile.writeAsBytesSync(compressedBytes);
-
-          validImages.add(compressedFile); // Agregar imagen comprimida y válida a la lista
-        } else {
-          // Mostrar mensaje de error si el tamaño es mayor a 20 MB
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('El tamaño de la imagen ${pickedFile.name} debe ser menor a 20 MB.'),
-              duration: Duration(seconds: 2),
-            ),
-          );
-        }
-      } else {
-        // Mostrar mensaje de error si el formato no es válido
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Formato no válido para la imagen ${pickedFile.name}. Solo se aceptan JPG y PNG.'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
-    }
-
-    // Si hay imágenes válidas, procesarlas
-    if (validImages.isNotEmpty) {
-      setState(() {
-        _images.clear();
-        _images.addAll(validImages); // Actualiza la lista de imágenes
-      });
-    }
-  }
-}
 
   // Función para mostrar el diálogo de confirmación
   Future<void> _showConfirmationDialog() async {
@@ -338,13 +299,26 @@ void _getImages() async {
     );
   }
 
-
-   Widget _buildSelectDocumentsButton() {
+  // Botón para seleccionar documentos
+  Widget _buildSelectDocumentsButton() {
     return ElevatedButton(
-      onPressed: _getDocuments,
+      onPressed: _getDocuments, // Función para obtener documentos
       child: Text('Seleccionar Documentos'),
     );
   }
+
+  // Método para obtener documentos
+  void _getDocuments() async {
+    final pickedFiles = await FilePicker.platform.pickFiles(allowMultiple: true);
+    if (pickedFiles != null) {
+      setState(() {
+        _documents.clear();
+        _documents.addAll(pickedFiles.paths.map((path) => File(path!))); // Actualiza la lista de documentos
+      });
+    }
+  }
+
+  // Método para mostrar documentos seleccionados
   Widget _buildSelectedDocuments() {
     return _documents.isNotEmpty
         ? Wrap(
@@ -363,32 +337,25 @@ void _getImages() async {
         : Text('No hay documentos seleccionados');
   }
 
-
   // Función para enviar el formulario
   Future<void> _submitForm() async {
     // Validar que el formulario sea correcto
     if (!_formKey.currentState!.validate()) return;
 
-    if (_images.isEmpty  && _documents.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Por favor selecciona al menos una imagen o un documento')),
-    );
-    return;
-  }
+    if (_images.isEmpty && _documents.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Por favor selecciona al menos una imagen o un documento')),
+      );
+      return;
+    }
 
-    // Indicar que la carga ha comenzado
     setState(() {
-      _isLoading = true;
+      _isLoading = true; // Indica que la carga ha comenzado
     });
 
     try {
-      List<String> imagePaths = []; // Lista para almacenar las rutas de las imágenes
-      List<String> documentPaths = _documents.map((doc) => doc.path).toList();
-
-      // Procesar cada imagen seleccionada
-      for (File imageFile in _images) {
-        imagePaths.add(imageFile.path); // Guardar la ruta del archivo comprimido
-      }
+      List<String> imagePaths = _images.map((img) => img.path).toList(); // Rutas de las imágenes
+      List<String> documentPaths = _documents.map((doc) => doc.path).toList(); // Rutas de los documentos
 
       // Llamar al controlador para crear las cesantías
       await _controller.createCesantias(
@@ -400,12 +367,9 @@ void _getImages() async {
         context: context,
       );
 
-      // Mostrar un mensaje de éxito
+      // Mensaje de éxito
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Cesantía creada exitosamente'),
-          duration: Duration(seconds: 2),
-        ),
+        SnackBar(content: Text('Cesantía creada exitosamente')),
       );
 
       // Navegar a la página de menú
@@ -413,26 +377,18 @@ void _getImages() async {
     } catch (e) {
       String errorMessage;
 
-      // Manejar errores específicos
       if (e is FileSystemException) {
         errorMessage = 'Error al acceder a los archivos. Verifica los permisos.'; // Error de acceso a archivos
-      } else if (e is Exception) {
-        errorMessage = e.toString(); 
       } else {
-        errorMessage = 'Error desconocido: $e'; 
+        errorMessage = 'Error desconocido: $e'; // Error desconocido
       }
 
-      // Mostrar un mensaje de error
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(errorMessage),
-          duration: Duration(seconds: 2),
-        ),
+        SnackBar(content: Text(errorMessage)),
       );
     } finally {
-      // Indicar que la carga ha finalizado
       setState(() {
-        _isLoading = false;
+        _isLoading = false; // Indica que la carga ha finalizado
       });
     }
   }

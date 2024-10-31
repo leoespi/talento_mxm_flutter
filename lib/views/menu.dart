@@ -11,7 +11,6 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  // Variables para manejar la lista de publicaciones y el estado de carga
   List<Publicacion> feeds = [];
   bool isLoading = false;
   int _offset = 0;
@@ -32,14 +31,12 @@ class _MenuPageState extends State<MenuPage> {
     super.dispose();
   }
 
-  // Método para cargar más feeds al hacer scroll
   void _scrollListener() {
     if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
       _cargarFeeds();
     }
   }
 
-  // Método para cargar los feeds
   Future<void> _cargarFeeds() async {
     if (isLoading) return;
 
@@ -54,28 +51,26 @@ class _MenuPageState extends State<MenuPage> {
       } else {
         setState(() {
           feeds.addAll(nuevosFeeds);
-          _offset += _limit; // Actualiza el offset
+          _offset += _limit;
         });
       }
     } catch (e) {
       _mostrarSnackBar('Error al cargar los feeds: $e');
     } finally {
       setState(() {
-        isLoading = false; // Restablece el estado de carga
+        isLoading = false;
       });
     }
   }
 
-  // Método para mostrar un SnackBar con un mensaje
   void _mostrarSnackBar(String mensaje) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensaje)));
   }
 
-  // Método para refrescar los feeds
   Future<void> _refreshFeeds() async {
     setState(() {
       feeds.clear();
-      _offset = 0; // Reinicia el offset
+      _offset = 0;
     });
     await _cargarFeeds();
   }
@@ -86,7 +81,9 @@ class _MenuPageState extends State<MenuPage> {
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 5, 13, 121),
-        title: Text('Inicio', style: TextStyle(color: Colors.white)),
+        title: Text('Inicio', style: TextStyle(
+      color: Colors.white, // Cambia el color aquí
+    ),),
       ),
       drawer: SideMenu(),
       body: RefreshIndicator(
@@ -102,7 +99,6 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
-  // Método para construir cada tarjeta de feed
   Widget _buildFeedCard(Publicacion feed) {
     return GestureDetector(
       onTap: () {
@@ -120,9 +116,9 @@ class _MenuPageState extends State<MenuPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(feed.userNombre, style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+              Text(' ${feed.userNombre}', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
               SizedBox(height: 8.0),
-              Text(feed.contenido, style: TextStyle(fontSize: 14.0)),
+              Text('${feed.contenido}', style: TextStyle(fontSize: 14.0)),
               SizedBox(height: 8.0),
               if (feed.videoLink != null && feed.videoLink!.isNotEmpty)
                 _buildVideoThumbnail(feed.videoLink!),
@@ -135,7 +131,6 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
-  // Método para construir el thumbnail del video
   Widget _buildVideoThumbnail(String videoLink) {
     return Container(
       height: 200.0,
@@ -149,17 +144,18 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
-  // Método para mostrar la imagen al hacer clic
   void _mostrarImagen(BuildContext context, int index, List<String> imagenes) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VistaImagen(imagenes: imagenes, inicial: index),
+        builder: (context) => VistaImagen(
+          imagenes: imagenes,
+          inicial: index,
+        ),
       ),
     );
   }
 
-  // Método para construir una cuadrícula de imágenes
   Widget _buildImageGrid(List<String> imagenes) {
     return Container(
       height: 200.0,
@@ -200,7 +196,6 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
-  // Método para construir el indicador de carga
   Widget _buildLoadingIndicator() {
     if (isLoading) {
       return Center(child: CircularProgressIndicator());
@@ -241,12 +236,14 @@ class _DetallePublicacionState extends State<DetallePublicacion> {
     super.dispose();
   }
 
-  // Método para mostrar la imagen al hacer clic
   void _mostrarImagen(BuildContext context, int index, List<String> imagenes) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VistaImagen(imagenes: imagenes, inicial: index),
+        builder: (context) => VistaImagen(
+          imagenes: imagenes,
+          inicial: index,
+        ),
       ),
     );
   }
@@ -267,7 +264,7 @@ class _DetallePublicacionState extends State<DetallePublicacion> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(feed.userNombre, style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold)),
+              Text('${feed.userNombre}', style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold)),
               SizedBox(height: 12.0),
               Text(feed.contenido, style: TextStyle(fontSize: 16.0), textAlign: TextAlign.justify),
               SizedBox(height: 16.0),
@@ -281,7 +278,6 @@ class _DetallePublicacionState extends State<DetallePublicacion> {
     );
   }
 
-  // Método para construir el reproductor de YouTube
   Widget _buildYoutubePlayer() {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16.0),
@@ -296,7 +292,6 @@ class _DetallePublicacionState extends State<DetallePublicacion> {
     );
   }
 
-  // Método para construir la sección de imágenes
   Widget _buildImageSection(List<String> imagenes) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,7 +320,7 @@ class _DetallePublicacionState extends State<DetallePublicacion> {
                   placeholder: (context, url) => Center(child: CircularProgressIndicator()),
                   errorWidget: (context, url, error) => Center(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,  
                       children: [
                         Icon(Icons.error),
                         Text('Toca para intentar de nuevo'),
@@ -376,9 +371,8 @@ class _VistaImagenState extends State<VistaImagen> {
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              // Intentar recargar la imagen al tocar
               setState(() {
-                // Esto vuelve a construir el widget
+                // Forzar la reconstrucción del widget para recargar la imagen
               });
             },
             child: Center(
@@ -387,12 +381,19 @@ class _VistaImagenState extends State<VistaImagen> {
                 fit: BoxFit.contain,
                 placeholder: (context, url) => Center(child: CircularProgressIndicator()),
                 errorWidget: (context, url, error) => Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.error),
-                      Text('Toca para intentar de nuevo'),
-                    ],
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        // Intenta recargar la imagen al tocar
+                      });
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.error),
+                        Text('Toca para intentar de nuevo'),
+                      ],
+                    ),
                   ),
                 ),
               ),

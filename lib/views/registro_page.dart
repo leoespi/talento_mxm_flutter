@@ -90,7 +90,7 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
                             if (cesantia.justificacion != null)
                               Text('Justificación: ${cesantia.justificacion}'),
                             Text('Fecha: ${cesantia.createdAt.toLocal()}'),
-                             SizedBox(height: 8),
+                            SizedBox(height: 8),
                             if (cesantia.documentos.isNotEmpty)
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,12 +214,19 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Center(child: CircularProgressIndicator()),
                 errorWidget: (context, url, error) => Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.error),
-                      Text('Error al cargar la imagen'),
-                    ],
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        // Forzar la reconstrucción del widget para recargar la imagen
+                      });
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.error),
+                        Text('Toca para intentar de nuevo'),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -273,12 +280,19 @@ class _VistaImagenState extends State<VistaImagen> {
                 fit: BoxFit.contain,
                 placeholder: (context, url) => Center(child: CircularProgressIndicator()),
                 errorWidget: (context, url, error) => Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.error),
-                      Text('Error al cargar la imagen'),
-                    ],
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        // Forzar la reconstrucción del widget para recargar la imagen
+                      });
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.error),
+                        Text('Toca para intentar de nuevo'),
+                      ],
+                    ),
                   ),
                 ),
               ),

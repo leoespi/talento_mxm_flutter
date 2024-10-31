@@ -5,21 +5,23 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:talento_mxm_flutter/views/login_page.dart'; // Importa la página de inicio de sesión
 import 'package:talento_mxm_flutter/views/menu.dart';
+
 class AuthenticationController extends GetxController {
+  // Observables para manejar el estado de carga y el token
   final isLoading = false.obs;
   final token = ''.obs;
-  final box = GetStorage();
-  final String url = 'http://10.0.2.2:8000/api/'; // Ajusta la URL de tu API aquí
+  final box = GetStorage(); // Almacenamiento local
+  final String url = 'http://10.0.2.2:8000/api/'; // URL de la API
 
-  // Función para registrar un nuevo usuario
-  Future register({
+  /// Registra un nuevo usuario
+  Future<void> register({
     required String name,
     required int cedula,
     required String email,
     required String password,
   }) async {
     try {
-      isLoading.value = true;
+      isLoading.value = true; // Indica que la carga ha comenzado
       var data = {
         'name': name,
         'cedula': cedula.toString(),
@@ -27,6 +29,7 @@ class AuthenticationController extends GetxController {
         'password': password,
       };
 
+      // Realiza la solicitud POST para registrar el usuario
       var response = await http.post(
         Uri.parse('${url}register'),
         headers: {
@@ -36,8 +39,8 @@ class AuthenticationController extends GetxController {
       );
 
       if (response.statusCode == 201) {
-        isLoading.value = false;
-        Get.off(() => LoginPage()); // Redirige al usuario a la página de inicio de sesión
+        isLoading.value = false; // Indica que la carga ha terminado
+        Get.off(() => LoginPage()); // Redirige a la página de inicio de sesión
         Get.snackbar(
           'Registro exitoso',
           'Tu cuenta ha sido creada. Espera la activación por parte del administrador.',
@@ -46,7 +49,7 @@ class AuthenticationController extends GetxController {
           colorText: Colors.white,
         );
       } else {
-        isLoading.value = false;
+        isLoading.value = false; // Indica que la carga ha terminado
         Get.snackbar(
           'Error',
           json.decode(response.body)['message'],
@@ -54,26 +57,27 @@ class AuthenticationController extends GetxController {
           backgroundColor: Colors.red,
           colorText: Colors.white,
         );
-        print(json.decode(response.body));
+        print(json.decode(response.body)); // Imprime el error en la consola
       }
     } catch (e) {
-      isLoading.value = false;
-      print(e.toString());
+      isLoading.value = false; // Indica que la carga ha terminado
+      print(e.toString()); // Imprime la excepción en la consola
     }
   }
 
-  // Función para iniciar sesión
-  Future login({
+  /// Inicia sesión de un usuario
+  Future<void> login({
     required int cedula,
     required String password,
   }) async {
     try {
-      isLoading.value = true;
+      isLoading.value = true; // Indica que la carga ha comenzado
       var data = {
         'cedula': cedula.toString(),
         'password': password,
       };
 
+      // Realiza la solicitud POST para iniciar sesión
       var response = await http.post(
         Uri.parse('${url}login'),
         headers: {
@@ -83,13 +87,13 @@ class AuthenticationController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        isLoading.value = false;
-        token.value = json.decode(response.body)['token'];
-        box.write('token', token.value);
-        Get.offAll(() => MenuPage()); // Redirige al usuario a la página principal o menú 
-        box.write('user_id', json.decode(response.body)['user']['id']);
+        isLoading.value = false; // Indica que la carga ha terminado
+        token.value = json.decode(response.body)['token']; // Guarda el token
+        box.write('token', token.value); // Almacena el token localmente
+        Get.offAll(() => MenuPage()); // Redirige a la página principal o menú 
+        box.write('user_id', json.decode(response.body)['user']['id']); // Almacena el ID del usuario
       } else {
-        isLoading.value = false;
+        isLoading.value = false; // Indica que la carga ha terminado
         Get.snackbar(
           'Error',
           json.decode(response.body)['message'],
@@ -97,17 +101,17 @@ class AuthenticationController extends GetxController {
           backgroundColor: Colors.red,
           colorText: Colors.white,
         );
-        print(json.decode(response.body));
+        print(json.decode(response.body)); // Imprime el error en la consola
       }
     } catch (e) {
-      isLoading.value = false;
-      print(e.toString());
+      isLoading.value = false; // Indica que la carga ha terminado
+      print(e.toString()); // Imprime la excepción en la consola
     }
   }
 
-  // Función para cerrar sesión
+  /// Cierra sesión del usuario
   Future<void> logout() async {
-    box.remove('token');
-    Get.offAll(() => LoginPage());
+    box.remove('token'); // Elimina el token del almacenamiento local
+    Get.offAll(() => LoginPage()); // Redirige a la página de inicio de sesión
   }
 }

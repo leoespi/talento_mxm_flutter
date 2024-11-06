@@ -72,7 +72,7 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
                 return Center(child: CircularProgressIndicator());
               }
               if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
+                return _buildErrorState(snapshot.error);
               }
               if (snapshot.hasData && snapshot.data!.isEmpty) {
                 return Center(child: Text('No hay cesantías disponibles.'));
@@ -129,11 +129,11 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
           FutureBuilder<List<Incapacidad>>(
             future: incapacidades,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
+               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
               }
               if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
+                return _buildErrorState(snapshot.error);
               }
               if (snapshot.hasData && snapshot.data!.isEmpty) {
                 return Center(child: Text('No hay incapacidades disponibles.'));
@@ -201,6 +201,30 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
     );
   }
 
+  // Método para mostrar el error y el botón de refrescar
+  Widget _buildErrorState(Object? error) {
+    String errorMessage = 'Ha ocurrido un error desconocido';
+    if (error is String) {
+      errorMessage = error;
+    } else if (error is Exception) {
+      errorMessage = error.toString();
+    }
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('Error: $errorMessage'),
+          SizedBox(height: 8),
+          ElevatedButton(
+            onPressed: _refreshData,
+            child: Text('Intentar de nuevo'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _mostrarImagen(BuildContext context, int index, List<String> imagenes) {
     Navigator.push(
       context,
@@ -214,34 +238,35 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
   }
 
   Widget _buildImageGrid(List<String> images) {
-  return GridView.builder(
-    shrinkWrap: true,
-    physics: NeverScrollableScrollPhysics(),
-    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: 2,
-      crossAxisSpacing: 4.0,
-      mainAxisSpacing: 4.0,
-      childAspectRatio: 1.0,
-    ),
-    itemCount: images.length,
-    itemBuilder: (context, index) {
-      return GestureDetector(
-        onTap: () => _mostrarImagen(context, index, images),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8.0),
-          child: CachedNetworkImage(
-            imageUrl: 'http://10.0.2.2:8000/storage/${images[index]}',
-            fit: BoxFit.cover,
-            placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-            errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 4.0,
+        mainAxisSpacing: 4.0,
+        childAspectRatio: 1.0,
+      ),
+      itemCount: images.length,
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          onTap: () => _mostrarImagen(context, index, images),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: CachedNetworkImage(
+              imageUrl: 'http://10.0.2.2:8000/storage/${images[index]}',
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+              errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+            ),
           ),
-        ),
-      );
-    },
-  );
+        );
+      },
+    );
+  }
 }
 
-}
+
 
 class VistaImagen extends StatefulWidget {
   final List<String> imagenes;
@@ -289,6 +314,7 @@ class _VistaImagenState extends State<VistaImagen> {
                     onTap: () {
                       setState(() {
                         // Forzar la reconstrucción del widget para recargar la imagen
+                          CachedNetworkImage.evictFromCache('http://10.0.2.2:8000/storage/${widget.imagenes[index]}');
                       });
                     },
                     child: Column(

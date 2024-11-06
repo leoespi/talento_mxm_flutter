@@ -6,49 +6,90 @@ import 'package:get_storage/get_storage.dart';
 class ApiService {
   final String baseUrl = 'http://10.0.2.2:8000/api';
 
-  /// Obtiene la lista de cesantías
+  // Obtiene la lista de cesantías
   Future<List<Cesantia>> fetchCesantias() async {
-    final token = _getToken(); // Obtiene el token de almacenamiento
-    final response = await _getRequest('$baseUrl/indexcesantias', token); // Realiza la solicitud
+  final token = _getToken();
+  final response = await _getRequest('$baseUrl/indexcesantias', token);
 
-    print('Response body: ${response.body}'); // Imprimir respuesta para depuración
-    final List<dynamic> data = json.decode(response.body)['cesantias']; // Decodifica la respuesta
-    return data.map((item) => Cesantia.fromJson(item)).toList(); // Convierte a lista de objetos Cesantia
+  if (response.body.isEmpty) {
+    throw Exception('Respuesta vacía desde el servidor');
   }
 
-  /// Obtiene la lista de incapacidades
+  try {
+    final decodedResponse = json.decode(response.body);
+
+    // Comprobamos si la respuesta tiene el formato esperado
+    if (decodedResponse is Map<String, dynamic> && decodedResponse.containsKey('cesantias')) {
+      final List<dynamic> data = decodedResponse['cesantias'];
+      return data.map((item) => Cesantia.fromJson(item)).toList();
+    } else {
+      throw Exception('Formato de respuesta inválido: No contiene "cesantias"');
+    }
+  } catch (e) {
+    print('Error al parsear JSON de Cesantías: $e');
+    throw Exception('Error al cargar cesantías: $e');
+  }
+}
+
+
+  // Obtiene la lista de incapacidades
   Future<List<Incapacidad>> fetchIncapacidades() async {
-    final token = _getToken(); // Obtiene el token de almacenamiento
-    final response = await _getRequest('$baseUrl/indexincapacidades', token); // Realiza la solicitud
+  final token = _getToken();
 
-    print('Response body: ${response.body}'); // Imprimir respuesta para depuración
-    final List<dynamic> data = json.decode(response.body)['incapacidades']; // Decodifica la respuesta
-    return data.map((item) => Incapacidad.fromJson(item)).toList(); // Convierte a lista de objetos Incapacidad
+  if (token == null) {
+    throw Exception('Token nulo. Por favor, inicie sesión nuevamente.');
   }
 
-  /// Obtiene el token de almacenamiento
+  final response = await _getRequest('$baseUrl/indexincapacidades', token);
+
+  if (response.body.isEmpty) {
+    throw Exception('Respuesta vacía desde el servidor');
+  }
+
+  try {
+    print('Respuesta del servidor: ${response.body}'); // Imprimir la respuesta completa
+    final decodedResponse = json.decode(response.body);
+
+    if (decodedResponse is Map<String, dynamic> && decodedResponse.containsKey('incapacidades')) {
+      final List<dynamic> data = decodedResponse['incapacidades'];
+      return data.map((item) => Incapacidad.fromJson(item)).toList();
+    } else {
+      throw Exception('Formato de respuesta inválido: No contiene "incapacidades"');
+    }
+  } catch (e) {
+    print('Error al parsear JSON de Incapacidades: $e');
+    throw Exception('Error al cargar incapacidades: $e');
+  }
+}
+
+
+
+
+
+  // Obtiene el token de almacenamiento
   String? _getToken() {
     final box = GetStorage();
-    return box.read('token'); // Retorna el token guardado
+    return box.read('token');
   }
 
-  /// Realiza una solicitud GET a la API
+  // Realiza una solicitud GET a la API
   Future<http.Response> _getRequest(String url, String? token) async {
     Map<String, String>? headers;
+
     if (token != null) {
       headers = {
-        'Authorization': 'Bearer $token', // Añade encabezado de autorización si el token está presente
+        'Authorization': 'Bearer $token',
       };
     }
-    
-    // Realiza la solicitud GET
+
     final response = await http.get(Uri.parse(url), headers: headers);
 
-    // Manejo de errores
+    // Verificar si el estado es diferente de 200 (OK)
     if (response.statusCode != 200) {
-      print('Error: ${response.body}'); // Imprimir cuerpo de error para depuración
-      throw Exception('Failed to load data: ${response.body}'); // Lanza excepción si la solicitud falla
+      print('Error en solicitud GET: ${response.body}');
+      throw Exception('No se pudo cargar los datos: ${response.body}');
     }
-    return response; // Retorna la respuesta exitosa
+
+    return response;
   }
 }

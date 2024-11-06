@@ -49,19 +49,26 @@ Future<void> _cargarFeeds() async {
     if (nuevosFeeds.isEmpty) {
       _mostrarSnackBar('No hay más publicaciones para cargar');
     } else {
-      setState(() {
-        feeds.addAll(nuevosFeeds);
-        _offset += _limit;
-      });
+      if (mounted) {  // Verifica si el widget sigue montado
+        setState(() {
+          feeds.addAll(nuevosFeeds);
+          _offset += _limit;
+        });
+      }
     }
   } catch (e) {
-    _mostrarSnackBar('Error al cargar los feeds. Toca para intentar de nuevo.');
+    if (mounted) {  // Verifica si el widget sigue montado
+      _mostrarSnackBar('Error al cargar los feeds. Toca para intentar de nuevo.');
+    }
   } finally {
-    setState(() {
-      isLoading = false;
-    });
+    if (mounted) {  // Verifica si el widget sigue montado
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 }
+
 
 
 

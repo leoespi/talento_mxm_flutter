@@ -32,6 +32,14 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
     super.dispose();
   }
 
+  // Método para refrescar los datos
+  Future<void> _refreshData() async {
+    setState(() {
+      cesantias = ApiService().fetchCesantias();
+      incapacidades = ApiService().fetchIncapacidades();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,46 +77,51 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
               if (snapshot.hasData && snapshot.data!.isEmpty) {
                 return Center(child: Text('No hay cesantías disponibles.'));
               }
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final cesantia = snapshot.data![index];
-                  return GestureDetector(
-                    onTap: () {
-                      // Acción al pulsar
-                    },
-                    child: Card(
-                      margin: EdgeInsets.all(8.0),
-                      child: Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text('Cesantía ID: ${cesantia.id}'),
-                            Text('Tipo: ${cesantia.tipoCesantiaReportada}'),
-                            Text('Estado: ${cesantia.estado}'),
-                            if (cesantia.justificacion != null)
-                              Text('Justificación: ${cesantia.justificacion}'),
-                            Text('Fecha: ${cesantia.createdAt.toLocal()}'),
-                            SizedBox(height: 8),
-                            if (cesantia.documentos.isNotEmpty)
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Documentos:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                  SizedBox(height: 4),
-                                  ...cesantia.documentos.map((doc) => Text(doc)).toList(),
-                                  SizedBox(height: 8),
-                                ],
-                              ),
-                            if (cesantia.imagenes.isNotEmpty)
-                              _buildImageGrid(cesantia.imagenes),
-                          ],
+              // Invertir el orden para mostrar los más recientes primero
+              final cesantiasData = snapshot.data!.reversed.toList();
+              return RefreshIndicator(
+                onRefresh: _refreshData, // Función para refrescar los datos
+                child: ListView.builder(
+                  itemCount: cesantiasData.length,
+                  itemBuilder: (context, index) {
+                    final cesantia = cesantiasData[index];
+                    return GestureDetector(
+                      onTap: () {
+                        // Acción al pulsar
+                      },
+                      child: Card(
+                        margin: EdgeInsets.all(8.0),
+                        child: Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text('Cesantía ID: ${cesantia.id}'),
+                              Text('Tipo: ${cesantia.tipoCesantiaReportada}'),
+                              Text('Estado: ${cesantia.estado}'),
+                              if (cesantia.justificacion != null)
+                                Text('Justificación: ${cesantia.justificacion}'),
+                              Text('Fecha: ${cesantia.createdAt.toLocal()}'),
+                              SizedBox(height: 8),
+                              if (cesantia.documentos.isNotEmpty)
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Documentos:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    SizedBox(height: 4),
+                                    ...cesantia.documentos.map((doc) => Text(doc)).toList(),
+                                    SizedBox(height: 8),
+                                  ],
+                                ),
+                              if (cesantia.imagenes.isNotEmpty)
+                                _buildImageGrid(cesantia.imagenes),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               );
             },
           ),
@@ -125,56 +138,61 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
               if (snapshot.hasData && snapshot.data!.isEmpty) {
                 return Center(child: Text('No hay incapacidades disponibles.'));
               }
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final incapacidad = snapshot.data![index];
-                  return GestureDetector(
-                    onTap: () {
-                      // Acción al pulsar
-                    },
-                    child: Card(
-                      margin: EdgeInsets.all(8.0),
-                      child: Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text('Incapacidad Nro: ${incapacidad.id}', style: TextStyle(fontWeight: FontWeight.bold)),
-                            SizedBox(height: 8),
-                            Text('Tipo: ${incapacidad.tipoIncapacidadReportada}'),
-                            SizedBox(height: 4),
-                            Text('Días de Incapacidad: ${incapacidad.diasIncapacidad}'),
-                            SizedBox(height: 4),
-                            Text('Fecha de Inicio: ${incapacidad.fechaInicioIncapacidad.toLocal()}'),
-                            SizedBox(height: 4),
-                            Text('Entidad Afiliada: ${incapacidad.entidadAfiliada}'),
-                            SizedBox(height: 8),
-                            if (incapacidad.documentos.isNotEmpty)
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Documentos:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                  SizedBox(height: 4),
-                                  ...incapacidad.documentos.map((doc) => Text(doc)).toList(),
-                                  SizedBox(height: 8),
-                                ],
-                              ),
-                            if (incapacidad.imagenes.isNotEmpty) 
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Imágenes:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                  SizedBox(height: 4),
-                                  _buildImageGrid(incapacidad.imagenes),
-                                ],
-                              ),
-                          ],
+              // Invertir el orden para mostrar los más recientes primero
+              final incapacidadesData = snapshot.data!.reversed.toList();
+              return RefreshIndicator(
+                onRefresh: _refreshData, // Función para refrescar los datos
+                child: ListView.builder(
+                  itemCount: incapacidadesData.length,
+                  itemBuilder: (context, index) {
+                    final incapacidad = incapacidadesData[index];
+                    return GestureDetector(
+                      onTap: () {
+                        // Acción al pulsar
+                      },
+                      child: Card(
+                        margin: EdgeInsets.all(8.0),
+                        child: Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text('Incapacidad Nro: ${incapacidad.id}', style: TextStyle(fontWeight: FontWeight.bold)),
+                              SizedBox(height: 8),
+                              Text('Tipo: ${incapacidad.tipoIncapacidadReportada}'),
+                              SizedBox(height: 4),
+                              Text('Días de Incapacidad: ${incapacidad.diasIncapacidad}'),
+                              SizedBox(height: 4),
+                              Text('Fecha de Inicio: ${incapacidad.fechaInicioIncapacidad.toLocal()}'),
+                              SizedBox(height: 4),
+                              Text('Entidad Afiliada: ${incapacidad.entidadAfiliada}'),
+                              SizedBox(height: 8),
+                              if (incapacidad.documentos.isNotEmpty)
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Documentos:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    SizedBox(height: 4),
+                                    ...incapacidad.documentos.map((doc) => Text(doc)).toList(),
+                                    SizedBox(height: 8),
+                                  ],
+                                ),
+                              if (incapacidad.imagenes.isNotEmpty)
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Imágenes:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    SizedBox(height: 4),
+                                    _buildImageGrid(incapacidad.imagenes),
+                                  ],
+                                ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               );
             },
           ),

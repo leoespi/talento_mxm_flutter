@@ -68,12 +68,13 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Future<void> _refreshFeeds() async {
-    setState(() {
-      feeds.clear();
-      _offset = 0;
-    });
-    await _cargarFeeds();
-  }
+  setState(() {
+    feeds.clear();
+    _offset = 0;
+  });
+  await _cargarFeeds();
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -100,36 +101,39 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Widget _buildFeedCard(Publicacion feed) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => DetallePublicacion(feed: feed)),
-        );
-      },
-      child: Card(
-        margin: EdgeInsets.all(8.0),
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-        child: Padding(
-          padding: EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(' ${feed.userNombre}', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
-              SizedBox(height: 8.0),
-              Text('${feed.contenido}', style: TextStyle(fontSize: 14.0)),
-              SizedBox(height: 8.0),
-              if (feed.videoLink != null && feed.videoLink!.isNotEmpty)
-                _buildVideoThumbnail(feed.videoLink!),
-              if (feed.imagenes.isNotEmpty) _buildImageGrid(feed.imagenes),
-              SizedBox(height: 8.0),
-            ],
-          ),
+  return GestureDetector(
+    onTap: () async {
+      // Recargamos los feeds si no se cargan correctamente
+      await _refreshFeeds();
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => DetallePublicacion(feed: feed)),
+      );
+    },
+    child: Card(
+      margin: EdgeInsets.all(8.0),
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+      child: Padding(
+        padding: EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(' ${feed.userNombre}', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+            SizedBox(height: 8.0),
+            Text('${feed.contenido}', style: TextStyle(fontSize: 14.0)),
+            SizedBox(height: 8.0),
+            if (feed.videoLink != null && feed.videoLink!.isNotEmpty)
+              _buildVideoThumbnail(feed.videoLink!),
+            if (feed.imagenes.isNotEmpty) _buildImageGrid(feed.imagenes),
+            SizedBox(height: 8.0),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _buildVideoThumbnail(String videoLink) {
     return Container(
@@ -156,30 +160,40 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
-  Widget _buildImageGrid(List<String> imagenes) {
-    return Container(
-      height: 200.0,
-      child: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: imagenes.length == 1 ? 1 : 2,
-          childAspectRatio: 1.0,
-          crossAxisSpacing: 4.0,
-          mainAxisSpacing: 4.0,
-        ),
-        itemCount: imagenes.length,
-        scrollDirection: Axis.vertical,
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemBuilder: (context, imgIndex) {
-          return GestureDetector(
-            onTap: () => _mostrarImagen(context, imgIndex, imagenes),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: CachedNetworkImage(
-                imageUrl: 'http://10.0.2.2:8000${imagenes[imgIndex]}',
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => Center(
+ Widget _buildImageGrid(List<String> imagenes) {
+  return Container(
+    height: 200.0,
+    child: GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: imagenes.length == 1 ? 1 : 2,
+        childAspectRatio: 1.0,
+        crossAxisSpacing: 4.0,
+        mainAxisSpacing: 4.0,
+      ),
+      itemCount: imagenes.length,
+      scrollDirection: Axis.vertical,
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemBuilder: (context, imgIndex) {
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              // Forzamos el reload de la imagen
+            });
+          },
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: CachedNetworkImage(
+              imageUrl: 'http://10.0.2.2:8000${imagenes[imgIndex]}',
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+              errorWidget: (context, url, error) => Center(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      // Al tocar la imagen, intentar recargarla
+                    });
+                  },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -190,11 +204,13 @@ class _MenuPageState extends State<MenuPage> {
                 ),
               ),
             ),
-          );
-        },
-      ),
-    );
-  }
+          ),
+        );
+      },
+    ),
+  );
+}
+
 
   Widget _buildLoadingIndicator() {
     if (isLoading) {

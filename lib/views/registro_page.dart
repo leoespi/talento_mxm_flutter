@@ -214,46 +214,33 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
   }
 
   Widget _buildImageGrid(List<String> images) {
-    return Container(
-      child: GridView.count(
-        crossAxisCount: 2,
-        childAspectRatio: 1.0,
-        crossAxisSpacing: 4.0,
-        mainAxisSpacing: 4.0,
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        children: List.generate(images.length, (index) {
-          return GestureDetector(
-            onTap: () => _mostrarImagen(context, index, images),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: CachedNetworkImage(
-                imageUrl: 'http://10.0.2.2:8000/storage/${images[index]}',
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        // Forzar la reconstrucción del widget para recargar la imagen
-                      });
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.error),
-                        Text('Toca para intentar de nuevo'),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        }),
-      ),
-    );
-  }
+  return GridView.builder(
+    shrinkWrap: true,
+    physics: NeverScrollableScrollPhysics(),
+    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2,
+      crossAxisSpacing: 4.0,
+      mainAxisSpacing: 4.0,
+      childAspectRatio: 1.0,
+    ),
+    itemCount: images.length,
+    itemBuilder: (context, index) {
+      return GestureDetector(
+        onTap: () => _mostrarImagen(context, index, images),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8.0),
+          child: CachedNetworkImage(
+            imageUrl: 'http://10.0.2.2:8000/storage/${images[index]}',
+            fit: BoxFit.cover,
+            placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+            errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+          ),
+        ),
+      );
+    },
+  );
+}
+
 }
 
 class VistaImagen extends StatefulWidget {

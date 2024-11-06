@@ -31,37 +31,39 @@ class _MenuPageState extends State<MenuPage> {
     super.dispose();
   }
 
-  void _scrollListener() {
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-      _cargarFeeds();
-    }
+ void _scrollListener() {
+  if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent && !isLoading) {
+    _cargarFeeds();
   }
+}
 
-  Future<void> _cargarFeeds() async {
-    if (isLoading) return;
+Future<void> _cargarFeeds() async {
+  if (isLoading) return;
 
-    setState(() {
-      isLoading = true;
-    });
+  setState(() {
+    isLoading = true;
+  });
 
-    try {
-      List<Publicacion> nuevosFeeds = await FeedController.obtenerFeeds(_offset, _limit);
-      if (nuevosFeeds.isEmpty) {
-        _mostrarSnackBar('No hay más publicaciones para cargar');
-      } else {
-        setState(() {
-          feeds.addAll(nuevosFeeds);
-          _offset += _limit;
-        });
-      }
-    } catch (e) {
-      _mostrarSnackBar('Error al cargar los feeds: $e');
-    } finally {
+  try {
+    List<Publicacion> nuevosFeeds = await FeedController.obtenerFeeds(_offset, _limit);
+    if (nuevosFeeds.isEmpty) {
+      _mostrarSnackBar('No hay más publicaciones para cargar');
+    } else {
       setState(() {
-        isLoading = false;
+        feeds.addAll(nuevosFeeds);
+        _offset += _limit;
       });
     }
+  } catch (e) {
+    _mostrarSnackBar('Error al cargar los feeds. Toca para intentar de nuevo.');
+  } finally {
+    setState(() {
+      isLoading = false;
+    });
   }
+}
+
+
 
   void _mostrarSnackBar(String mensaje) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensaje)));
@@ -89,13 +91,15 @@ class _MenuPageState extends State<MenuPage> {
       drawer: SideMenu(),
       body: RefreshIndicator(
         onRefresh: _refreshFeeds,
-        child: ListView.builder(
-          controller: _scrollController,
-          itemCount: feeds.length + 1,
-          itemBuilder: (context, index) {
-            return index < feeds.length ? _buildFeedCard(feeds[index]) : _buildLoadingIndicator();
-          },
-        ),
+        child: ListView.separated(
+  controller: _scrollController,
+  itemCount: feeds.length + 1,
+  separatorBuilder: (context, index) => Divider(),
+  itemBuilder: (context, index) {
+    return index < feeds.length ? _buildFeedCard(feeds[index]) : _buildLoadingIndicator();
+  },
+)
+
       ),
     );
   }
@@ -159,8 +163,9 @@ class _MenuPageState extends State<MenuPage> {
       ),
     );
   }
-
- Widget _buildImageGrid(List<String> imagenes) {
+  
+  
+  Widget _buildImageGrid(List<String> imagenes) {
   return Container(
     height: 200.0,
     child: GridView.builder(
@@ -175,41 +180,16 @@ class _MenuPageState extends State<MenuPage> {
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemBuilder: (context, imgIndex) {
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              // Forzamos el reload de la imagen
-            });
-          },
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: CachedNetworkImage(
-              imageUrl: 'http://10.0.2.2:8000${imagenes[imgIndex]}',
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-              errorWidget: (context, url, error) => Center(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      // Al tocar la imagen, intentar recargarla
-                    });
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.error),
-                      Text('Toca para intentar de nuevo'),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
+        return ImageWithRetry(imageUrl: imagenes[imgIndex]);
       },
     ),
   );
 }
+
+
+
+
+
 
 
   Widget _buildLoadingIndicator() {
@@ -219,6 +199,72 @@ class _MenuPageState extends State<MenuPage> {
     return SizedBox.shrink(); // No mostrar nada extra cuando no hay más feeds
   }
 }
+
+class ImageWithRetry extends StatefulWidget {
+  final String imageUrl;
+
+  const ImageWithRetry({required this.imageUrl, Key? key}) : super(key: key);
+
+  @override
+  _ImageWithRetryState createState() => _ImageWithRetryState();
+}
+
+class _ImageWithRetryState extends State<ImageWithRetry> {
+  bool _isError = false; // Variable para controlar si hay un error en la imagen
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _isError = false; // Resetear el error cuando el usuario toque la imagen
+        });
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8.0),
+        child: CachedNetworkImage(
+          imageUrl: 'http://10.0.2.2:8000${widget.imageUrl}', // Usa el imageUrl de la propiedad
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+          errorWidget: (context, url, error) {
+            return _isError
+                ? _buildErrorRetryWidget()
+                : Center(child: CircularProgressIndicator());
+          },
+        ),
+      ),
+    );
+  }
+
+  // Widget de error con la opción de intentar recargar
+  Widget _buildErrorRetryWidget() {
+    return Center(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _isError = false; // Intentar recargar la imagen
+          });
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error, color: Colors.red),
+            Text('Toca para intentar de nuevo', style: TextStyle(color: Colors.red)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
 
 class DetallePublicacion extends StatefulWidget {
   final Publicacion feed;

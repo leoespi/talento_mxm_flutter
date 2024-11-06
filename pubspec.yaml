@@ -11,8 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   intl: ^0.17.0
-  pdf_handler: ^0.0.1
-  pdf: ^3.6.0 
+  
   cached_network_image: ^3.2.0
   url_launcher: ^6.0.20
   youtube_player_flutter: ^8.1.0

@@ -6,7 +6,11 @@ import 'package:get_storage/get_storage.dart';
 class FeedController {
   // URL base de la API
   static const String baseUrl = 'http://10.0.2.2:8000/api';
+  
+   //url prueba Celular por cable (SOLO SE USA PARA CARGAR EL PROYECTO EN EL CELULAR POR CABLE)
+   //static const  baseUrl = 'http://192.168.1.148:8000/api';
 
+  
   /// Obtiene una lista de publicaciones desde el feed
   /// 
   /// Parámetros:

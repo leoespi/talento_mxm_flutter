@@ -230,6 +230,9 @@ class _ImageWithRetryState extends State<ImageWithRetry> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8.0),
         child: CachedNetworkImage(
+           //url prueba Celular por cable (SOLO SE USA PARA CARGAR EL PROYECTO EN EL CELULAR POR CABLE)
+          //imageUrl: 'http://192.168.1.148:8000${widget.imageUrl}',
+          
           imageUrl: 'http://10.0.2.2:8000${widget.imageUrl}', // Usa el imageUrl de la propiedad
           fit: BoxFit.cover,
           placeholder: (context, url) => Center(child: CircularProgressIndicator()),
@@ -384,6 +387,10 @@ class _DetallePublicacionState extends State<DetallePublicacion> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12.0),
                 child: CachedNetworkImage(
+
+                  //url prueba Celular por cable (SOLO SE USA PARA CARGAR EL PROYECTO EN EL CELULAR POR CABLE)
+                  //imageUrl: 'http://192.168.1.148:8000${imagenes[imgIndex]}',
+
                   imageUrl: 'http://10.0.2.2:8000${imagenes[imgIndex]}',
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Center(child: CircularProgressIndicator()),
@@ -446,6 +453,9 @@ class _VistaImagenState extends State<VistaImagen> {
             },
             child: Center(
               child: CachedNetworkImage(
+                  //url prueba Celular por cable (SOLO SE USA PARA CARGAR EL PROYECTO EN EL CELULAR POR CABLE)
+                  //imageUrl: 'http://192.168.1.148:8000${widget.imagenes[index]}',
+
                 imageUrl: 'http://10.0.2.2:8000${widget.imagenes[index]}',
                 fit: BoxFit.contain,
                 placeholder: (context, url) => Center(child: CircularProgressIndicator()),

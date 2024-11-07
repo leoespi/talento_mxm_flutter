@@ -254,7 +254,8 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
             child: CachedNetworkImage(
-              imageUrl: 'http://10.0.2.2:8000/storage/${images[index]}',
+              imageUrl: 'http://192.168.1.148:8000/storage/${images[index]}',
+              //imageUrl: 'http://10.0.2.2:8000/storage/${images[index]}',
               fit: BoxFit.cover,
               placeholder: (context, url) => Center(child: CircularProgressIndicator()),
               errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
@@ -306,7 +307,8 @@ class _VistaImagenState extends State<VistaImagen> {
             },
             child: Center(
               child: CachedNetworkImage(
-                imageUrl: 'http://10.0.2.2:8000/storage/${widget.imagenes[index]}',
+                  imageUrl: 'http://192.168.1.148:8000/storage/${widget.imagenes[index]}',
+                //imageUrl: 'http://10.0.2.2:8000/storage/${widget.imagenes[index]}',
                 fit: BoxFit.contain,
                 placeholder: (context, url) => Center(child: CircularProgressIndicator()),
                 errorWidget: (context, url, error) => Center(
@@ -314,7 +316,8 @@ class _VistaImagenState extends State<VistaImagen> {
                     onTap: () {
                       setState(() {
                         // Forzar la reconstrucción del widget para recargar la imagen
-                          CachedNetworkImage.evictFromCache('http://10.0.2.2:8000/storage/${widget.imagenes[index]}');
+                        CachedNetworkImage.evictFromCache('http://192.168.1.148:8000/storage/${widget.imagenes[index]}');
+                          //CachedNetworkImage.evictFromCache('http://10.0.2.2:8000/storage/${widget.imagenes[index]}');
                       });
                     },
                     child: Column(

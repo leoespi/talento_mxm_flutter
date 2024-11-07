@@ -7,6 +7,10 @@ class UserService {
     
     //url usuarios
     final url = 'http://10.0.2.2:8000/api/get/user';
+
+
+   //url prueba Celular por cable (SOLO SE USA PARA CARGAR EL PROYECTO EN EL CELULAR POR CABLE)
+     //final  url = 'http://192.168.1.148:8000/api/get/user';
     var headers = {
       'Content-Type': 'application/json',
       'authorization': 'Bearer $token'
@@ -39,6 +43,9 @@ class UserService {
 
    // Método para solicitar el PIN de restablecimiento
   static Future<bool> requestResetPin(String email) async {
+    //url prueba Celular por cable (SOLO SE USA PARA CARGAR EL PROYECTO EN EL CELULAR POR CABLE)
+    //final url = 'http://192.168.1.148:8000/api/password/forgot';
+
     final url = 'http://10.0.2.2:8000/api/password/forgot';
     var headers = {'Content-Type': 'application/json'};
     var body = json.encode({'email': email});
@@ -58,6 +65,9 @@ class UserService {
 
   // Método para restablecer la contraseña usando el PIN
   static Future<bool> resetPasswordWithPin(String email, String pin, String newPassword) async {
+      //url prueba Celular por cable (SOLO SE USA PARA CARGAR EL PROYECTO EN EL CELULAR POR CABLE)
+     //final url = 'http://192.168.1.148:8000/api/password/reset';
+     
     final url = 'http://10.0.2.2:8000/api/password/reset';
     var headers = {'Content-Type': 'application/json'};
     var body = json.encode({

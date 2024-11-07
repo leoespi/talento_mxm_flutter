@@ -13,6 +13,11 @@ class AuthenticationController extends GetxController {
   final box = GetStorage(); // Almacenamiento local
   final String url = 'http://10.0.2.2:8000/api/'; // URL de la API
 
+
+  //url prueba Celular por cable (SOLO SE USA PARA CARGAR EL PROYECTO EN EL CELULAR POR CABLE)
+ //final String url = 'http://192.168.1.148:8000/api/';
+
+
   /// Registra un nuevo usuario
   Future<void> register({
     required String name,

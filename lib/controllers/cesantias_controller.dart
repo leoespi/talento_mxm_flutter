@@ -10,6 +10,10 @@ class CesantiasController extends GetxController {
   final box = GetStorage();
   final String url = 'http://10.0.2.2:8000/api/';
 
+  //url prueba Celular por cable (SOLO SE USA PARA CARGAR EL PROYECTO EN EL CELULAR POR CABLE)
+  //final String url = 'http://192.168.1.148:8000/api/';
+
+
   /// Crea un reporte de cesantías
   /// 
   /// Parámetros:

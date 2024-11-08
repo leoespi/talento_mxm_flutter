@@ -1,6 +1,7 @@
 class Publicacion {
   final int id;
   final int userId;
+  final String categoria;
   final String contenido;
   final List<String> imagenes;
   final String userNombre;
@@ -9,6 +10,7 @@ class Publicacion {
   Publicacion({
     required this.id,
     required this.userId,
+    required this.categoria,
     required this.contenido,
     required this.imagenes,
     required this.userNombre,
@@ -24,6 +26,7 @@ class Publicacion {
     return Publicacion(
       id: json['id'],
       userId: json['user_id'],
+      categoria:json['categoria'],
       contenido: json['content'],
       imagenes: images,
       userNombre: json['user']['name'],

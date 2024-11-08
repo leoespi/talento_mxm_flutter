@@ -130,8 +130,9 @@ Future<void> _cargarFeeds() async {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(' ${feed.userNombre}', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+           
             SizedBox(height: 8.0),
+             Text('${feed.categoria}', style: TextStyle(fontSize: 25.0)),
             Text('${feed.contenido}', style: TextStyle(fontSize: 14.0)),
             SizedBox(height: 8.0),
             if (feed.videoLink != null && feed.videoLink!.isNotEmpty)
@@ -336,9 +337,11 @@ class _DetallePublicacionState extends State<DetallePublicacion> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${feed.userNombre}', style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold)),
+                SizedBox(height: 20.0),
+              Text(feed.categoria, style: TextStyle(fontSize: 25.0), textAlign: TextAlign.justify),
               SizedBox(height: 12.0),
               Text(feed.contenido, style: TextStyle(fontSize: 16.0), textAlign: TextAlign.justify),
+            
               SizedBox(height: 16.0),
               if (feed.videoLink != null && feed.videoLink!.isNotEmpty) _buildYoutubePlayer(),
               SizedBox(height: 16.0),

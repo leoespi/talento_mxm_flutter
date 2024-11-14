@@ -30,6 +30,7 @@ class _MyFormState extends State<MyForm> {
   final AuthenticationController _authController = AuthenticationController();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _diasIncapacidadController = TextEditingController();
+ final TextEditingController _categoriaCodigoController = TextEditingController(); // Nuevo controlador para el código de categoría
 
   String? _selectedEntidadAfiliada;
   String? _selectedTipoincapacidadReportada;
@@ -69,6 +70,8 @@ class _MyFormState extends State<MyForm> {
                   _buildFechaInicioField(),
                   SizedBox(height: 20),
                   _buildDropdownEntidadAfiliada(),
+                      SizedBox(height: 20),
+                  _buildCategoriaCodigoField(), // Agregado campo de código de categoría
                   SizedBox(height: 20),
                   _buildSelectImagesButton(),
                   SizedBox(height: 20),
@@ -102,6 +105,56 @@ class _MyFormState extends State<MyForm> {
       });
     }
   }
+
+Widget _buildCategoriaCodigoField() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      TextFormField(
+        controller: _categoriaCodigoController,
+        decoration: InputDecoration(
+          labelText: 'Código de Incapacidad',
+          border: OutlineInputBorder(),
+          // Aquí añadimos un color de borde diferente cuando el campo está en error
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red),
+          ),
+        ),
+        validator: (value) {
+          // Verificar si el valor es nulo o vacío
+          if (value == null || value.isEmpty) {
+            return 'Por favor ingresa el código de categoría';
+          }
+
+          // Expresión regular para validar el código
+          RegExp regExp = RegExp(r'^[A-Z]\d{3}$|^[A-Z]\d{2}[A-Z]$');
+          if (!regExp.hasMatch(value)) {
+            return 'El código de categoría no es válido. Debe ser en uno de estos formatos: (letra y de uno a tres digitos) =D463 o (letra, dos digitos y una letra) D65X.';
+          }
+          return null; // Si la validación pasa, no devuelve ningún error
+        },
+        maxLines: 1, // Mantener en una sola línea para el campo de entrada
+        textInputAction: TextInputAction.done,
+      ),
+      // Esto asegura que el mensaje de error se muestre correctamente
+      if (_categoriaCodigoController.text.isNotEmpty &&
+          _formKey.currentState?.validate() == false)
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Text(
+            'El código de categoría no es válido. Debe ser en uno de estos formatos: (letra y de uno a tres digitos =D463)  o (letra, dos digitos y una letra = D65X) siempre en Mayuscula.',
+            style: TextStyle(color: Colors.red, fontSize: 14),
+          ),
+        ),
+    ],
+  );
+}
+
+
+
 
   // Método para comprimir la imagen
   File compressImage(File file) {
@@ -162,54 +215,52 @@ class _MyFormState extends State<MyForm> {
       _submitForm();
     }
   }
-
-  // Método para enviar el formulario
-  Future<void> _submitForm() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    // Verificar que al menos uno de los dos (imágenes o documentos) esté presente
-    if (_images.isEmpty && _documents.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Por favor selecciona al menos una imagen o un documento')),
-      );
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      List<String> imagePaths = _images.map((img) => img.path).toList();
-      List<String> documentPaths = _documents.map((doc) => doc.path).toList();
-
-      await _controller.createIncapacidad(
-        tipoincapacidadreportada: _selectedTipoincapacidadReportada!,
-        diasIncapacidad: int.parse(_diasIncapacidadController.text),
-        fechaInicioIncapacidad: _fechaInicio,
-        entidadAfiliada: _selectedEntidadAfiliada!,
-        images: _images,
-        documents: _documents,
-        imagePaths: imagePaths,
-        documentPaths: documentPaths,
-        context: context,
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Incapacidad creada con éxito')),
-      );
-
-      Get.offAll(() => MenuPage());
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ocurrió un error. Por favor, inténtalo de nuevo.')),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+Future<void> _submitForm() async {
+  if (!_formKey.currentState!.validate()) {
+    // Si la validación falla, se sale de la función
+    return;
   }
+
+  // Muestra el indicador de carga
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    List<String> imagePaths = _images.map((img) => img.path).toList();
+    List<String> documentPaths = _documents.map((doc) => doc.path).toList();
+
+    String categoriaCodigo = _categoriaCodigoController.text;
+
+    // Enviar incapacidad al controlador
+    await _controller.createIncapacidad(
+      tipoincapacidadreportada: _selectedTipoincapacidadReportada!,
+      diasIncapacidad: int.parse(_diasIncapacidadController.text),
+      fechaInicioIncapacidad: _fechaInicio,
+      entidadAfiliada: _selectedEntidadAfiliada!,
+      images: _images,
+      documents: _documents,
+      imagePaths: imagePaths,
+      documentPaths: documentPaths,
+      categoriaCodigo: categoriaCodigo,
+      context: context,
+    );
+
+    // Este bloque solo se ejecuta si la incapacidad se crea exitosamente
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Incapacidad creada correctamente')));
+    Get.offAll(() => MenuPage()); // Redirige al inicio
+
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Ocurrió un error. Por favor, inténtalo de nuevo.')),
+    );
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
+
 
   // Método para construir el dropdown de tipo de incapacidad
   Widget _buildDropdownTipoincapacidad() {

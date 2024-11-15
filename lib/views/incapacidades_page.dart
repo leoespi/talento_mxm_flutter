@@ -8,9 +8,11 @@ import 'package:talento_mxm_flutter/controllers/authentication.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image/image.dart' as img;
 import 'package:talento_mxm_flutter/views/bottom_menu.dart';
+import 'package:http/http.dart' as http;
 
 void main() => runApp(MyApp());
 
+// La clase principal que ejecuta la aplicación
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -21,24 +23,30 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// Widget principal que contiene el formulario
 class MyForm extends StatefulWidget {
   @override
   _MyFormState createState() => _MyFormState();
 }
 
 class _MyFormState extends State<MyForm> {
+  // Controladores
   final AuthenticationController _authController = AuthenticationController();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _diasIncapacidadController = TextEditingController();
- final TextEditingController _categoriaCodigoController = TextEditingController(); // Nuevo controlador para el código de categoría
+  final TextEditingController _categoriaCodigoController = TextEditingController();
 
+  // Variables para los campos del formulario
   String? _selectedEntidadAfiliada;
   String? _selectedTipoincapacidadReportada;
   DateTime _fechaInicio = DateTime.now();
   List<File> _images = [];
   List<File> _documents = [];
+  bool _isCategoriaValida = true;
   bool _isLoading = false;
+  String? _codigoCategoriaError;
 
+  // Controlador de incapacidades
   final IncapacidadesController _controller = Get.put(IncapacidadesController());
 
   @override
@@ -70,8 +78,8 @@ class _MyFormState extends State<MyForm> {
                   _buildFechaInicioField(),
                   SizedBox(height: 20),
                   _buildDropdownEntidadAfiliada(),
-                      SizedBox(height: 20),
-                  _buildCategoriaCodigoField(), // Agregado campo de código de categoría
+                  SizedBox(height: 20),
+                  _buildCategoriaCodigoField(),
                   SizedBox(height: 20),
                   _buildSelectImagesButton(),
                   SizedBox(height: 20),
@@ -106,56 +114,6 @@ class _MyFormState extends State<MyForm> {
     }
   }
 
-Widget _buildCategoriaCodigoField() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      TextFormField(
-        controller: _categoriaCodigoController,
-        decoration: InputDecoration(
-          labelText: 'Código de Incapacidad',
-          border: OutlineInputBorder(),
-          // Aquí añadimos un color de borde diferente cuando el campo está en error
-          errorBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.red),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.red),
-          ),
-        ),
-        validator: (value) {
-          // Verificar si el valor es nulo o vacío
-          if (value == null || value.isEmpty) {
-            return 'Por favor ingresa el código de categoría';
-          }
-
-          // Expresión regular para validar el código
-          RegExp regExp = RegExp(r'^[A-Z]\d{3}$|^[A-Z]\d{2}[A-Z]$');
-          if (!regExp.hasMatch(value)) {
-            return 'El código de categoría no es válido. Debe ser en uno de estos formatos: (letra y de uno a tres digitos) =D463 o (letra, dos digitos y una letra) D65X.';
-          }
-          return null; // Si la validación pasa, no devuelve ningún error
-        },
-        maxLines: 1, // Mantener en una sola línea para el campo de entrada
-        textInputAction: TextInputAction.done,
-      ),
-      // Esto asegura que el mensaje de error se muestre correctamente
-      if (_categoriaCodigoController.text.isNotEmpty &&
-          _formKey.currentState?.validate() == false)
-        Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: Text(
-            'El código de categoría no es válido. Debe ser en uno de estos formatos: (letra y de uno a tres digitos =D463)  o (letra, dos digitos y una letra = D65X) siempre en Mayuscula.',
-            style: TextStyle(color: Colors.red, fontSize: 14),
-          ),
-        ),
-    ],
-  );
-}
-
-
-
-
   // Método para comprimir la imagen
   File compressImage(File file) {
     img.Image? image = img.decodeImage(file.readAsBytesSync());
@@ -166,7 +124,7 @@ Widget _buildCategoriaCodigoField() {
     return compressedFile;
   }
 
-  // Método para obtener imágenes
+  // Método para obtener imágenes desde la galería
   void _getImages() async {
     final pickedFiles = await ImagePicker().pickMultiImage();
     if (pickedFiles != null) {
@@ -178,7 +136,7 @@ Widget _buildCategoriaCodigoField() {
     }
   }
 
-  // Método para obtener documentos
+  // Método para obtener documentos desde el sistema de archivos
   void _getDocuments() async {
     final pickedFiles = await FilePicker.platform.pickFiles(allowMultiple: true);
     if (pickedFiles != null) {
@@ -189,80 +147,10 @@ Widget _buildCategoriaCodigoField() {
     }
   }
 
-  // Método para confirmar y enviar el formulario
-  Future<void> _confirmAndSubmit() async {
-    bool? confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Confirmar Envío'),
-          content: Text('¿Estás seguro de que deseas enviar la incapacidad?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Text('Confirmar'),
-            ),
-          ],
-        );
-      },
-    );
 
-    if (confirm == true) {
-      _submitForm();
-    }
-  }
-Future<void> _submitForm() async {
-  if (!_formKey.currentState!.validate()) {
-    // Si la validación falla, se sale de la función
-    return;
-  }
+  
 
-  // Muestra el indicador de carga
-  setState(() {
-    _isLoading = true;
-  });
-
-  try {
-    List<String> imagePaths = _images.map((img) => img.path).toList();
-    List<String> documentPaths = _documents.map((doc) => doc.path).toList();
-
-    String categoriaCodigo = _categoriaCodigoController.text;
-
-    // Enviar incapacidad al controlador
-    await _controller.createIncapacidad(
-      tipoincapacidadreportada: _selectedTipoincapacidadReportada!,
-      diasIncapacidad: int.parse(_diasIncapacidadController.text),
-      fechaInicioIncapacidad: _fechaInicio,
-      entidadAfiliada: _selectedEntidadAfiliada!,
-      images: _images,
-      documents: _documents,
-      imagePaths: imagePaths,
-      documentPaths: documentPaths,
-      categoriaCodigo: categoriaCodigo,
-      context: context,
-    );
-
-    // Este bloque solo se ejecuta si la incapacidad se crea exitosamente
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Incapacidad creada correctamente')));
-    Get.offAll(() => MenuPage()); // Redirige al inicio
-
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Ocurrió un error. Por favor, inténtalo de nuevo.')),
-    );
-  } finally {
-    setState(() {
-      _isLoading = false;
-    });
-  }
-}
-
-
-  // Método para construir el dropdown de tipo de incapacidad
+  // Métodos para construir los widgets del formulario
   Widget _buildDropdownTipoincapacidad() {
     return DropdownButtonFormField<String>(
       value: _selectedTipoincapacidadReportada,
@@ -291,7 +179,6 @@ Future<void> _submitForm() async {
     );
   }
 
-  // Método para construir el campo de días de incapacidad
   Widget _buildDiasIncapacidadField() {
     return TextFormField(
       controller: _diasIncapacidadController,
@@ -309,7 +196,6 @@ Future<void> _submitForm() async {
     );
   }
 
-  // Método para construir el campo de fecha de inicio
   Widget _buildFechaInicioField() {
     return ListTile(
       title: Text('Fecha de Inicio de la Incapacidad:'),
@@ -319,7 +205,7 @@ Future<void> _submitForm() async {
     );
   }
 
-  // Método para construir la sección de documentos requeridos
+  // Sección de documentos requeridos según tipo de incapacidad
   Widget _buildDocumentItem(String? selectedOption) {
     List<String> documents = [];
 
@@ -352,7 +238,6 @@ Future<void> _submitForm() async {
     );
   }
 
-  // Método para construir el dropdown de entidad afiliada
   Widget _buildDropdownEntidadAfiliada() {
     return DropdownButtonFormField<String>(
       value: _selectedEntidadAfiliada,
@@ -381,7 +266,7 @@ Future<void> _submitForm() async {
     );
   }
 
-  // Método para construir el botón de seleccionar imágenes
+  // Método para agregar imágenes
   Widget _buildSelectImagesButton() {
     return ElevatedButton(
       onPressed: _getImages,
@@ -389,7 +274,69 @@ Future<void> _submitForm() async {
     );
   }
 
-  // Método para construir la sección de imágenes seleccionadas
+  // Campo para el código de categoría
+  Widget _buildCategoriaCodigoField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextFormField(
+          controller: _categoriaCodigoController,
+          decoration: InputDecoration(
+            labelText: 'Código del diagnostico',
+            border: OutlineInputBorder(),
+            errorText: _codigoCategoriaError, // Mostrar error si lo hay
+          ),
+          onChanged: (value) {
+            if (value.isNotEmpty) {
+              _checkCodigoCategoria(value);
+            }
+          },
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Por favor ingresa el código del diagnostico';
+            }
+            if (_codigoCategoriaError != null) {
+              return _codigoCategoriaError; // Mostrar el error aquí
+            }
+            return null;
+          },
+        ),
+        if (_codigoCategoriaError != null && _codigoCategoriaError!.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              _codigoCategoriaError!,
+              style: TextStyle(color: Colors.red, fontSize: 14),
+            ),
+          ),
+      ],
+    );
+  }
+
+  // Método para verificar el código de categoría con el backend
+  Future<void> _checkCodigoCategoria(String codigo) async {
+    final url = Uri.parse('http://10.0.2.2:8000/api/categoria/$codigo');  // Cambiar localhost a tu IP local
+    
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        setState(() {
+          _codigoCategoriaError = null; // Código válido
+        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('¡Código de categoría válido!')));
+      } else {
+        setState(() {
+          _codigoCategoriaError = 'Este código de categoría no existe. Solicítalo con tu EPS.';
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _codigoCategoriaError = 'Error al verificar el código de categoría.';
+      });
+    }
+  }
+
+  // Método para mostrar las imágenes seleccionadas
   Widget _buildSelectedImages() {
     return _images.isNotEmpty
         ? Wrap(
@@ -397,8 +344,7 @@ Future<void> _submitForm() async {
             children: _images.map((image) {
               return GestureDetector(
                 onTap: () {
-                  // Lógica para intentar cargar la imagen nuevamente
-                  _retryImageUpload(image);
+                  _retryImageUpload(image);  // Intentar cargar la imagen nuevamente
                 },
                 child: Container(
                   width: 100,
@@ -406,7 +352,7 @@ Future<void> _submitForm() async {
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.blueAccent),
                   ),
-                  child: Center(child: Text(image.path.split('/').last)), // Mostrar nombre del archivo
+                  child: Center(child: Text(image.path.split('/').last)),
                 ),
               );
             }).toList(),
@@ -414,18 +360,18 @@ Future<void> _submitForm() async {
         : Text('No hay imágenes seleccionadas');
   }
 
-  // Método para reintentar cargar la imagen
+  // Reintentar cargar una imagen
   void _retryImageUpload(File image) async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
-        _images.remove(image); // Eliminar la imagen anterior si se vuelve a seleccionar
-        _images.add(File(pickedFile.path)); // Agregar la nueva imagen
+        _images.remove(image);
+        _images.add(File(pickedFile.path));
       });
     }
   }
 
-  // Método para construir el botón de seleccionar documentos
+  // Método para seleccionar documentos
   Widget _buildSelectDocumentsButton() {
     return ElevatedButton(
       onPressed: _getDocuments,
@@ -433,7 +379,7 @@ Future<void> _submitForm() async {
     );
   }
 
-  // Método para construir la sección de documentos seleccionados
+  // Mostrar los documentos seleccionados
   Widget _buildSelectedDocuments() {
     return _documents.isNotEmpty
         ? Wrap(
@@ -445,20 +391,102 @@ Future<void> _submitForm() async {
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.blueAccent),
                 ),
-                child: Center(child: Text(document.path.split('/').last)), // Mostrar nombre del archivo
+                child: Center(child: Text(document.path.split('/').last)),
               );
             }).toList(),
           )
         : Text('No hay documentos seleccionados');
   }
-
-  // Método para construir el botón de enviar
-  Widget _buildSubmitButton() {
-    return ElevatedButton(
-      onPressed: _isLoading ? null : _confirmAndSubmit, // Cambiado para usar la confirmación
-      child: _isLoading
-          ? CircularProgressIndicator(color: Colors.white)
-          : Text('Enviar'),
+// Método para confirmar y enviar el formulario
+Future<void> _confirmAndSubmit() async {
+  // Verificamos si el código de categoría es válido
+  if (_codigoCategoriaError != null && _codigoCategoriaError!.isNotEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Por favor ingresa un código de categoría válido.')),
     );
+    return;
   }
+
+  // Continuamos con la confirmación solo si el código es válido
+  bool? confirm = await showDialog<bool>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text('Confirmar Envío'),
+        content: Text('¿Estás seguro de que deseas enviar la incapacidad?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text('Confirmar'),
+          ),
+        ],
+      );
+    },
+  );
+
+  if (confirm == true) {
+    _submitForm();
+  }
+}
+
+// Método para enviar el formulario
+Future<void> _submitForm() async {
+  if (!_formKey.currentState!.validate()) {
+    return; // Si la validación falla, salimos
+  }
+
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    List<String> imagePaths = _images.map((img) => img.path).toList();
+    List<String> documentPaths = _documents.map((doc) => doc.path).toList();
+
+    String categoriaCodigo = _categoriaCodigoController.text;
+
+    // Enviar la incapacidad si todo es válido
+    await _controller.createIncapacidad(
+      tipoincapacidadreportada: _selectedTipoincapacidadReportada!,
+      diasIncapacidad: int.parse(_diasIncapacidadController.text),
+      fechaInicioIncapacidad: _fechaInicio,
+      entidadAfiliada: _selectedEntidadAfiliada!,
+      images: _images,
+      documents: _documents,
+      imagePaths: imagePaths,
+      documentPaths: documentPaths,
+      categoriaCodigo: categoriaCodigo,
+      context: context,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Incapacidad creada correctamente')),
+    );
+    Get.offAll(() => MenuPage()); // Redirige al menú principal
+
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Ocurrió un error. Por favor, inténtalo de nuevo.')),
+    );
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+}
+
+// Método para construir el botón de envío
+Widget _buildSubmitButton() {
+  return ElevatedButton(
+    onPressed: _isLoading || (_codigoCategoriaError != null && _codigoCategoriaError!.isNotEmpty) ? null : _confirmAndSubmit,
+    child: _isLoading
+        ? CircularProgressIndicator(color: Colors.white)
+        : Text('Enviar'),
+  );
+}
+
 }

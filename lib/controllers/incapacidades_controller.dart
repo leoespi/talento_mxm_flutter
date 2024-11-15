@@ -26,6 +26,7 @@ class IncapacidadesController extends GetxController {
   /// - [documents]: Lista de documentos asociados.
   /// - [imagePaths]: Rutas de las imágenes.
   /// - [documentPaths]: Rutas de los documentos.
+  /// - [categoriaCodigo]: codigo de la categoria (incapacidad)
   /// - [context]: Contexto de la aplicación para mostrar diálogos.
 
 Future<void> createIncapacidad({
@@ -127,8 +128,6 @@ Future<void> createIncapacidad({
   }
 }
 
-
-
   /// Muestra un diálogo de éxito al crear la incapacidad
   void _showSuccessDialog(BuildContext context) {
     showDialog(
@@ -149,4 +148,5 @@ Future<void> createIncapacidad({
       },
     );
   }
+
 }

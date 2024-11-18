@@ -27,6 +27,8 @@ class UserService {
           name: data["name"],
           cedula: data["cedula"].toString(), 
           email: data["email"],
+          p_venta: data["p_venta"],
+          cargo: data["cargo"]
         );
       } else {
         // La solicitud falló, maneja el error de otra manera

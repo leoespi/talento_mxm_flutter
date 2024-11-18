@@ -18,6 +18,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _cedulaController = TextEditingController();
+  final TextEditingController _p_ventaController = TextEditingController();
+  final TextEditingController _cargoController = TextEditingController();
+
 
   // Controlador de autenticación
   final AuthenticationController _authenticationController = Get.put(AuthenticationController());
@@ -28,7 +31,10 @@ class _RegisterPageState extends State<RegisterPage> {
     if (_nameController.text.trim().isEmpty ||
         _cedulaController.text.trim().isEmpty ||
         _emailController.text.trim().isEmpty ||
-        _passwordController.text.trim().isEmpty) {
+        _passwordController.text.trim().isEmpty||
+        _p_ventaController.text.trim().isEmpty||
+        _cargoController.text.trim().isEmpty
+        ) {
       Get.snackbar(
         'Campos Requeridos',
         'Por favor, completa todos los campos.',
@@ -44,6 +50,8 @@ class _RegisterPageState extends State<RegisterPage> {
       name: _nameController.text.trim(),
       cedula: int.parse(_cedulaController.text.trim()),
       email: _emailController.text.trim(),
+      p_venta: _p_ventaController.text.trim(),
+      cargo:_cargoController.text.trim(),
       password: _passwordController.text.trim(),
     );
   }
@@ -91,6 +99,21 @@ class _RegisterPageState extends State<RegisterPage> {
                 obscureText: false,
                 controller: _emailController,
               ),
+              
+              SizedBox(height: 20),
+              InputWidget(
+                hintText: 'Punto de Venta',
+                obscureText: false,
+                controller: _p_ventaController,
+              ),
+              
+              SizedBox(height: 20),
+              InputWidget(
+                hintText: 'Cargo',
+                obscureText: false,
+                controller: _cargoController,
+              ),
+              
               SizedBox(height: 20),
               InputWidget(
                 hintText: 'Contraseña',

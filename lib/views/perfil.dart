@@ -7,11 +7,15 @@ class UserData {
   final String name;
   final String cedula;
   final String email;
+  final String p_venta;
+  final String cargo;
 
   UserData({
     required this.name,
     required this.cedula,
     required this.email,
+    required this.p_venta,
+    required this.cargo,
   });
 }
 
@@ -106,6 +110,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     leading: Icon(Icons.email, color: const Color.fromARGB(255, 5, 13, 121)),
                     title: Text('Correo Electrónico'),
                     subtitle: Text(usuario.email),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.store_outlined, color: const Color.fromARGB(255, 5, 13, 121)),
+                    title: Text('Punto de Venta'),
+                    subtitle: Text(usuario.p_venta),
+                  ),
+
+                   ListTile(
+                    leading: Icon(Icons.emoji_people, color: const Color.fromARGB(255, 5, 13, 121)),
+                    title: Text('Cargo'),
+                    subtitle: Text(usuario.cargo),
                   ),
                 ],
               ),

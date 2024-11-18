@@ -23,6 +23,8 @@ class AuthenticationController extends GetxController {
     required String name,
     required int cedula,
     required String email,
+    required String p_venta,
+    required String cargo,
     required String password,
   }) async {
     try {
@@ -31,6 +33,8 @@ class AuthenticationController extends GetxController {
         'name': name,
         'cedula': cedula.toString(),
         'email': email,
+        'p_venta': p_venta,
+        'cargo': cargo,
         'password': password,
       };
 

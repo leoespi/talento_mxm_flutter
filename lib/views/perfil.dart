@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:talento_mxm_flutter/services/user_service.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:talento_mxm_flutter/views/bottom_menu.dart';
+import 'package:talento_mxm_flutter/views/update_perfil.dart'; // Importar el formulario de actualización de usuario
 
 class UserData {
   final String name;
@@ -9,7 +10,6 @@ class UserData {
   final String email;
   final String p_venta;
   final String cargo;
-
   UserData({
     required this.name,
     required this.cedula,
@@ -45,12 +45,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 5, 13, 121),
-        
-        title: Text('Mi Perfil', style: TextStyle(
-      color: Colors.white, // Cambia el color aquí
-    ),),
-        
-        
+        title: Text(
+          'Mi Perfil',
+          style: TextStyle(
+            color: Colors.white, // Cambia el color aquí
+          ),
+        ),
       ),
       drawer: SideMenu(),
       body: FutureBuilder<UserData>(
@@ -111,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     title: Text('Correo Electrónico'),
                     subtitle: Text(usuario.email),
                   ),
-                  ListTile(
+                   ListTile(
                     leading: Icon(Icons.store_outlined, color: const Color.fromARGB(255, 5, 13, 121)),
                     title: Text('Punto de Venta'),
                     subtitle: Text(usuario.p_venta),
@@ -122,6 +122,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     title: Text('Cargo'),
                     subtitle: Text(usuario.cargo),
                   ),
+                  SizedBox(height: 20.0),
+                  // Botón para actualizar los datos
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Navegar a la pantalla de actualización de usuario
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UpdateUserForm(),
+                          ),
+                        );
+                      },
+                      child: Text('Actualizar Información'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 5, 13, 121), // Color del botón
+                        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                        textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        foregroundColor: Colors.white, // Aquí se establece el color del texto del botón
+                      ),
+                    ),
+                  )
+
                 ],
               ),
             );

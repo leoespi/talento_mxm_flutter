@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:talento_mxm_flutter/models/registros_model.dart';
@@ -65,6 +66,62 @@ class ApiService {
     throw Exception('Error al cargar incapacidades: $e');
   }
 }
+
+Future<List<Solicitud>> fetchpermisos()  async {
+  final token = _getToken();
+  final response = await _getRequest('$baseUrl/indexpermisos', token);
+
+  if(response.body.isEmpty){
+    throw Exception('Respuesta vacía desde el servidor');
+  }
+
+  try {
+    final decodedResponse = json.decode(response.body);
+
+    if(decodedResponse is Map <String,  dynamic> && decodedResponse.containsKey('permisos')){
+      final List<dynamic> data = decodedResponse ['permisos'];
+      return data.map((item) => Solicitud.fromJson(item)).toList();
+    }else{
+      throw Exception('Formato de respuesta inválido: No contiene "permisos"');
+    }
+
+
+  }catch(e) {
+    print('Error al parsear JSON de Solicitudes: $e');
+    throw Exception('Error al cargar solicitudes: $e');
+  }
+
+}
+
+
+Future<List<Malla>> fetchmallas() async {
+  final token = _getToken();
+  final response = await _getRequest('$baseUrl/indexmallas', token);
+
+  if (response.body.isEmpty) {
+    throw Exception('Respuesta vacía desde el servidor');
+  }
+
+ try {
+  final decodedResponse = json.decode(response.body);
+
+  // Verifica si la respuesta contiene la clave "mallas" de la forma que esperas
+  if (decodedResponse is Map<String, dynamic> && decodedResponse.containsKey('data') && decodedResponse['data'].containsKey('mallas')) {
+    final mallasData = decodedResponse['data']['malla'];
+    return mallasData.map((item) => Malla.fromJson(item)).toList();
+  } else {
+    throw Exception('Formato de respuesta inválido: No contiene "data" o "mallas"');
+  }
+} catch (e) {
+  print('Error al parsear JSON de Mallas: $e');
+  throw Exception('Error al cargar mallas: $e');
+}
+
+}
+
+
+
+
 
 
 

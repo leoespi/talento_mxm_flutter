@@ -46,7 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 5, 13, 121),
         title: Text(
-          'Mi Perfil',
+          'Perfil',
           style: TextStyle(
             color: Colors.white, // Cambia el color aquí
           ),

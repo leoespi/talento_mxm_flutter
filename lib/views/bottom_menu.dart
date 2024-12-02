@@ -8,6 +8,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:talento_mxm_flutter/views/perfil.dart';
 import 'package:talento_mxm_flutter/views/registro_page.dart';
 import 'package:talento_mxm_flutter/controllers/authentication.dart';
+import 'package:talento_mxm_flutter/views/Permisos_page.dart';
+import 'package:talento_mxm_flutter/views/Malla_page.dart';
+
+
 
 class SideMenu extends StatelessWidget {
   final AuthenticationController _authController = AuthenticationController();
@@ -98,8 +102,23 @@ class SideMenu extends StatelessWidget {
               _navigateTo(context, CrearReferidoScreen());
             },
           ),
+
+           _createDrawerItem(
+            icon: Icons.assignment_turned_in_outlined,
+            text: 'Permisos             Remunerados',
+            onTap: () {
+              _navigateTo(context, CrearPermisoPage());
+            },
+          ),
+            _createDrawerItem(
+            icon: Icons.edit_document,
+            text: 'Mallas',
+            onTap: () {
+              _navigateTo(context, CrearMallaScreen());
+            },
+          ),
           _createDrawerItem(
-            icon: Icons.format_align_left,
+            icon: Icons.notes,
             text: 'Autogestión',
             onTap: () {
               _launchURL('http://supermercadosmxmag.siesacloud.com:8933/AuthAG/LoginFormAG?IdCia=1&NroConexion=1');

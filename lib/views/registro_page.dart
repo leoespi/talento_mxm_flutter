@@ -11,10 +11,12 @@ class MyWidget extends StatefulWidget {
   _MyWidgetState createState() => _MyWidgetState();
 }
 
-class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin {
+class _MyWidgetState extends State<MyWidget>
+    with SingleTickerProviderStateMixin {
   final AuthenticationController _authController = AuthenticationController();
   late Future<List<Cesantia>> cesantias;
   late Future<List<Incapacidad>> incapacidades;
+  late Future<List<Solicitud>> permisos;
   late TabController _tabController;
   final storage = GetStorage();
 
@@ -23,7 +25,8 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
     super.initState();
     cesantias = ApiService().fetchCesantias();
     incapacidades = ApiService().fetchIncapacidades();
-    _tabController = TabController(length: 2, vsync: this);
+    permisos = ApiService().fetchpermisos();
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -37,6 +40,7 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
     setState(() {
       cesantias = ApiService().fetchCesantias();
       incapacidades = ApiService().fetchIncapacidades();
+      permisos = ApiService().fetchpermisos();
     });
   }
 
@@ -57,6 +61,7 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
           tabs: [
             Tab(text: 'Cesantías'),
             Tab(text: 'Incapacidades'),
+            Tab(text: 'Permisos'),
           ],
         ),
       ),
@@ -100,16 +105,21 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
                               Text('Tipo: ${cesantia.tipoCesantiaReportada}'),
                               Text('Estado: ${cesantia.estado}'),
                               if (cesantia.justificacion != null)
-                                Text('Justificación: ${cesantia.justificacion}'),
+                                Text(
+                                    'Justificación: ${cesantia.justificacion}'),
                               Text('Fecha: ${cesantia.createdAt.toLocal()}'),
                               SizedBox(height: 8),
                               if (cesantia.documentos.isNotEmpty)
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Documentos:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    Text('Documentos:',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
                                     SizedBox(height: 4),
-                                    ...cesantia.documentos.map((doc) => Text(doc)).toList(),
+                                    ...cesantia.documentos
+                                        .map((doc) => Text(doc))
+                                        .toList(),
                                     SizedBox(height: 8),
                                   ],
                                 ),
@@ -129,7 +139,7 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
           FutureBuilder<List<Incapacidad>>(
             future: incapacidades,
             builder: (context, snapshot) {
-               if (snapshot.connectionState == ConnectionState.waiting) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
               }
               if (snapshot.hasError) {
@@ -157,23 +167,33 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text('Incapacidad Nro: ${incapacidad.id}', style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text('Incapacidad Nro: ${incapacidad.id}',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
                               SizedBox(height: 8),
-                              Text('Tipo: ${incapacidad.tipoIncapacidadReportada}'),
+                              Text(
+                                  'Tipo: ${incapacidad.tipoIncapacidadReportada}'),
                               SizedBox(height: 4),
-                              Text('Días de Incapacidad: ${incapacidad.diasIncapacidad}'),
+                              Text(
+                                  'Días de Incapacidad: ${incapacidad.diasIncapacidad}'),
                               SizedBox(height: 4),
-                              Text('Fecha de Inicio: ${incapacidad.fechaInicioIncapacidad.toLocal()}'),
+                              Text(
+                                  'Fecha de Inicio: ${incapacidad.fechaInicioIncapacidad.toLocal()}'),
                               SizedBox(height: 4),
-                              Text('Entidad Afiliada: ${incapacidad.entidadAfiliada}'),
+                              Text(
+                                  'Entidad Afiliada: ${incapacidad.entidadAfiliada}'),
                               SizedBox(height: 8),
                               if (incapacidad.documentos.isNotEmpty)
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Documentos:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    Text('Documentos:',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
                                     SizedBox(height: 4),
-                                    ...incapacidad.documentos.map((doc) => Text(doc)).toList(),
+                                    ...incapacidad.documentos
+                                        .map((doc) => Text(doc))
+                                        .toList(),
                                     SizedBox(height: 8),
                                   ],
                                 ),
@@ -181,7 +201,9 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Imágenes:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                    Text('Imágenes:',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
                                     SizedBox(height: 4),
                                     _buildImageGrid(incapacidad.imagenes),
                                   ],
@@ -196,6 +218,66 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
               );
             },
           ),
+
+          FutureBuilder<List<Solicitud>>(
+            future: permisos,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return _buildErrorState(snapshot.error);
+              }
+              if (snapshot.hasData && snapshot.data!.isEmpty) {
+                return Center(
+                    child: Text('No hay solicitudes de permisos disponibles.'));
+              }
+
+              // Invertir el orden para mostrar los más recientes primero
+              final permisosData = snapshot.data!.reversed.toList();
+
+              return RefreshIndicator(
+                onRefresh: _refreshData, // Función para refrescar los datos
+                child: ListView.builder(
+                  itemCount: permisosData.length,
+                  itemBuilder: (context, index) {
+                    final permisos = permisosData[index];
+                    return GestureDetector(
+                      onTap: () {
+                        // Acción al tocar el ítem
+                      },
+                      child: Card(
+                        margin: EdgeInsets.all(8.0),
+                        child: Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text('PERMISOS'),
+                              Text('Sede: ${permisos.pVenta}'),
+                              Text(
+                                  'Categoria Solicitud: ${permisos.categoriaSolicitud}'),
+                              Text(
+                                  'Fecha de Permiso: ${permisos.fechaPermiso}'),
+                              Text(
+                                  'Fecha de Solicitud: ${permisos.fechaSolicitud}'),
+                              Text('Hora: ${permisos.hora}'),
+                              Text(
+                                  'Unidad de tiempo: ${permisos.unidadTiempo}'),
+                              Text('Justificación: ${permisos.justificacion}'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+
+
+
         ],
       ),
     );
@@ -257,8 +339,10 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
               imageUrl: 'http://192.168.1.148:8000/storage/${images[index]}',
               //imageUrl: 'http://10.0.2.2:8000/storage/${images[index]}',
               fit: BoxFit.cover,
-              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-              errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+              placeholder: (context, url) =>
+                  Center(child: CircularProgressIndicator()),
+              errorWidget: (context, url, error) =>
+                  Center(child: Icon(Icons.error)),
             ),
           ),
         );
@@ -266,8 +350,6 @@ class _MyWidgetState extends State<MyWidget> with SingleTickerProviderStateMixin
     );
   }
 }
-
-
 
 class VistaImagen extends StatefulWidget {
   final List<String> imagenes;
@@ -307,17 +389,20 @@ class _VistaImagenState extends State<VistaImagen> {
             },
             child: Center(
               child: CachedNetworkImage(
-                  imageUrl: 'http://192.168.1.148:8000/storage/${widget.imagenes[index]}',
+                imageUrl:
+                    'http://192.168.1.148:8000/storage/${widget.imagenes[index]}',
                 //imageUrl: 'http://10.0.2.2:8000/storage/${widget.imagenes[index]}',
                 fit: BoxFit.contain,
-                placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                placeholder: (context, url) =>
+                    Center(child: CircularProgressIndicator()),
                 errorWidget: (context, url, error) => Center(
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
                         // Forzar la reconstrucción del widget para recargar la imagen
-                        CachedNetworkImage.evictFromCache('http://192.168.1.148:8000/storage/${widget.imagenes[index]}');
-                          //CachedNetworkImage.evictFromCache('http://10.0.2.2:8000/storage/${widget.imagenes[index]}');
+                        CachedNetworkImage.evictFromCache(
+                            'http://192.168.1.148:8000/storage/${widget.imagenes[index]}');
+                        //CachedNetworkImage.evictFromCache('http://10.0.2.2:8000/storage/${widget.imagenes[index]}');
                       });
                     },
                     child: Column(

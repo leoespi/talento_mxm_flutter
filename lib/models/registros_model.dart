@@ -98,3 +98,100 @@ class Incapacidad {
     );
   }
 }
+class Solicitud {
+  final int userId;
+  final String pVenta;
+  final String categoriaSolicitud;
+  final String tiempoRequerido;
+  final String unidadTiempo;
+  final String hora;
+  final DateTime fechaPermiso;
+  final DateTime fechaSolicitud;
+  final String justificacion;
+
+  Solicitud({
+    required this.userId,
+    required this.pVenta,
+    required this.categoriaSolicitud,
+    required this.tiempoRequerido,
+    required this.unidadTiempo,
+    required this.hora,
+    required this.fechaPermiso,
+    required this.fechaSolicitud,
+    required this.justificacion,
+  });
+
+  // Método para convertir un mapa JSON en una instancia de Solicitud
+  factory Solicitud.fromJson(Map<String, dynamic> json) {
+    return Solicitud(
+      userId: json['user_id'],
+      pVenta: json['p_venta']?.toString() ?? '',  // Convertir a String si es necesario
+      categoriaSolicitud: json['categoria_solicitud']?.toString() ?? '',  // Convertir a String si es necesario
+      tiempoRequerido: json['tiempo_requerido']?.toString() ?? '',  // Convertir a String si es necesario
+      unidadTiempo: json['unidad_tiempo']?.toString() ?? '',  // Convertir a String si es necesario
+      hora: json['hora']?.toString() ?? '',  // Convertir a String si es necesario
+      fechaPermiso: DateTime.parse(json['fecha_permiso']),
+      fechaSolicitud: DateTime.parse(json['fecha_solicitud']),
+      justificacion: json['justificacion'] ?? '',  // Asignar un valor por defecto si es null
+    );
+  }
+
+  
+
+
+
+
+
+  // Método para convertir una instancia de Solicitud a JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'user_id': userId,
+      'p_venta': pVenta,
+      'categoria_solicitud': categoriaSolicitud,
+      'tiempo_requerido': tiempoRequerido,
+      'unidad_tiempo': unidadTiempo,
+      'hora': hora,
+      'fecha_permiso': fechaPermiso.toIso8601String(),
+      'fecha_solicitud': fechaSolicitud.toIso8601String(),
+      'justificacion': justificacion,
+    };
+  }
+}
+
+
+class Malla {
+  final int userId;
+  final String proceso;
+  final String pVenta;
+  final String documento; // El nombre del archivo o la URL del archivo
+
+  Malla({
+    required this.userId,
+    required this.proceso,
+    required this.pVenta,
+    required this.documento,
+  });
+
+  // Método para convertir un objeto Malla a un mapa (para enviar al backend)
+  Map<String, dynamic> toJson() {
+    return {
+      'user_id': userId,
+      'proceso': proceso,
+      'p_venta': pVenta,
+      'documento': documento,
+    };
+  }
+
+  // Método para crear un objeto Malla desde el JSON de respuesta
+  factory Malla.fromJson(Map<String, dynamic> json) {
+    return Malla(
+      userId: json['user_id'],
+      proceso: json['proceso'],
+      pVenta: json['p_venta'],
+      documento: json['documento'],
+    );
+  }
+}
+
+
+

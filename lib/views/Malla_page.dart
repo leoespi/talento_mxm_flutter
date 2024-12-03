@@ -63,11 +63,11 @@ class _CrearMallaScreenState extends State<CrearMallaScreen> {
 
   // Método para enviar el formulario
   Future<void> _submit() async {
-    int? userId = 1; // Suponiendo que el ID del usuario es 1, o lo obtienes desde GetStorage
+   
 
     // Llamamos al método del controlador para crear la malla
     await _mallaController.createMalla(
-      userId: userId,
+    
       proceso: _selectedProceso,
       pVenta: _selectedPVenta,
       documento: _documento,

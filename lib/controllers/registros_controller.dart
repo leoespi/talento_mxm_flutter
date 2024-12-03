@@ -92,9 +92,7 @@ Future<List<Solicitud>> fetchpermisos()  async {
   }
 
 }
-
-
-Future<List<Malla>> fetchmallas() async {
+Future<List<Malla>> fetchmalla() async {
   final token = _getToken();
   final response = await _getRequest('$baseUrl/indexmallas', token);
 
@@ -102,23 +100,28 @@ Future<List<Malla>> fetchmallas() async {
     throw Exception('Respuesta vacía desde el servidor');
   }
 
- try {
-  final decodedResponse = json.decode(response.body);
+  try {
+    final decodedResponse = json.decode(response.body);
+   
+    // Verifica si la respuesta contiene la clave "mallas"
+    if (decodedResponse is Map<String, dynamic> && decodedResponse.containsKey('mallas')) {
+      final mallasData = decodedResponse['mallas'];
 
-  // Verifica si la respuesta contiene la clave "mallas" de la forma que esperas
-  if (decodedResponse is Map<String, dynamic> && decodedResponse.containsKey('data') && decodedResponse['data'].containsKey('mallas')) {
-    final mallasData = decodedResponse['data']['malla'];
-    return mallasData.map((item) => Malla.fromJson(item)).toList();
-  } else {
-    throw Exception('Formato de respuesta inválido: No contiene "data" o "mallas"');
+      // Asegurarse de que mallasData sea una lista antes de intentar mapear
+      if (mallasData is List) {
+        // Mapear cada item de la lista a un objeto Malla
+        return mallasData.map((item) => Malla.fromJson(item)).toList();
+      } else {
+        throw Exception('El campo "mallas" no es una lista');
+      }
+    } else {
+      throw Exception('Formato de respuesta inválido: No contiene "mallas"');
+    }
+  } catch (e) {
+    print('Error al parsear JSON de Mallas: $e');
+    throw Exception('Error al cargar mallas: $e');
   }
-} catch (e) {
-  print('Error al parsear JSON de Mallas: $e');
-  throw Exception('Error al cargar mallas: $e');
 }
-
-}
-
 
 
 

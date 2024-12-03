@@ -17,6 +17,7 @@ class _MyWidgetState extends State<MyWidget>
   late Future<List<Cesantia>> cesantias;
   late Future<List<Incapacidad>> incapacidades;
   late Future<List<Solicitud>> permisos;
+  late Future<List<Malla>>malla;
   late TabController _tabController;
   final storage = GetStorage();
 
@@ -26,7 +27,8 @@ class _MyWidgetState extends State<MyWidget>
     cesantias = ApiService().fetchCesantias();
     incapacidades = ApiService().fetchIncapacidades();
     permisos = ApiService().fetchpermisos();
-    _tabController = TabController(length: 3, vsync: this);
+    malla = ApiService().fetchmalla();
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -41,6 +43,7 @@ class _MyWidgetState extends State<MyWidget>
       cesantias = ApiService().fetchCesantias();
       incapacidades = ApiService().fetchIncapacidades();
       permisos = ApiService().fetchpermisos();
+      malla = ApiService().fetchmalla();
     });
   }
 
@@ -62,6 +65,7 @@ class _MyWidgetState extends State<MyWidget>
             Tab(text: 'Cesantías'),
             Tab(text: 'Incapacidades'),
             Tab(text: 'Permisos'),
+            Tab(text: 'Mallas',)
           ],
         ),
       ),
@@ -275,6 +279,55 @@ class _MyWidgetState extends State<MyWidget>
               );
             },
           ),
+
+           // FutureBuilder for Cesantías...
+          FutureBuilder<List<Malla>>(
+            future: malla,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return _buildErrorState(snapshot.error);
+              }
+              if (snapshot.hasData && snapshot.data!.isEmpty) {
+                return Center(child: Text('No hay mallas disponibles.'));
+              }
+              // Invertir el orden para mostrar los más recientes primero
+              final mallasData = snapshot.data!.reversed.toList();
+              return RefreshIndicator(
+                onRefresh: _refreshData, // Función para refrescar los datos
+                child: ListView.builder(
+                  itemCount: mallasData.length,
+                  itemBuilder: (context, index) {
+                    final malla = mallasData[index];
+                    return GestureDetector(
+                      onTap: () {
+                        // Acción al pulsar
+                      },
+                      child: Card(
+                        margin: EdgeInsets.all(8.0),
+                        child: Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text('Punto de Venta: ${malla.pVenta}'),
+                              Text('Proceso: ${malla.proceso}'),
+                              Text('Documento: ${malla.documento}'),
+                            
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+
+
 
 
 
